@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31105.61
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.Core", "AcidarX.Core\AcidarX.Core.csproj", "{37FD5E71-1384-4A82-98E3-C6E660D0DF54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.ECS", "AcidarX.ECS\AcidarX.ECS.csproj", "{D9F47404-C8A7-4C48-9219-57BA6057E2CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37FD5E71-1384-4A82-98E3-C6E660D0DF54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37FD5E71-1384-4A82-98E3-C6E660D0DF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37FD5E71-1384-4A82-98E3-C6E660D0DF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37FD5E71-1384-4A82-98E3-C6E660D0DF54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {679809F2-B809-42A8-A2B4-D0229594704B}
+	EndGlobalSection
+EndGlobal
