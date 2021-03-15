@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.Core", "AcidarX.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.ECS", "AcidarX.ECS\AcidarX.ECS.csproj", "{D9F47404-C8A7-4C48-9219-57BA6057E2CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.Sandbox", "AcidarX.Sandbox\AcidarX.Sandbox.csproj", "{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9F47404-C8A7-4C48-9219-57BA6057E2CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
