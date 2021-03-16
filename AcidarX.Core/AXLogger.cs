@@ -8,18 +8,17 @@ namespace AcidarX.Core
 {
     public class AXLogger
     {
-        private const string OutputTemplate = "[{Timestamp:HH:mm}] [{SourceContext}] [{Level}] ({ThreadId}) {Message}{NewLine}{Exception}";
+        private const string OutputTemplate =
+            "[{Timestamp:HH:mm}] [{SourceContext}] [{Level}] ({ThreadId}) {Message}{NewLine}{Exception}";
 
-        private static readonly Serilog.Core.Logger SerilogLogger = new LoggerConfiguration().MinimumLevel.Verbose().MinimumLevel
+        private static readonly Logger SerilogLogger = new LoggerConfiguration().MinimumLevel.Verbose().MinimumLevel
             .Override("Microsoft", LogEventLevel.Information)
             .Enrich.With(new ThreadEnricher())
             .WriteTo.Console(outputTemplate: OutputTemplate)
             .CreateLogger();
 
-        public static ILogger<T> CreateLogger<T>() where T : class
-        {
-            return new LoggerFactory().AddSerilog(SerilogLogger).CreateLogger<T>();
-        }
+        public static ILogger<T> CreateLogger<T>() where T : class =>
+            new LoggerFactory().AddSerilog(SerilogLogger).CreateLogger<T>();
     }
 
     public class ThreadEnricher : ILogEventEnricher

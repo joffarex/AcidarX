@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 
 namespace AcidarX.ECS
 {
-    class Registry
+    internal class Registry
     {
         public static Dictionary<uint, HashSet<IComponent>> Entities { get; } = new();
 
@@ -40,7 +40,7 @@ namespace AcidarX.ECS
 
         public void AddComponent<T>(uint entity, ref T component) where T : IComponent
         {
-            Entities.TryGetValue(entity, out var components);
+            Entities.TryGetValue(entity, out HashSet<IComponent> components);
 
             Debug.Assert(components != null, $"Entity {entity} not found");
 
@@ -52,7 +52,7 @@ namespace AcidarX.ECS
 
         public T GetComponent<T>(uint entity) where T : IComponent
         {
-            Entities.TryGetValue(entity, out var components);
+            Entities.TryGetValue(entity, out HashSet<IComponent> components);
 
             Debug.Assert(components != null, $"Entity {entity} not found");
 
@@ -68,7 +68,7 @@ namespace AcidarX.ECS
 
         public void RemoveComponent<T>(uint entity) where T : IComponent
         {
-            Entities.TryGetValue(entity, out var components);
+            Entities.TryGetValue(entity, out HashSet<IComponent> components);
 
             Debug.Assert(components != null, $"Entity {entity} not found");
 

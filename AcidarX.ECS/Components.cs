@@ -32,10 +32,7 @@ namespace AcidarX.ECS
     {
         public Matrix4x4 Translation { get; }
 
-        public Transform3DComponent(Matrix4x4 translation)
-        {
-            Translation = translation;
-        }
+        public Transform3DComponent(Matrix4x4 translation) => Translation = translation;
 
         public override string ToString() => string.Format("[{0}]: {{ Translation: {1} }}",
             GetType().Name, Translation);
