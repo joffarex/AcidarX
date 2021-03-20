@@ -20,7 +20,7 @@ namespace AcidarX.Core.Windowing
             windowOptions.WindowBorder = WindowBorder.Resizable;
             _window = Window.Create(windowOptions);
 
-            AXLogger.Assert(_window != null, "Could not initialize Common Window");
+            Logger.Assert(_window != null, "Could not initialize Common Window");
 
             _window.Closing += OnClose;
         }
