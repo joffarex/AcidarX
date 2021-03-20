@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Core;
@@ -17,8 +18,20 @@ namespace AcidarX.Core
             .WriteTo.Console(outputTemplate: OutputTemplate)
             .CreateLogger();
 
+        private static readonly ILogger<AXLogger> AssertLogger = CreateLogger<AXLogger>();
+
         public static ILogger<T> CreateLogger<T>() where T : class =>
             new LoggerFactory().AddSerilog(SerilogLogger).CreateLogger<T>();
+
+        [Conditional("DEBUG")]
+        public static void Assert(bool condition, string message)
+        {
+            if (!condition)
+            {
+                AssertLogger.LogError(string.Format("Assertion Failed: {0}", message));
+                Debugger.Break();
+            }
+        }
     }
 
     public class ThreadEnricher : ILogEventEnricher
