@@ -1,16 +1,16 @@
-﻿using System.Numerics;
+﻿using Silk.NET.Maths;
 
 namespace AcidarX.Core.Events
 {
     public class WindowResizeEvent : Event
     {
-        public WindowResizeEvent(Vector2 size)
+        public WindowResizeEvent(Vector2D<int> size)
         {
             Size = size;
             EventType = GetStaticType<WindowResizeEvent>();
         }
 
-        public Vector2 Size { get; }
+        public Vector2D<int> Size { get; }
 
         public override int GetCategoryFlags() => (int) EventCategory.Application;
 
@@ -26,6 +26,15 @@ namespace AcidarX.Core.Events
         public override string ToString() => "WindowCloseEvent";
     }
 
+    public class AppLoadEvent : Event
+    {
+        public AppLoadEvent() => EventType = GetStaticType<AppLoadEvent>();
+
+        public override int GetCategoryFlags() => (int) EventCategory.Application;
+
+        public override string ToString() => "AppLoadEvent";
+    }
+
     public class AppTickEvent : Event
     {
         public AppTickEvent() => EventType = GetStaticType<AppTickEvent>();
@@ -37,7 +46,13 @@ namespace AcidarX.Core.Events
 
     public class AppUpdateEvent : Event
     {
-        public AppUpdateEvent() => EventType = GetStaticType<AppUpdateEvent>();
+        public AppUpdateEvent(double deltatime)
+        {
+            DeltaTime = deltatime;
+            EventType = GetStaticType<AppUpdateEvent>();
+        }
+
+        public double DeltaTime { get; }
 
         public override int GetCategoryFlags() => (int) EventCategory.Application;
 
@@ -46,7 +61,13 @@ namespace AcidarX.Core.Events
 
     public class AppRenderEvent : Event
     {
-        public AppRenderEvent() => EventType = GetStaticType<AppRenderEvent>();
+        public AppRenderEvent(double deltatime)
+        {
+            DeltaTime = deltatime;
+            EventType = GetStaticType<AppRenderEvent>();
+        }
+
+        public double DeltaTime { get; }
 
         public override int GetCategoryFlags() => (int) EventCategory.Application;
 

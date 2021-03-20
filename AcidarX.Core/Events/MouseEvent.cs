@@ -2,34 +2,34 @@
 
 namespace AcidarX.Core.Events
 {
-    public class MouseMovedEvent : Event
+    public class MouseMoveEvent : Event
     {
-        public MouseMovedEvent(Vector2 mousePos)
+        public MouseMoveEvent(Vector2 mousePos)
         {
             MousePos = mousePos;
-            EventType = GetStaticType<MouseMovedEvent>();
+            EventType = GetStaticType<MouseMoveEvent>();
         }
 
         public Vector2 MousePos { get; }
 
         public override int GetCategoryFlags() => (int) EventCategory.Mouse | (int) EventCategory.Input;
 
-        public override string ToString() => string.Format("MouseMovedEvent: {0},{1}", MousePos.X, MousePos.Y);
+        public override string ToString() => string.Format("MouseMoveEvent: {0},{1}", MousePos.X, MousePos.Y);
     }
 
-    public class MouseScrolledEvent : Event
+    public class MouseScrollEvent : Event
     {
-        public MouseScrolledEvent(Vector2 offset)
+        public MouseScrollEvent(Vector2 offset)
         {
             Offset = offset;
-            EventType = GetStaticType<MouseScrolledEvent>();
+            EventType = GetStaticType<MouseScrollEvent>();
         }
 
         public Vector2 Offset { get; }
 
         public override int GetCategoryFlags() => (int) EventCategory.Mouse | (int) EventCategory.Input;
 
-        public override string ToString() => string.Format("MouseScrolledEvent: {0},{1}", Offset.X, Offset.Y);
+        public override string ToString() => string.Format("MouseScrollEvent: {0},{1}", Offset.X, Offset.Y);
     }
 
     public abstract class MouseButtonEvent : Event

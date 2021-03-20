@@ -14,6 +14,7 @@ namespace AcidarX.Core.Events
         WindowLostFocus,
         WindowMoved,
 
+        AppLoad,
         AppTick,
         AppUpdate,
         AppRender,
@@ -40,7 +41,7 @@ namespace AcidarX.Core.Events
 
     public abstract class Event
     {
-        protected bool Handled { get; set; }
+        public bool Handled { get; set; }
         public EventType EventType { get; protected set; }
         public string Name => EventType.ToString("G");
 
@@ -50,12 +51,13 @@ namespace AcidarX.Core.Events
             {
                 nameof(KeyPressedEvent) => EventType.KeyPressed,
                 nameof(KeyReleasedEvent) => EventType.KeyReleased,
-                nameof(MouseMovedEvent) => EventType.MouseMoved,
-                nameof(MouseScrolledEvent) => EventType.MouseMoved,
+                nameof(MouseMoveEvent) => EventType.MouseMoved,
+                nameof(MouseScrollEvent) => EventType.MouseMoved,
                 nameof(MouseButtonPressedEvent) => EventType.MouseButtonPressed,
                 nameof(MouseButtonReleasedEvent) => EventType.MouseButtonReleased,
                 nameof(WindowResizeEvent) => EventType.WindowResize,
                 nameof(WindowCloseEvent) => EventType.WindowClose,
+                nameof(AppLoadEvent) => EventType.AppLoad,
                 nameof(AppTickEvent) => EventType.AppTick,
                 nameof(AppUpdateEvent) => EventType.AppUpdate,
                 nameof(AppRenderEvent) => EventType.AppRender,
@@ -67,23 +69,5 @@ namespace AcidarX.Core.Events
         public override string ToString() => Name;
 
         public bool IsInCategory(EventCategory category) => (GetCategoryFlags() & (int) category) != 0;
-
-        public class EventDispatcher
-        {
-            public EventDispatcher(Event @event) => Event = @event;
-
-            public Event Event { get; }
-
-            public bool Dispatch<T>(Func<T, bool> func) where T : Event
-            {
-                if (Event.EventType != GetStaticType<T>())
-                {
-                    return false;
-                }
-
-                Event.Handled = func((T) Event);
-                return true;
-            }
-        }
     }
 }

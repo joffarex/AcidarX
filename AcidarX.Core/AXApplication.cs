@@ -1,6 +1,6 @@
-﻿using AcidarX.Core.Windowing;
+﻿using AcidarX.Core.Events;
+using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Maths;
 
 namespace AcidarX.Core
 {
@@ -12,31 +12,33 @@ namespace AcidarX.Core
         protected AXApplication(AXWindowOptions axWindowOptions)
         {
             _window = new AXWindow(axWindowOptions);
-            _window.SetOnLoad(OnLoad);
-            _window.SetOnResize(OnResize);
-            _window.SetOnUpdate(OnUpdate);
-            _window.SetOnRender(OnRender);
+            _window.SetEventCallback(OnEvent);
         }
 
-        protected virtual void OnLoad()
+        private void OnEvent(Event e)
         {
-        }
+            var eventDispatcher = new EventDispatcher(e);
+            eventDispatcher.Dispatch<WindowCloseEvent>(OnWindowClose);
+            eventDispatcher.Dispatch<AppLoadEvent>(OnLoad);
 
-        protected virtual void OnResize(Vector2D<int> size)
-        {
-        }
-
-        protected virtual void OnUpdate(double dt)
-        {
-        }
-
-        protected virtual void OnRender(double dt)
-        {
+            // Logger.LogTrace($"{e}");
         }
 
         public void Run()
         {
             _window.Run();
+        }
+
+        private static bool OnLoad(AppLoadEvent e)
+        {
+            Logger.LogInformation($"[{e}]: WOAH, LOADED THIS MF!");
+            return true;
+        }
+
+        private static bool OnWindowClose(WindowCloseEvent e)
+        {
+            Logger.LogInformation($"[{e}]: Closing Window... WOW REPEATED!!!");
+            return true; // Handled
         }
     }
 }
