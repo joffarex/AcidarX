@@ -10,6 +10,7 @@ namespace AcidarX.Sandbox
 
         public Application(AXWindowOptions axWindowOptions) : base(axWindowOptions)
         {
+            PushLayer(new ExampleLayer());
         }
     }
 }
