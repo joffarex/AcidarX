@@ -23,12 +23,10 @@ namespace AcidarX.Sandbox
 
         public override void OnUpdate(double deltaTime)
         {
-            Logger.LogTrace("OnUpdate");
         }
 
         public override void OnRender(double deltaTime)
         {
-            Logger.LogTrace("OnRender");
         }
 
         public override void OnEvent(Event e)

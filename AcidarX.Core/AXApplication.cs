@@ -30,22 +30,25 @@ namespace AcidarX.Core
 
             foreach (Layer layer in _layers.Reverse())
             {
-                layer.OnEvent(e);
                 if (e.Handled)
                 {
                     break;
                 }
+
+                layer.OnEvent(e);
             }
         }
 
         public void PushLayer(Layer layer)
         {
             _layers.PushLayer(layer);
+            layer.OnAttach();
         }
 
         public void PushOverlay(Layer overlay)
         {
             _layers.PushOverlay(overlay);
+            overlay.OnAttach();
         }
 
         public void Run()
@@ -53,9 +56,10 @@ namespace AcidarX.Core
             _window.Run();
         }
 
-        private static bool OnLoad(AppLoadEvent e)
+        private bool OnLoad(AppLoadEvent e)
         {
-            Logger.LogInformation($"[{e}]: WOAH, LOADED THIS MF!");
+            PushLayer(new ImGuiLayer(_window.Gl, _window.NativeWindow.Size));
+
             return true;
         }
 

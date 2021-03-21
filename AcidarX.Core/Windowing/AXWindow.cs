@@ -4,6 +4,7 @@ using AcidarX.Core.Events;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.Maths;
+using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Windowing
@@ -11,7 +12,6 @@ namespace AcidarX.Core.Windowing
     public class AXWindow
     {
         private static readonly ILogger<AXWindow> Logger = AXLogger.CreateLogger<AXWindow>();
-        private readonly IWindow _window;
 
         public Action<Event> EventCallback;
 
@@ -23,17 +23,24 @@ namespace AcidarX.Core.Windowing
             windowOptions.VSync = axWindowOptions.VSync;
             windowOptions.ShouldSwapAutomatically = true;
             windowOptions.WindowBorder = WindowBorder.Resizable;
-            _window = Window.Create(windowOptions);
+            NativeWindow = Window.Create(windowOptions);
 
-            Logger.Assert(_window != null, "Could not initialize Common Window");
+            Logger.Assert(NativeWindow != null, "Could not initialize Common Window");
 
-            _window.Load += OnLoadContext;
-            _window.Load += OnLoad;
-            _window.Resize += OnResize;
-            _window.Update += OnUpdate;
-            _window.Render += OnRender;
-            _window.Closing += OnClose;
+            NativeWindow.Load += OnLoadContext;
+            NativeWindow.Load += OnLoad;
+            NativeWindow.Resize += OnResize;
+            NativeWindow.Update += OnUpdate;
+            NativeWindow.Render += OnRender;
+            NativeWindow.Closing += OnClose;
+
+            Gl = NativeWindow.CreateOpenGL();
         }
+
+        public IWindow NativeWindow { get; }
+        public GL Gl { get; }
+
+        public IInputContext InputContext { get; private set; }
 
         public void SetEventCallback(Action<Event> onEvent)
         {
@@ -42,15 +49,16 @@ namespace AcidarX.Core.Windowing
 
         private void OnLoadContext()
         {
-            IInputContext inputContext = _window.CreateInput();
+            InputContext = NativeWindow.CreateInput();
 
-            foreach (IKeyboard keyboard in inputContext.Keyboards)
+            foreach (IKeyboard keyboard in InputContext.Keyboards)
             {
                 keyboard.KeyDown += OnKeyPressed;
                 keyboard.KeyUp += OnKeyReleased;
+                keyboard.KeyChar += OnKeyChar;
             }
 
-            foreach (IMouse mouse in inputContext.Mice)
+            foreach (IMouse mouse in InputContext.Mice)
             {
                 mouse.MouseDown += OnMousePressed;
                 mouse.MouseUp += OnMouseReleased;
@@ -125,9 +133,15 @@ namespace AcidarX.Core.Windowing
             EventCallback(keyReleasedEvent);
         }
 
+        private void OnKeyChar(IKeyboard keyboard, char keyChar)
+        {
+            var keyTypedEvent = new KeyTypedEvent(keyChar);
+            EventCallback(keyTypedEvent);
+        }
+
         public void Run()
         {
-            _window.Run();
+            NativeWindow.Run();
         }
     }
 }
