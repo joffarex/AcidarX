@@ -30,4 +30,11 @@
 
         public override string ToString() => string.Format("KeyReleasedEvent: {0}", KeyCode);
     }
+
+    public class KeyTypedEvent : KeyEvent
+    {
+        public KeyTypedEvent(int keyCode) : base(keyCode) => EventType = GetStaticType<KeyTypedEvent>();
+
+        public override string ToString() => string.Format("KeyTypedEvent: {0}", KeyCode);
+    }
 }

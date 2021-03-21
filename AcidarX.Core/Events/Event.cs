@@ -21,6 +21,7 @@ namespace AcidarX.Core.Events
 
         KeyPressed,
         KeyReleased,
+        KeyTyped,
 
         MouseButtonPressed,
         MouseButtonReleased,
@@ -51,8 +52,9 @@ namespace AcidarX.Core.Events
             {
                 nameof(KeyPressedEvent) => EventType.KeyPressed,
                 nameof(KeyReleasedEvent) => EventType.KeyReleased,
+                nameof(KeyTypedEvent) => EventType.KeyTyped,
                 nameof(MouseMoveEvent) => EventType.MouseMoved,
-                nameof(MouseScrollEvent) => EventType.MouseMoved,
+                nameof(MouseScrollEvent) => EventType.MouseScrolled,
                 nameof(MouseButtonPressedEvent) => EventType.MouseButtonPressed,
                 nameof(MouseButtonReleasedEvent) => EventType.MouseButtonReleased,
                 nameof(WindowResizeEvent) => EventType.WindowResize,
