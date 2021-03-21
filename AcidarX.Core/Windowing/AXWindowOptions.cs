@@ -15,6 +15,6 @@
             VSync = vSync;
         }
 
-        public static AXWindowOptions CreateDefault() => new("AcidarX", 1280, 820, true);
+        public static AXWindowOptions CreateDefault() => new("AcidarX", 1280, 720, true);
     }
 }
