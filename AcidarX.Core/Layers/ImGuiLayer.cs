@@ -43,14 +43,14 @@ namespace AcidarX.Core.Layers
 
         public override void OnRender(double deltaTime)
         {
-            ImGui.ShowDemoWindow();
+            ImGuiNET.ImGui.ShowDemoWindow();
 
             _imGuiController.Render();
         }
 
         private bool OnMouseButtonPressedEvent(MouseButtonPressedEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.MouseDown[e.Button] = true;
 
             // We want other layers to handle this
@@ -59,7 +59,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.MouseDown[e.Button] = false;
 
             // We want other layers to handle this
@@ -68,7 +68,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnMouseScrollEvent(MouseScrollEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.MouseWheel += e.Offset.X;
             io.MouseWheelH += e.Offset.Y;
 
@@ -78,7 +78,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnMouseMoveEvent(MouseMoveEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.MousePos = e.MousePos;
 
             // We want other layers to handle this
@@ -87,7 +87,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnKeyPressedEvent(KeyPressedEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.KeysDown[e.KeyCode] = true;
 
             io.KeyCtrl = io.KeysDown[(int) Key.ControlLeft] || io.KeysDown[(int) Key.ControlRight];
@@ -101,7 +101,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnKeyReleasedEvent(KeyReleasedEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.KeysDown[e.KeyCode] = false;
 
             // We want other layers to handle this
@@ -110,7 +110,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnKeyTypedEvent(KeyTypedEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.AddInputCharacter((uint) e.KeyCode);
 
             // We want other layers to handle this
@@ -119,7 +119,7 @@ namespace AcidarX.Core.Layers
 
         private bool OnWindowResizeEvent(WindowResizeEvent e)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.DisplaySize = (Vector2) e.Size;
             io.DisplayFramebufferScale = Vector2.One;
 
