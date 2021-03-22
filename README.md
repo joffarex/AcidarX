@@ -1,7 +1,7 @@
 AcidarX
 =======
 
-AcidarX (a.k.a AX) is a modular Game Framework, built with C# and SILK.NET. It is aiming to be a complete package for game developers, who prefer to write code instead of using ui tools, but also usable as small chunks (For example, you can use `AcidarX.ECS` in your own game framework/engine which uses MonoGame).
+AcidarX (a.k.a AX) is a modular Game Framework, built with C# and SILK.NET. It is aiming to be a complete package for game developers, who prefer to write code instead of using ui tools, but also usable as separate modules (For example, you can use `AcidarX.ECS` in your own game framework/engine which uses MonoGame).
 
 > :warning: **Currently under development**: It has not even hit alpha stage yet, and all the previously claimed 'modularity' will probably come really later.
 
