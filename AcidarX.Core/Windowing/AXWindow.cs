@@ -73,13 +73,15 @@ namespace AcidarX.Core.Windowing
 
         private void OnMousePressed(IMouse mouse, MouseButton mouseButton)
         {
-            var mousePressedEvent = new MouseButtonPressedEvent((int) mouseButton);
+            var mousePressedEvent = new MouseButtonPressedEvent((int) mouseButton,
+                AXInputCodeMapper.SilkMouseButtonToAXMouseButton(mouseButton));
             EventCallback(mousePressedEvent);
         }
 
         private void OnMouseReleased(IMouse mouse, MouseButton mouseButton)
         {
-            var mouseReleasedEvent = new MouseButtonReleasedEvent((int) mouseButton);
+            var mouseReleasedEvent = new MouseButtonReleasedEvent((int) mouseButton,
+                AXInputCodeMapper.SilkMouseButtonToAXMouseButton(mouseButton));
             EventCallback(mouseReleasedEvent);
         }
 
@@ -121,19 +123,19 @@ namespace AcidarX.Core.Windowing
 
         private void OnKeyPressed(IKeyboard keyboard, Key key, int keyCode)
         {
-            var keyPressedEvent = new KeyPressedEvent(keyCode, 0);
+            var keyPressedEvent = new KeyPressedEvent(keyCode, AXInputCodeMapper.SilkKeyToAXKey(key), 0);
             EventCallback(keyPressedEvent);
         }
 
         private void OnKeyReleased(IKeyboard keyboard, Key key, int keyCode)
         {
-            var keyReleasedEvent = new KeyReleasedEvent(keyCode);
+            var keyReleasedEvent = new KeyReleasedEvent(keyCode, AXInputCodeMapper.SilkKeyToAXKey(key));
             EventCallback(keyReleasedEvent);
         }
 
         private void OnKeyChar(IKeyboard keyboard, char keyChar)
         {
-            var keyTypedEvent = new KeyTypedEvent(keyChar);
+            var keyTypedEvent = new KeyTypedEvent(keyChar, AXInputCodeMapper.SilkKeyToAXKey((Key) keyChar));
             EventCallback(keyTypedEvent);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using AcidarX.Core.Input;
 
 namespace AcidarX.Core.Events
 {
@@ -34,9 +35,11 @@ namespace AcidarX.Core.Events
 
     public abstract class MouseButtonEvent : Event
     {
-        public MouseButtonEvent(int button) => Button = button;
+        public MouseButtonEvent
+            (int buttonCode, AXMouseButton mouseButton) => (ButtonCode, MouseButton) = (buttonCode, mouseButton);
 
-        public int Button { get; }
+        public int ButtonCode { get; }
+        public AXMouseButton MouseButton { get; }
 
         public override int GetCategoryFlags() =>
             (int) EventCategory.Mouse | (int) EventCategory.Input | (int) EventCategory.MouseButton;
@@ -45,16 +48,18 @@ namespace AcidarX.Core.Events
     public class MouseButtonPressedEvent : MouseButtonEvent
     {
         public MouseButtonPressedEvent
-            (int button) : base(button) => EventType = GetStaticType<MouseButtonPressedEvent>();
+            (int buttonCode, AXMouseButton mouseButton) : base(buttonCode, mouseButton) =>
+            EventType = GetStaticType<MouseButtonPressedEvent>();
 
-        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", Button);
+        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", ButtonCode);
     }
 
     public class MouseButtonReleasedEvent : MouseButtonEvent
     {
         public MouseButtonReleasedEvent
-            (int button) : base(button) => EventType = GetStaticType<MouseButtonReleasedEvent>();
+            (int buttonCode, AXMouseButton mouseButton) : base(buttonCode, mouseButton) =>
+            EventType = GetStaticType<MouseButtonReleasedEvent>();
 
-        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", Button);
+        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", ButtonCode);
     }
 }

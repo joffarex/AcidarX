@@ -31,7 +31,7 @@ namespace AcidarX.Sandbox
 
         public override void OnEvent(Event e)
         {
-            Logger.LogTrace($"{e} from examplelayer");
+            // Logger.LogTrace($"{e} from examplelayer");
         }
 
         public override void Dispose(bool manual)

@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
 using AcidarX.Core.Events;
+using AcidarX.Core.Input;
 using AcidarX.ImGui;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 
@@ -51,7 +51,7 @@ namespace AcidarX.Core.Layers
         private bool OnMouseButtonPressedEvent(MouseButtonPressedEvent e)
         {
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MouseDown[e.Button] = true;
+            io.MouseDown[e.ButtonCode] = true;
 
             // We want other layers to handle this
             return false;
@@ -60,7 +60,7 @@ namespace AcidarX.Core.Layers
         private bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent e)
         {
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MouseDown[e.Button] = false;
+            io.MouseDown[e.ButtonCode] = false;
 
             // We want other layers to handle this
             return false;
@@ -90,10 +90,10 @@ namespace AcidarX.Core.Layers
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.KeysDown[e.KeyCode] = true;
 
-            io.KeyCtrl = io.KeysDown[(int) Key.ControlLeft] || io.KeysDown[(int) Key.ControlRight];
-            io.KeyAlt = io.KeysDown[(int) Key.AltLeft] || io.KeysDown[(int) Key.AltRight];
-            io.KeyShift = io.KeysDown[(int) Key.ShiftLeft] || io.KeysDown[(int) Key.ShiftRight];
-            io.KeySuper = io.KeysDown[(int) Key.SuperLeft] || io.KeysDown[(int) Key.SuperRight];
+            io.KeyCtrl = io.KeysDown[(int) AXKey.ControlLeft] || io.KeysDown[(int) AXKey.ControlRight];
+            io.KeyAlt = io.KeysDown[(int) AXKey.AltLeft] || io.KeysDown[(int) AXKey.AltRight];
+            io.KeyShift = io.KeysDown[(int) AXKey.ShiftLeft] || io.KeysDown[(int) AXKey.ShiftRight];
+            io.KeySuper = io.KeysDown[(int) AXKey.SuperLeft] || io.KeysDown[(int) AXKey.SuperRight];
 
             // We want other layers to handle this
             return false;
