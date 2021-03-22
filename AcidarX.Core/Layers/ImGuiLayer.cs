@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using AcidareX.ImGui;
+using AcidarX.ImGui;
 using AcidarX.Core.Events;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;

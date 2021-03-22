@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Silk.NET.OpenGL;
 
-namespace AcidareX.ImGui
+namespace AcidarX.ImGui
 {
     internal static class Util
     {

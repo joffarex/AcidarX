@@ -1,7 +1,7 @@
 ﻿using System;
 using Silk.NET.OpenGL;
 
-namespace AcidareX.ImGui
+namespace AcidarX.ImGui
 {
     public enum TextureCoordinate
     {

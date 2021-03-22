@@ -6,7 +6,7 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 
-namespace AcidareX.ImGui
+namespace AcidarX.ImGui
 {
     public class ImGuiController : IDisposable
     {

@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AcidareX.ImGui\AcidareX.ImGui.csproj" />
     <ProjectReference Include="..\AcidarX.ECS\AcidarX.ECS.csproj" />
+    <ProjectReference Include="..\AcidarX.ImGui\AcidarX.ImGui.csproj" />
   </ItemGroup>
     
     <ItemGroup>

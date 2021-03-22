@@ -1,4 +1,4 @@
-﻿namespace AcidareX.ImGui
+﻿namespace AcidarX.ImGui
 {
     public struct ImGuiFontConfig
     {
