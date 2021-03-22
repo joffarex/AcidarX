@@ -10,16 +10,14 @@ namespace AcidarX.ImGui
 {
     public class ImGuiController : IDisposable
     {
-        private Texture _fontTexture;
-        private bool _frameBegun;
         private readonly GL _gl;
         private readonly Version _glVersion;
+        private readonly Vector2D<int> _size;
+        private Texture _fontTexture;
+        private bool _frameBegun;
         private uint _indexBuffer;
         private uint _indexBufferSize;
         private Shader _shader;
-
-
-        private readonly Vector2D<int> _size;
 
         // OpenGL objects
         private uint _vertexArray;

@@ -16,10 +16,10 @@ namespace AcidarX.ImGui
 
     internal class Shader
     {
-        private readonly Dictionary<string, int> _uniformToLocation = new();
-        public readonly string Name;
         private readonly (ShaderType Type, string Path)[] _files;
         private readonly GL _gl;
+        private readonly Dictionary<string, int> _uniformToLocation = new();
+        public readonly string Name;
         private bool _initialized;
 
         public Shader(GL gl, string name, string vertexShader, string fragmentShader)

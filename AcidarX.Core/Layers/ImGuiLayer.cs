@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
-using AcidarX.ImGui;
 using AcidarX.Core.Events;
+using AcidarX.ImGui;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;

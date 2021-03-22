@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using AcidarX.Core.Events;
+using AcidarX.Core.Input;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -12,8 +13,6 @@ namespace AcidarX.Core.Windowing
     public class AXWindow
     {
         private static readonly ILogger<AXWindow> Logger = AXLogger.CreateLogger<AXWindow>();
-
-        public Action<Event> EventCallback;
 
         public AXWindow(AXWindowOptions axWindowOptions)
         {
@@ -37,15 +36,12 @@ namespace AcidarX.Core.Windowing
             Gl = NativeWindow.CreateOpenGL();
         }
 
+        public Action<Event> EventCallback { get; set; }
+
         public IWindow NativeWindow { get; }
         public GL Gl { get; }
 
         public IInputContext InputContext { get; private set; }
-
-        public void SetEventCallback(Action<Event> onEvent)
-        {
-            EventCallback = onEvent;
-        }
 
         private void OnLoadContext()
         {
@@ -56,6 +52,7 @@ namespace AcidarX.Core.Windowing
                 keyboard.KeyDown += OnKeyPressed;
                 keyboard.KeyUp += OnKeyReleased;
                 keyboard.KeyChar += OnKeyChar;
+                KeyboardState.AddKeyboard(keyboard);
             }
 
             foreach (IMouse mouse in InputContext.Mice)
@@ -64,6 +61,7 @@ namespace AcidarX.Core.Windowing
                 mouse.MouseUp += OnMouseReleased;
                 mouse.MouseMove += OnMouseMove;
                 mouse.Scroll += OnMouseScroll;
+                MouseState.AddMouse(mouse);
             }
         }
 

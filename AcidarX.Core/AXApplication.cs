@@ -17,7 +17,7 @@ namespace AcidarX.Core
             _layers = new LayerStack();
 
             _window = new AXWindow(axWindowOptions);
-            _window.SetEventCallback(OnEvent);
+            _window.EventCallback = OnEvent;
         }
 
         private void OnEvent(Event e)
