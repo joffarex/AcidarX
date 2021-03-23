@@ -13,27 +13,27 @@ namespace AcidarX.ImGui
 {
     public class ImGuiController : IDisposable
     {
+        private readonly GL _gl;
+        private readonly Version _glVersion;
+        private readonly IInputContext _input;
         private readonly List<char> _pressedChars = new();
+
+        private readonly Vector2 _scaleFactor = Vector2.One;
+        private readonly IView _view;
 
         private Texture _fontTexture;
         private bool _frameBegun;
-        private readonly GL _gl;
-        private readonly Version _glVersion;
         private uint _indexBuffer;
         private uint _indexBufferSize;
-        private readonly IInputContext _input;
         private IKeyboard _keyboard;
 
         private IMouse _prevMouseState;
-
-        private readonly Vector2 _scaleFactor = Vector2.One;
         private Shader _shader;
 
         // OpenGL objects
         private uint _vertexArray;
         private uint _vertexBuffer;
         private uint _vertexBufferSize;
-        private readonly IView _view;
         private int _windowHeight;
 
         private int _windowWidth;
@@ -254,8 +254,6 @@ void main()
         /// </summary>
         public void Update(float deltaSeconds)
         {
-            _gl.Clear((uint) ClearBufferMask.ColorBufferBit);
-
             if (_frameBegun)
             {
                 ImGuiNET.ImGui.Render();

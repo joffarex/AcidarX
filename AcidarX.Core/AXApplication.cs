@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using AcidarX.Core.Events;
+using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Renderer.OpenGL;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +20,7 @@ namespace AcidarX.Core
             _layers = new LayerStack();
 
             _window = new AXWindow(axWindowOptions);
+            _window.Init();
             _window.EventCallback = OnEvent;
         }
 
@@ -28,6 +31,7 @@ namespace AcidarX.Core
             eventDispatcher.Dispatch<AppLoadEvent>(OnLoad);
             eventDispatcher.Dispatch<AppUpdateEvent>(OnUpdate);
             eventDispatcher.Dispatch<AppRenderEvent>(OnRender);
+            eventDispatcher.Dispatch<KeyPressedEvent>(OnKeyPressed);
 
             foreach (Layer layer in _layers.Reverse())
             {
@@ -59,7 +63,9 @@ namespace AcidarX.Core
 
         private bool OnLoad(AppLoadEvent e)
         {
-            _imGuiLayer = new ImGuiLayer(_window.Gl, _window.NativeWindow, _window.InputContext);
+            Logger.Assert(OpenGLGraphicsContext.Gl != null, "OpenGL context has not been initialized");
+
+            _imGuiLayer = new ImGuiLayer(OpenGLGraphicsContext.Gl, _window.NativeWindow, _window.InputContext);
             PushLayer(_imGuiLayer);
 
             return true;
@@ -67,6 +73,9 @@ namespace AcidarX.Core
 
         private bool OnUpdate(AppUpdateEvent e)
         {
+            _window.GraphicsContext.Clear();
+            _window.GraphicsContext.ClearColor();
+
             foreach (Layer layer in _layers)
             {
                 layer.OnUpdate(e.DeltaTime);
@@ -89,6 +98,16 @@ namespace AcidarX.Core
             }
 
             _imGuiLayer.End();
+
+            return true;
+        }
+
+        private bool OnKeyPressed(KeyPressedEvent e)
+        {
+            if (e.Key == AXKey.Escape)
+            {
+                _window.NativeWindow.Close();
+            }
 
             return true;
         }
