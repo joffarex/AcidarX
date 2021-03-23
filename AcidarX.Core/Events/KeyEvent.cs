@@ -29,7 +29,8 @@ namespace AcidarX.Core.Events
 
     public class KeyReleasedEvent : KeyEvent
     {
-        public KeyReleasedEvent(int keyCode, AXKey key) : base(keyCode, key) => EventType = GetStaticType<KeyReleasedEvent>();
+        public KeyReleasedEvent
+            (int keyCode, AXKey key) : base(keyCode, key) => EventType = GetStaticType<KeyReleasedEvent>();
 
         public override string ToString() => string.Format("KeyReleasedEvent: {0}", KeyCode);
     }

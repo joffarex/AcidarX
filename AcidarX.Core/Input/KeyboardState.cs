@@ -14,6 +14,7 @@ namespace AcidarX.Core.Input
         }
 
         public static bool IsKeyPressed
-            (AXKey key) => Keyboards.Select(keyboard => keyboard.IsKeyPressed(AXInputCodeMapper.AXKeyToSilkKey(key))).FirstOrDefault();
+            (AXKey key) => Keyboards.Select(keyboard => keyboard.IsKeyPressed(AXInputCodeMapper.AXKeyToSilkKey(key)))
+            .FirstOrDefault();
     }
 }

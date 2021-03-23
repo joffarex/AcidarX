@@ -125,6 +125,6 @@ namespace AcidarX.Core.Input
         ControlRight = Key.ControlRight,
         AltRight = Key.AltRight,
         SuperRight = Key.SuperRight,
-        Menu = Key.Menu,
+        Menu = Key.Menu
     }
 }

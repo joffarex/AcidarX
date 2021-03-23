@@ -16,6 +16,6 @@ namespace AcidarX.Core.Input
         Button9 = MouseButton.Button9,
         Button10 = MouseButton.Button10,
         Button11 = MouseButton.Button11,
-        Button12 = MouseButton.Button12,
+        Button12 = MouseButton.Button12
     }
 }

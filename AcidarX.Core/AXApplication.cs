@@ -11,6 +11,7 @@ namespace AcidarX.Core
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
         private readonly LayerStack _layers;
         private readonly AXWindow _window;
+        private ImGuiLayer _imGuiLayer;
 
         protected AXApplication(AXWindowOptions axWindowOptions)
         {
@@ -58,7 +59,8 @@ namespace AcidarX.Core
 
         private bool OnLoad(AppLoadEvent e)
         {
-            PushLayer(new ImGuiLayer(_window.Gl, _window.NativeWindow.Size));
+            _imGuiLayer = new ImGuiLayer(_window.Gl, _window.NativeWindow, _window.InputContext);
+            PushLayer(_imGuiLayer);
 
             return true;
         }
@@ -79,6 +81,14 @@ namespace AcidarX.Core
             {
                 layer.OnRender(e.DeltaTime);
             }
+
+            _imGuiLayer.Begin(e.DeltaTime);
+            foreach (Layer layer in _layers)
+            {
+                layer.OnImGuiRender();
+            }
+
+            _imGuiLayer.End();
 
             return true;
         }

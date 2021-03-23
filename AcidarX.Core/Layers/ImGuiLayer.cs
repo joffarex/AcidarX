@@ -1,11 +1,8 @@
-﻿using System.Numerics;
-using AcidarX.Core.Events;
-using AcidarX.Core.Input;
-using AcidarX.ImGui;
-using ImGuiNET;
+﻿using AcidarX.ImGui;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Maths;
+using Silk.NET.Input;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Layers
 {
@@ -16,19 +13,14 @@ namespace AcidarX.Core.Layers
         private readonly ImGuiController _imGuiController;
 
         public ImGuiLayer
-            (GL gl, Vector2D<int> size) : base("ImGui layer") => _imGuiController = new ImGuiController(gl, size);
+            (GL gl, IWindow window, IInputContext inputContext) : base("ImGui layer") =>
+            _imGuiController = new ImGuiController(gl, window, inputContext);
 
         public override void OnAttach()
         {
             string fontPath = PathUtils.GetFullPath("assets/Fonts/OpenSans-Regular.ttf");
 
             _imGuiController.Init(new ImGuiFontConfig {Path = fontPath, Size = 18});
-
-            _imGuiController.SetKeyMappings();
-
-            _imGuiController.SetPerFrameImGuiData(1f / 60f);
-            _imGuiController.CreateDeviceResources();
-            _imGuiController.BeginFrame();
         }
 
         public override void OnDetach()
@@ -36,108 +28,19 @@ namespace AcidarX.Core.Layers
             _imGuiController.DestroyDeviceObjects();
         }
 
-        public override void OnUpdate(double deltaTime)
+        public override void OnImGuiRender()
+        {
+            ImGuiNET.ImGui.ShowDemoWindow();
+        }
+
+        public void Begin(double deltaTime)
         {
             _imGuiController.Update((float) deltaTime);
         }
 
-        public override void OnRender(double deltaTime)
+        public void End()
         {
-            ImGuiNET.ImGui.ShowDemoWindow();
-
             _imGuiController.Render();
-        }
-
-        private bool OnMouseButtonPressedEvent(MouseButtonPressedEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MouseDown[e.ButtonCode] = true;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MouseDown[e.ButtonCode] = false;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnMouseScrollEvent(MouseScrollEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MouseWheel += e.Offset.X;
-            io.MouseWheelH += e.Offset.Y;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnMouseMoveEvent(MouseMoveEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.MousePos = e.MousePos;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnKeyPressedEvent(KeyPressedEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.KeysDown[e.KeyCode] = true;
-
-            io.KeyCtrl = io.KeysDown[(int) AXKey.ControlLeft] || io.KeysDown[(int) AXKey.ControlRight];
-            io.KeyAlt = io.KeysDown[(int) AXKey.AltLeft] || io.KeysDown[(int) AXKey.AltRight];
-            io.KeyShift = io.KeysDown[(int) AXKey.ShiftLeft] || io.KeysDown[(int) AXKey.ShiftRight];
-            io.KeySuper = io.KeysDown[(int) AXKey.SuperLeft] || io.KeysDown[(int) AXKey.SuperRight];
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnKeyReleasedEvent(KeyReleasedEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.KeysDown[e.KeyCode] = false;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnKeyTypedEvent(KeyTypedEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.AddInputCharacter((uint) e.KeyCode);
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        private bool OnWindowResizeEvent(WindowResizeEvent e)
-        {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            io.DisplaySize = (Vector2) e.Size;
-            io.DisplayFramebufferScale = Vector2.One;
-
-            // We want other layers to handle this
-            return false;
-        }
-
-        public override void OnEvent(Event e)
-        {
-            var eventDispatcher = new EventDispatcher(e);
-            eventDispatcher.Dispatch<MouseButtonPressedEvent>(OnMouseButtonPressedEvent);
-            eventDispatcher.Dispatch<MouseButtonReleasedEvent>(OnMouseButtonReleasedEvent);
-            eventDispatcher.Dispatch<MouseScrollEvent>(OnMouseScrollEvent);
-            eventDispatcher.Dispatch<MouseMoveEvent>(OnMouseMoveEvent);
-            eventDispatcher.Dispatch<KeyPressedEvent>(OnKeyPressedEvent);
-            eventDispatcher.Dispatch<KeyReleasedEvent>(OnKeyReleasedEvent);
-            eventDispatcher.Dispatch<KeyTypedEvent>(OnKeyTypedEvent);
-            eventDispatcher.Dispatch<WindowResizeEvent>(OnWindowResizeEvent);
         }
 
 

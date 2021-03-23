@@ -28,9 +28,21 @@ namespace AcidarX.Core.Layers
         public abstract void OnAttach();
         public abstract void OnDetach();
 
-        public abstract void OnUpdate(double deltaTime);
-        public abstract void OnRender(double deltaTime);
-        public abstract void OnEvent(Event e);
+        public virtual void OnUpdate(double deltaTime)
+        {
+        }
+
+        public virtual void OnRender(double deltaTime)
+        {
+        }
+
+        public virtual void OnImGuiRender()
+        {
+        }
+
+        public virtual void OnEvent(Event e)
+        {
+        }
 
         public abstract void Dispose(bool manual);
     }

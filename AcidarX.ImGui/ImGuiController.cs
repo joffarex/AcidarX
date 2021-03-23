@@ -1,37 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 
 namespace AcidarX.ImGui
 {
     public class ImGuiController : IDisposable
     {
-        private readonly GL _gl;
-        private readonly Version _glVersion;
-        private readonly Vector2D<int> _size;
+        private readonly List<char> _pressedChars = new();
+
         private Texture _fontTexture;
         private bool _frameBegun;
+        private readonly GL _gl;
+        private readonly Version _glVersion;
         private uint _indexBuffer;
         private uint _indexBufferSize;
+        private readonly IInputContext _input;
+        private IKeyboard _keyboard;
+
+        private IMouse _prevMouseState;
+
+        private readonly Vector2 _scaleFactor = Vector2.One;
         private Shader _shader;
 
         // OpenGL objects
         private uint _vertexArray;
         private uint _vertexBuffer;
         private uint _vertexBufferSize;
+        private readonly IView _view;
+        private int _windowHeight;
+
+        private int _windowWidth;
 
         /// <summary>
         ///     Constructs a new ImGuiController.
         /// </summary>
-        public ImGuiController(GL gl, Vector2D<int> size)
+        public ImGuiController(GL gl, IView view, IInputContext input)
         {
             _gl = gl;
             _glVersion = new Version(gl.GetInteger(GLEnum.MajorVersion), gl.GetInteger(GLEnum.MinorVersion));
-            _size = size;
+            _view = view;
+            _input = input;
+            _windowWidth = view.Size.X;
+            _windowHeight = view.Size.Y;
         }
 
         /// <summary>
@@ -39,63 +56,85 @@ namespace AcidarX.ImGui
         /// </summary>
         public void Dispose()
         {
+            _view.Resize -= WindowResized;
+            _keyboard.KeyChar -= OnKeyChar;
             _fontTexture.Dispose();
             _shader.Dispose();
         }
 
-
-        public void Init(ImGuiFontConfig fontConfig)
+        public void Init()
         {
-            ImGuiNET.ImGui.CreateContext();
+            IntPtr context = ImGuiNET.ImGui.CreateContext();
+            ImGuiNET.ImGui.SetCurrentContext(context);
+
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+
+            io.Fonts.AddFontDefault();
+
+            // Currently won't work as we do not have support for it on ImGui.NET
+            io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+            io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
+
+            CreateDeviceResources();
+            SetKeyMappings();
+
+            SetPerFrameImGuiData(1f / 60f);
+
+            BeginFrame();
+        }
+
+        public void Init(ImGuiFontConfig imGuiFontConfig)
+        {
+            IntPtr context = ImGuiNET.ImGui.CreateContext();
+            ImGuiNET.ImGui.SetCurrentContext(context);
             ImGuiNET.ImGui.StyleColorsClassic();
 
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
-            if (fontConfig.IsDefault)
-            {
-                io.Fonts.AddFontDefault();
-            }
-            else
-            {
-                io.Fonts.AddFontFromFileTTF(fontConfig.Path, fontConfig.Size);
-            }
 
+            io.Fonts.AddFontFromFileTTF(imGuiFontConfig.Path, imGuiFontConfig.Size);
+
+            // Currently won't work as we do not have support for it on ImGui.NET
+            io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-            io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
-            io.BackendFlags |= ImGuiBackendFlags.HasSetMousePos;
+
+            ImGuiStylePtr style = ImGuiNET.ImGui.GetStyle();
+            if ((io.ConfigFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+            {
+                style.WindowRounding = 0.0f;
+                style.Colors[(int) ImGuiCol.WindowBg].W = 1.0f;
+            }
+
+            CreateDeviceResources();
+            SetKeyMappings();
+
+            SetPerFrameImGuiData(1f / 60f);
+
+            BeginFrame();
         }
 
-        public void BeginFrame()
+
+        private void BeginFrame()
         {
             ImGuiNET.ImGui.NewFrame();
             _frameBegun = true;
+            _keyboard = _input.Keyboards[0];
+            _view.Resize += WindowResized;
+            _keyboard.KeyChar += OnKeyChar;
         }
 
-        public void Render()
+        private void OnKeyChar(IKeyboard arg1, char arg2)
         {
-            if (_frameBegun)
-            {
-                _frameBegun = false;
-                ImGuiNET.ImGui.Render();
-                RenderImDrawData(ImGuiNET.ImGui.GetDrawData());
-            }
+            _pressedChars.Add(arg2);
         }
 
-        /// <summary>
-        ///     Updates ImGui input and IO configuration state.
-        /// </summary>
-        public void Update(float deltaSeconds)
+        private void WindowResized(Vector2D<int> s)
         {
-            _gl.Clear((uint) ClearBufferMask.ColorBufferBit);
-
-            if (_frameBegun)
-            {
-                ImGuiNET.ImGui.Render();
-            }
-
-            SetPerFrameImGuiData(deltaSeconds);
-
-            _frameBegun = true;
-            ImGuiNET.ImGui.NewFrame();
+            _windowWidth = s.X;
+            _windowHeight = s.Y;
         }
 
         public void DestroyDeviceObjects()
@@ -103,7 +142,7 @@ namespace AcidarX.ImGui
             Dispose();
         }
 
-        public unsafe void CreateDeviceResources()
+        private unsafe void CreateDeviceResources()
         {
             _gl.CreateVertexArray("ImGui", out _vertexArray);
 
@@ -118,12 +157,16 @@ namespace AcidarX.ImGui
             RecreateFontDeviceTexture();
 
             var vertexSource = @"#version 330 core
+
 uniform mat4 projection_matrix;
+
 in vec2 in_position;
 in vec2 in_texCoord;
 in vec4 in_color;
+
 out vec4 color;
 out vec2 texCoord;
+
 void main()
 {
     gl_Position = projection_matrix * vec4(in_position, 0, 1);
@@ -131,10 +174,14 @@ void main()
     texCoord = in_texCoord;
 }";
             var fragmentSource = @"#version 330 core
+
 uniform sampler2D in_fontTexture;
+
 in vec4 color;
 in vec2 texCoord;
+
 out vec4 outputColor;
+
 void main()
 {
     outputColor = color * texture(in_fontTexture, texCoord);
@@ -177,22 +224,120 @@ void main()
             io.Fonts.ClearTexData();
         }
 
+        /// <summary>
+        ///     Renders the ImGui draw list data.
+        ///     This method requires a <see cref="GraphicsDevice" /> because it may create new DeviceBuffers if the size of vertex
+        ///     or index data has increased beyond the capacity of the existing buffers.
+        ///     A <see cref="CommandList" /> is needed to submit drawing and resource update commands.
+        /// </summary>
+        public void Render()
+        {
+            if (_frameBegun)
+            {
+                _frameBegun = false;
+                ImGuiNET.ImGui.Render();
+
+                _gl.Viewport(0, 0, (uint) _windowWidth, (uint) _windowHeight);
+                RenderImDrawData(ImGuiNET.ImGui.GetDrawData());
+
+                ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+
+                if ((io.ConfigFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
+                {
+                    ImGuiNET.ImGui.UpdatePlatformWindows();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Updates ImGui input and IO configuration state.
+        /// </summary>
+        public void Update(float deltaSeconds)
+        {
+            _gl.Clear((uint) ClearBufferMask.ColorBufferBit);
+
+            if (_frameBegun)
+            {
+                ImGuiNET.ImGui.Render();
+            }
+
+            SetPerFrameImGuiData(deltaSeconds);
+            UpdateImGuiInput();
+
+            _frameBegun = true;
+            ImGuiNET.ImGui.NewFrame();
+        }
 
         /// <summary>
         ///     Sets per-frame data based on the associated window.
         ///     This is called by Update(float).
         /// </summary>
-        public void SetPerFrameImGuiData(float deltaSeconds)
+        private void SetPerFrameImGuiData(float deltaSeconds)
         {
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.DisplaySize = new Vector2(
-                _size.X / Vector2.One.X,
-                _size.Y / Vector2.One.Y);
-            io.DisplayFramebufferScale = Vector2.One;
+                _windowWidth / _scaleFactor.X,
+                _windowHeight / _scaleFactor.Y);
+            io.DisplayFramebufferScale = _scaleFactor;
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
         }
 
-        public void SetKeyMappings()
+        private void UpdateImGuiInput()
+        {
+            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+
+            IMouse mouseState = _input.Mice[0];
+            IKeyboard keyboardState = _input.Keyboards[0];
+
+            io.MouseDown[0] = mouseState.IsButtonPressed(MouseButton.Left);
+            io.MouseDown[1] = mouseState.IsButtonPressed(MouseButton.Right);
+            io.MouseDown[2] = mouseState.IsButtonPressed(MouseButton.Middle);
+
+            var point = new Point((int) mouseState.Position.X, (int) mouseState.Position.Y);
+            //var screenPoint = new System.Drawing.Point((int) MouseState.Position.X, (int) MouseState.Position.Y);
+            //var point = _view.PointToClient(screenPoint);
+            io.MousePos = new Vector2(point.X, point.Y);
+
+            //var wheel = MouseState.GetScrollWheels()[0];
+            //var prevWheel = PrevMouseState?.GetScrollWheels()[0] ?? default;
+            //io.MouseWheel = wheel.Y - prevWheel.Y;
+            //io.MouseWheelH = wheel.X - prevWheel.X;
+            ScrollWheel wheel = mouseState.ScrollWheels[0];
+            io.MouseWheel = wheel.Y;
+            io.MouseWheelH = wheel.X;
+
+            foreach (Key key in Enum.GetValues(typeof(Key)))
+            {
+                if (key == Key.Unknown)
+                {
+                    continue;
+                }
+
+                io.KeysDown[(int) key] = keyboardState.IsKeyPressed(key);
+            }
+
+            foreach (char c in _pressedChars)
+            {
+                io.AddInputCharacter(c);
+            }
+
+            _pressedChars.Clear();
+
+            io.KeyCtrl = keyboardState.IsKeyPressed(Key.ControlLeft) || keyboardState.IsKeyPressed(Key.ControlRight);
+            io.KeyAlt = keyboardState.IsKeyPressed(Key.AltLeft) || keyboardState.IsKeyPressed(Key.AltRight);
+            io.KeyShift = keyboardState.IsKeyPressed(Key.ShiftLeft) || keyboardState.IsKeyPressed(Key.ShiftRight);
+            io.KeySuper = keyboardState.IsKeyPressed(Key.SuperLeft) || keyboardState.IsKeyPressed(Key.SuperRight);
+
+            _prevMouseState = mouseState;
+        }
+
+
+        internal void PressChar(char keyChar)
+        {
+            _pressedChars.Add(keyChar);
+        }
+
+        private static void SetKeyMappings()
         {
             ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
             io.KeyMap[(int) ImGuiKey.Tab] = (int) Key.Tab;
@@ -216,7 +361,7 @@ void main()
             io.KeyMap[(int) ImGuiKey.Z] = (int) Key.Z;
         }
 
-        public unsafe void RenderImDrawData(ImDrawDataPtr drawData)
+        private unsafe void RenderImDrawData(ImDrawDataPtr drawData)
         {
             uint vertexOffsetInVertices = 0;
             uint indexOffsetInElements = 0;
@@ -321,12 +466,12 @@ void main()
 
                     // We do _windowHeight - (int)clip.W instead of (int)clip.Y because gl has flipped Y when it comes to these coordinates
                     Vector4 clip = pcmd.ClipRect;
-                    _gl.Scissor((int) clip.X, _size.Y - (int) clip.W, (uint) (clip.Z - clip.X),
+                    _gl.Scissor((int) clip.X, _windowHeight - (int) clip.W, (uint) (clip.Z - clip.X),
                         (uint) (clip.W - clip.Y));
                     _gl.CheckGlError("Scissor");
 
-                    _gl.DrawElementsBaseVertex(PrimitiveType.Triangles, pcmd.ElemCount, DrawElementsType.UnsignedShort,
-                        (void*) (idxOffset * sizeof(ushort)), vtxOffset);
+                    _gl.DrawElementsBaseVertex(PrimitiveType.Triangles, pcmd.ElemCount,
+                        DrawElementsType.UnsignedShort, (void*) (idxOffset * sizeof(ushort)), vtxOffset);
                     _gl.CheckGlError("Draw");
 
                     idxOffset += (int) pcmd.ElemCount;
