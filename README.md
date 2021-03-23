@@ -16,13 +16,14 @@ Features to add before starting making actual games:
 - [ ] ImGui integration for debugging purposes
 - [ ] Simple level editor with ImGui
 - [ ] REALLY basic physics engine
+- [ ] Maybe do things more C# way (Use DI, for example)
 
 Make some simple games for framework showcase: 
 ----------------------------------------------
 > These projects are just really simple ones, to help figure out possible refactorings, possible features to add to the core framework, etc. Also this list could change with other simple games and it will also get updated with potential links to game repos with playable demos.
 
 - [ ] Breakout with advanced shit, like level-ups
-- [ ] Snake like seen in Chili videos
+- [ ] Snake with powerups and enemies
 - [ ] Minesweeper clone
 - [ ] Platformer with animations and basic physics
 
