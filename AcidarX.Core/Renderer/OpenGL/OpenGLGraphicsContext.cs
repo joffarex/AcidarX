@@ -15,7 +15,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Init()
         {
-            Gl = _window.CreateOpenGL();
+            Gl = GL.GetApi(_window);
         }
 
         public override void Clear()

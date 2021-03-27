@@ -2,9 +2,10 @@
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Renderer.OpenGL;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
+using Silk.NET.OpenGL;
+using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core
 {
@@ -61,21 +62,118 @@ namespace AcidarX.Core
             _window.Run();
         }
 
-        private bool OnLoad(AppLoadEvent e)
-        {
-            Logger.Assert(OpenGLGraphicsContext.Gl != null, "OpenGL context has not been initialized");
+        private static uint _vertexBuffer;
+        private static uint _indexBuffer;
+        private static uint _vertexArray;
+        private static uint _shader;
 
-            _imGuiLayer = new ImGuiLayer(OpenGLGraphicsContext.Gl, _window.NativeWindow, _window.InputContext);
+        private const string VertexShaderSource = @"
+        #version 330 core //Using version GLSL version 3.3
+        layout (location = 0) in vec4 vPos;
+        
+        void main()
+        {
+            gl_Position = vec4(vPos.x, vPos.y, vPos.z, 1.0);
+        }
+        ";
+
+        private const string FragmentShaderSource = @"
+        #version 330 core
+        out vec4 FragColor;
+        void main()
+        {
+            FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+        }
+        ";
+
+        //Vertex data, uploaded to the VBO.
+        private static readonly float[] Vertices =
+        {
+            //X    Y      Z
+            0.5f, 0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            -0.5f, 0.5f, 0.5f
+        };
+
+        //Index data, uploaded to the EBO.
+        private static readonly uint[] Indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
+
+        private unsafe bool OnLoad(AppLoadEvent e)
+        {
+            Logger.Assert(Gl != null, "OpenGL context has not been initialized");
+
+            _imGuiLayer = new ImGuiLayer(Gl, _window.NativeWindow, _window.InputContext);
             PushLayer(_imGuiLayer);
+
+            _vertexArray = Gl.GenVertexArray();
+            Gl.BindVertexArray(_vertexArray);
+
+            _vertexBuffer = Gl.GenBuffer(); 
+            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer); 
+            fixed (void* v = &Vertices[0])
+            {
+                Gl.BufferData(BufferTargetARB.ArrayBuffer,
+                    (nuint) (Vertices.Length * sizeof(uint)), v, BufferUsageARB.StaticDraw); 
+            }
+
+            _indexBuffer = Gl.GenBuffer();
+            Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _indexBuffer); 
+            fixed (void* i = &Indices[0])
+            {
+                Gl.BufferData(BufferTargetARB.ElementArrayBuffer,
+                    (nuint) (Indices.Length * sizeof(uint)), i, BufferUsageARB.StaticDraw);
+            }
+
+            uint vertexShader = Gl.CreateShader(ShaderType.VertexShader);
+            Gl.ShaderSource(vertexShader, VertexShaderSource);
+            Gl.CompileShader(vertexShader);
+
+            string infoLog = Gl.GetShaderInfoLog(vertexShader);
+            if (!string.IsNullOrWhiteSpace(infoLog))
+            {
+                Logger.LogError($"Error compiling vertex shader {infoLog}");
+            }
+
+            uint fragmentShader = Gl.CreateShader(ShaderType.FragmentShader);
+            Gl.ShaderSource(fragmentShader, FragmentShaderSource);
+            Gl.CompileShader(fragmentShader);
+
+            infoLog = Gl.GetShaderInfoLog(fragmentShader);
+            if (!string.IsNullOrWhiteSpace(infoLog))
+            {
+                Logger.LogError($"Error compiling fragment shader {infoLog}");
+            }
+
+            _shader = Gl.CreateProgram();
+            Gl.AttachShader(_shader, vertexShader);
+            Gl.AttachShader(_shader, fragmentShader);
+            Gl.LinkProgram(_shader);
+
+            Gl.GetProgram(_shader, GLEnum.LinkStatus, out var status);
+            if (status == 0)
+            {
+                Logger.LogError($"Error linking shader {Gl.GetProgramInfoLog(_shader)}");
+            }
+
+            Gl.DetachShader(_shader, vertexShader);
+            Gl.DetachShader(_shader, fragmentShader);
+            Gl.DeleteShader(vertexShader);
+            Gl.DeleteShader(fragmentShader);
+
+            Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float),
+                null);
+            Gl.EnableVertexAttribArray(0);
 
             return true;
         }
 
         private bool OnUpdate(AppUpdateEvent e)
         {
-            _window.GraphicsContext.Clear();
-            _window.GraphicsContext.ClearColor();
-
             foreach (Layer layer in _layers)
             {
                 layer.OnUpdate(e.DeltaTime);
@@ -84,7 +182,7 @@ namespace AcidarX.Core
             return true;
         }
 
-        private bool OnRender(AppRenderEvent e)
+        private unsafe bool OnRender(AppRenderEvent e)
         {
             foreach (Layer layer in _layers)
             {
@@ -98,6 +196,15 @@ namespace AcidarX.Core
             }
 
             _imGuiLayer.End();
+
+            _window.GraphicsContext.Clear();
+            _window.GraphicsContext.ClearColor();
+
+            Gl.BindVertexArray(_vertexArray);
+            Gl.UseProgram(_shader);
+
+            Gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length,
+                DrawElementsType.UnsignedInt, null);
 
             return true;
         }
