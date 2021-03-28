@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var windowOptions = AXWindowOptions.CreateDefault();
-IHost host = Host.CreateDefaultBuilder().ConfigureServices(x =>
+using IHost host = Host.CreateDefaultBuilder().ConfigureServices(x =>
 {
     IServiceCollection services = x.AddAcidarX(windowOptions);
 
@@ -18,4 +18,6 @@ IHost host = Host.CreateDefaultBuilder().ConfigureServices(x =>
     application.PushLayer(new ExampleLayer(graphicsFactory, renderer));
     application.Run();
 }).Build();
-host.Run();
+
+host.Start();
+    
