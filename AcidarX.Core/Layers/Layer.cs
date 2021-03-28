@@ -26,6 +26,7 @@ namespace AcidarX.Core.Layers
         }
 
         public abstract void OnAttach();
+        public abstract void OnLoad();
         public abstract void OnDetach();
 
         public virtual void OnUpdate(double deltaTime)

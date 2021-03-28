@@ -1,4 +1,5 @@
 ﻿using AcidarX.Core;
+using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
 using AcidarX.Sandbox;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,9 @@ IHost host = Host.CreateDefaultBuilder().ConfigureServices(x =>
     ServiceProvider provider = services.BuildServiceProvider();
 
     var application = provider.GetRequiredService<AXApplication>();
-    application.PushLayer(new ExampleLayer());
+    var graphicsFactory = provider.GetRequiredService<GraphicsFactory>();
+    var renderer = provider.GetRequiredService<AXRenderer>();
+    application.PushLayer(new ExampleLayer(graphicsFactory, renderer));
     application.Run();
 }).Build();
 host.Run();

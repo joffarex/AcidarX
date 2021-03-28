@@ -23,6 +23,10 @@ namespace AcidarX.Core.Layers
             _imGuiController.Init(new ImGuiFontConfig {Path = fontPath, Size = 18});
         }
 
+        public override void OnLoad()
+        {
+        }
+
         public override void OnDetach()
         {
             _imGuiController.DestroyDeviceObjects();

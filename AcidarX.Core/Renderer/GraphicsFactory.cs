@@ -1,6 +1,9 @@
 ﻿using System;
+using AcidarX.Core.Layers;
 using AcidarX.Core.Renderer.OpenGL;
+using Silk.NET.Input;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Renderer
 {
@@ -58,5 +61,7 @@ namespace AcidarX.Core.Renderer
                 _ => throw new Exception("Not supported API")
             };
         }
+
+        public ImGuiLayer CreateImGuiLayer(IWindow window, IInputContext inputContext) => new(Gl, window, inputContext);
     }
 }
