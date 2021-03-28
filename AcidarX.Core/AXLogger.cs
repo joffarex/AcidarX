@@ -14,8 +14,12 @@ namespace AcidarX.Core
         {
             if (!condition)
             {
-                logger.LogError(string.Format("Assertion Failed: {0}", message));
-                Debugger.Break();
+                logger.LogError("Assertion Failed: {Message}", message);
+                if (Debugger.IsAttached)
+                {
+                    logger.LogError(new StackTrace().ToString());
+                    Debugger.Break();
+                }
             }
         }
     }
