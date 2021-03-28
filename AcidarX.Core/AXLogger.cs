@@ -31,7 +31,7 @@ namespace AcidarX.Core
             .WriteTo.Console(outputTemplate: OutputTemplate)
             .CreateLogger();
 
-        public static ILogger<T> CreateLogger<T>() where T : class =>
+        public static ILogger<T> CreateLogger<T>() =>
             new LoggerFactory().AddSerilog(SerilogLogger).CreateLogger<T>();
     }
 

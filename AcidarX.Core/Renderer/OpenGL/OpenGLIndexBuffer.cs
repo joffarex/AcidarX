@@ -11,8 +11,8 @@ namespace AcidarX.Core.Renderer.OpenGL
 
     {
         private static readonly ILogger<OpenGLIndexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLIndexBuffer<T>>();
-        private readonly uint _rendererID;
         private readonly uint _count;
+        private readonly uint _rendererID;
         private bool _isDisposed;
 
         public OpenGLIndexBuffer(ReadOnlySpan<T> indices)
@@ -26,7 +26,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             Gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint) (_count * size), indices,
                 GLEnum.StaticDraw);
         }
-        
+
         public override void Dispose()
         {
             Logger.Assert(!_isDisposed, $"{this} is already disposed");

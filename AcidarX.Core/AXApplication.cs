@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
@@ -16,12 +17,15 @@ namespace AcidarX.Core
         private const string VertexShaderSource = @"
         #version 330 core
         layout (location = 0) in vec3 a_Position;
+        layout (location = 1) in vec4 a_Color;
         
         out vec3 v_Position;
+        out vec4 v_Color;
 
         void main()
         {
             v_Position = a_Position;
+            v_Color = a_Color;
             gl_Position = vec4(a_Position, 1.0);
         }
         ";
@@ -32,10 +36,11 @@ namespace AcidarX.Core
         layout (location = 0) out vec4 color;
 
         in vec3 v_Position;
+        in vec4 v_Color;
 
         void main()
         {
-            color = vec4(v_Position * 0.5f + 0.5f, 1.0f);
+            color = v_Color;
         }
         ";
 
@@ -50,10 +55,10 @@ namespace AcidarX.Core
         private static readonly float[] Vertices =
         {
             //X    Y      Z
-            0.5f, 0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.5f
+            0.5f, 0.5f, 0.0f, 0.8f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.0f, 0.6f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f, 0.4f, 0.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
         };
 
         //Index data, uploaded to the EBO.
@@ -113,6 +118,28 @@ namespace AcidarX.Core
             _window.Run();
         }
 
+        public static VertexAttribPointerType ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+        {
+            switch (type)
+            {
+                case ShaderDataType.Float:
+                case ShaderDataType.Float2:
+                case ShaderDataType.Float3:
+                case ShaderDataType.Float4:
+                case ShaderDataType.Mat3:
+                case ShaderDataType.Mat4: return VertexAttribPointerType.Float;
+                case ShaderDataType.Int:
+                case ShaderDataType.Int2:
+                case ShaderDataType.Int3:
+                case ShaderDataType.Int4: return VertexAttribPointerType.Int;
+                case ShaderDataType.Bool: return VertexAttribPointerType.Byte;
+                case ShaderDataType.None: return 0;
+                default:
+                    Logger.Assert(false, "Unknown ShaderDataType");
+                    return 0;
+            }
+        }
+
         private unsafe bool OnLoad(AppLoadEvent e)
         {
             Logger.Assert(Gl != null, "OpenGL context has not been initialized");
@@ -124,13 +151,25 @@ namespace AcidarX.Core
             Gl.BindVertexArray(_vertexArray);
 
             _vertexBuffer = BufferFactory.CreateVertexBuffer(Vertices);
+            _vertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
+            {
+                new("a_Position", ShaderDataType.Float3),
+                new("a_Color", ShaderDataType.Float4)
+            }));
+
             _indexBuffer = BufferFactory.CreateIndexBuffer(Indices);
 
             _shader = new Shader(VertexShaderSource, FragmentShaderSource);
 
-            Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float),
-                null);
-            Gl.EnableVertexAttribArray(0);
+            uint index = 0;
+            BufferLayout layout = _vertexBuffer.GetLayout();
+            foreach (BufferElement element in layout)
+            {
+                Gl.EnableVertexAttribArray(index);
+                Gl.VertexAttribPointer(index, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type),
+                    element.Normalized, layout.Stride, (void*) element.Offset);
+                index++;
+            }
 
             return true;
         }
