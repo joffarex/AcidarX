@@ -7,6 +7,7 @@ using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
+using Shader = AcidarX.Core.Renderer.Shader;
 
 namespace AcidarX.Core
 {
@@ -43,7 +44,7 @@ namespace AcidarX.Core
         private static VertexBuffer _vertexBuffer;
         private static IndexBuffer _indexBuffer;
         private static uint _vertexArray;
-        private static AXShader _shader;
+        private static Shader _shader;
 
         //Vertex data, uploaded to the VBO.
         private static readonly float[] Vertices =
@@ -125,7 +126,7 @@ namespace AcidarX.Core
             _vertexBuffer = BufferFactory.CreateVertexBuffer(Vertices);
             _indexBuffer = BufferFactory.CreateIndexBuffer(Indices);
 
-            _shader = new AXShader(VertexShaderSource, FragmentShaderSource);
+            _shader = new Shader(VertexShaderSource, FragmentShaderSource);
 
             Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float),
                 null);

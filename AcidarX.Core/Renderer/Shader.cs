@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core.Renderer
 {
-    public sealed class AXShader : IDisposable
+    public sealed class Shader : IDisposable
     {
-        private static readonly ILogger<AXShader> Logger = AXLogger.CreateLogger<AXShader>();
+        private static readonly ILogger<Shader> Logger = AXLogger.CreateLogger<Shader>();
 
         private readonly uint _rendererID;
 
         private bool _isDisposed;
 
-        public AXShader(string vertexSource, string fragmentSource)
+        public Shader(string vertexSource, string fragmentSource)
         {
             uint? vertexShader = CreateShader(ShaderType.VertexShader, vertexSource);
             if (!vertexShader.HasValue)
@@ -48,7 +47,7 @@ namespace AcidarX.Core.Renderer
 
         public void Dispose()
         {
-            Debug.Assert(!_isDisposed, $"{this} is already disposed");
+            Logger.Assert(!_isDisposed, $"{this} is already disposed");
 
             _isDisposed = true;
             Dispose(true);
@@ -112,7 +111,7 @@ namespace AcidarX.Core.Renderer
             Gl.DeleteShader(_rendererID);
         }
 
-        ~AXShader()
+        ~Shader()
         {
             Dispose(false);
         }
