@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
-using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core.Renderer.OpenGL
 {
@@ -10,18 +9,20 @@ namespace AcidarX.Core.Renderer.OpenGL
         where T : unmanaged
     {
         private static readonly ILogger<OpenGLVertexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLVertexBuffer<T>>();
+        private readonly GL _gl;
         private readonly RendererID _rendererID;
         private bool _isDisposed;
         private BufferLayout? _layout;
 
-        public OpenGLVertexBuffer(ReadOnlySpan<T> vertices)
+        public OpenGLVertexBuffer(GL gl, ReadOnlySpan<T> vertices)
         {
-            _rendererID = (RendererID) Gl.CreateBuffer();
+            _gl = gl;
+            _rendererID = (RendererID) _gl.CreateBuffer();
             Bind();
 
             int size = Marshal.SizeOf<T>();
 
-            Gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (vertices.Length * size), vertices,
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (vertices.Length * size), vertices,
                 GLEnum.StaticDraw);
         }
 
@@ -37,12 +38,12 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID);
         }
 
         public override void Unbind()
         {
-            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
         }
 
         public override void SetLayout(BufferLayout layout)
@@ -56,7 +57,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            Gl.DeleteBuffers(1, _rendererID);
+            _gl.DeleteBuffers(1, _rendererID);
         }
 
         public override string ToString() => string.Format("VertexBuffer|{0}", _rendererID);

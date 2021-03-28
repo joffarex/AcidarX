@@ -1,8 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
-using AcidarX.Core.Renderer;
-using AcidarX.Core.Renderer.OpenGL;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -10,22 +8,15 @@ using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Windowing
 {
-    public partial class AXWindow
+    public partial class AXWindow : IWindowProvider
     {
         private static readonly ILogger<AXWindow> Logger = AXLogger.CreateLogger<AXWindow>();
         private readonly AXWindowOptions _axWindowOptions;
 
-        public AXWindow(AXWindowOptions axWindowOptions) => _axWindowOptions = axWindowOptions;
-
-        public Action<Event> EventCallback { get; set; }
-
-        public IWindow NativeWindow { get; private set; }
-        public GraphicsContext GraphicsContext { get; private set; }
-
-        public IInputContext InputContext { get; private set; }
-
-        public void Init()
+        public AXWindow(AXWindowOptions axWindowOptions)
         {
+            _axWindowOptions = axWindowOptions;
+
             var windowOptions = WindowOptions.Default;
             windowOptions.Title = _axWindowOptions.Title;
             windowOptions.Size = new Vector2D<int>(_axWindowOptions.Width, _axWindowOptions.Height);
@@ -36,9 +27,6 @@ namespace AcidarX.Core.Windowing
 
             Logger.Assert(NativeWindow != null, "Could not initialize Common Window");
 
-            GraphicsContext = new OpenGLGraphicsContext(NativeWindow);
-            GraphicsContext.Init();
-
             NativeWindow.Load += InitInputContextOnLoad;
             NativeWindow.Load += OnLoad;
             NativeWindow.Resize += OnResize;
@@ -46,6 +34,12 @@ namespace AcidarX.Core.Windowing
             NativeWindow.Render += OnRender;
             NativeWindow.Closing += OnClose;
         }
+
+        public Action<Event> EventCallback { get; set; }
+
+        public IInputContext InputContext { get; private set; }
+
+        public IWindow NativeWindow { get; }
 
         private void InitInputContextOnLoad()
         {

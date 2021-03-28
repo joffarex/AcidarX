@@ -7,11 +7,10 @@ using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
-using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core
 {
-    public abstract class AXApplication
+    public class AXApplication
     {
         private const string SquareVertexShaderSource = @"
         #version 330 core
@@ -65,7 +64,7 @@ namespace AcidarX.Core
 
         void main()
         {
-            color = vec4(0.4f, 0.0f, 0.8f, 1.0f);
+            color = vec4(0.4f, 1.0f, 0.8f, 1.0f);
         }
         ";
 
@@ -76,21 +75,22 @@ namespace AcidarX.Core
 
         private static VertexArray _triangleVertexArray;
         private static Shader _triangleShader;
+        private readonly GraphicsFactory _graphicsFactory;
 
         private readonly LayerStack _layers;
+        private readonly AXRenderer _renderer;
         private readonly AXWindow _window;
         private ImGuiLayer _imGuiLayer;
-        private readonly AXRenderer _renderer;
 
-        protected AXApplication(AXWindowOptions axWindowOptions)
+        public AXApplication(AXWindowOptions axWindowOptions, AXRenderer renderer, GraphicsFactory graphicsFactory)
         {
             _layers = new LayerStack();
 
             _window = new AXWindow(axWindowOptions);
-            _window.Init();
             _window.EventCallback = OnEvent;
 
-            _renderer = GraphicsFactory.CreateRenderer();
+            _renderer = renderer;
+            _graphicsFactory = graphicsFactory;
         }
 
         private void OnEvent(Event e)
@@ -132,14 +132,12 @@ namespace AcidarX.Core
 
         private bool OnLoad(AppLoadEvent e)
         {
-            Logger.Assert(Gl != null, "OpenGL context has not been initialized");
-
-            _imGuiLayer = new ImGuiLayer(Gl, _window.NativeWindow, _window.InputContext);
+            _imGuiLayer = new ImGuiLayer(_graphicsFactory.Gl, _window.NativeWindow, _window.InputContext);
             PushLayer(_imGuiLayer);
 
             #region square
 
-            _squareVertexArray = GraphicsFactory.CreateVertexArray();
+            _squareVertexArray = _graphicsFactory.CreateVertexArray();
 
             float[] squareVertices =
             {
@@ -150,7 +148,7 @@ namespace AcidarX.Core
                 -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
             };
 
-            VertexBuffer squareVertexBuffer = GraphicsFactory.CreateVertexBuffer(squareVertices);
+            VertexBuffer squareVertexBuffer = _graphicsFactory.CreateVertexBuffer(squareVertices);
             squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3),
@@ -163,16 +161,16 @@ namespace AcidarX.Core
                 0, 1, 3,
                 1, 2, 3
             };
-            IndexBuffer squareIndexBuffer = GraphicsFactory.CreateIndexBuffer(squareIndices);
+            IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(squareIndices);
             _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            _squareShader = new Shader(SquareVertexShaderSource, SquareFragmentShaderSource);
+            _squareShader = new Shader(_graphicsFactory.Gl, SquareVertexShaderSource, SquareFragmentShaderSource);
 
             #endregion
 
             #region triangle
 
-            _triangleVertexArray = GraphicsFactory.CreateVertexArray();
+            _triangleVertexArray = _graphicsFactory.CreateVertexArray();
 
             float[] triangleVertices =
             {
@@ -182,7 +180,7 @@ namespace AcidarX.Core
                 0.0f, 0.5f, 0.0f
             };
 
-            VertexBuffer triangleVertexBuffer = GraphicsFactory.CreateVertexBuffer(triangleVertices);
+            VertexBuffer triangleVertexBuffer = _graphicsFactory.CreateVertexBuffer(triangleVertices);
             triangleVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3)
@@ -193,10 +191,10 @@ namespace AcidarX.Core
             {
                 0, 1, 2
             };
-            IndexBuffer triangleIndexBuffer = GraphicsFactory.CreateIndexBuffer(triangleIndices);
+            IndexBuffer triangleIndexBuffer = _graphicsFactory.CreateIndexBuffer(triangleIndices);
             _triangleVertexArray.SetIndexBuffer(triangleIndexBuffer);
 
-            _triangleShader = new Shader(TriangleVertexShaderSource, TriangleFragmentShaderSource);
+            _triangleShader = new Shader(_graphicsFactory.Gl, TriangleVertexShaderSource, TriangleFragmentShaderSource);
 
             #endregion
 

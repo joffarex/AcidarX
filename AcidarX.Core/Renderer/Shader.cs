@@ -1,20 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
-using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core.Renderer
 {
     public sealed class Shader : IDisposable
     {
         private static readonly ILogger<Shader> Logger = AXLogger.CreateLogger<Shader>();
+        private readonly GL _gl;
 
         private readonly RendererID _rendererID;
 
         private bool _isDisposed;
 
-        public Shader(string vertexSource, string fragmentSource)
+        public Shader(GL gl, string vertexSource, string fragmentSource)
         {
+            _gl = gl;
             uint? vertexShader = CreateShader(ShaderType.VertexShader, vertexSource);
             if (!vertexShader.HasValue)
             {
@@ -27,22 +28,22 @@ namespace AcidarX.Core.Renderer
                 return;
             }
 
-            _rendererID = (RendererID) Gl.CreateProgram();
-            Gl.AttachShader(_rendererID, vertexShader.Value);
-            Gl.AttachShader(_rendererID, fragmentShader.Value);
+            _rendererID = (RendererID) _gl.CreateProgram();
+            _gl.AttachShader(_rendererID, vertexShader.Value);
+            _gl.AttachShader(_rendererID, fragmentShader.Value);
 
             bool result = LinkProgram(_rendererID);
             if (!result)
             {
-                Gl.DeleteShader(vertexShader.Value);
-                Gl.DeleteShader(fragmentShader.Value);
+                _gl.DeleteShader(vertexShader.Value);
+                _gl.DeleteShader(fragmentShader.Value);
                 return;
             }
 
-            Gl.DetachShader(_rendererID, vertexShader.Value);
-            Gl.DetachShader(_rendererID, fragmentShader.Value);
-            Gl.DeleteShader(vertexShader.Value);
-            Gl.DeleteShader(fragmentShader.Value);
+            _gl.DetachShader(_rendererID, vertexShader.Value);
+            _gl.DetachShader(_rendererID, fragmentShader.Value);
+            _gl.DeleteShader(vertexShader.Value);
+            _gl.DeleteShader(fragmentShader.Value);
         }
 
         public void Dispose()
@@ -57,24 +58,24 @@ namespace AcidarX.Core.Renderer
 
         public void Bind()
         {
-            Gl.UseProgram(_rendererID);
+            _gl.UseProgram(_rendererID);
         }
 
         public void Unbind()
         {
-            Gl.UseProgram(0);
+            _gl.UseProgram(0);
         }
 
-        private static uint? CreateShader(ShaderType shaderType, string shaderSource)
+        private uint? CreateShader(ShaderType shaderType, string shaderSource)
         {
-            uint shader = Gl.CreateShader(shaderType);
-            Gl.ShaderSource(shader, shaderSource);
-            Gl.CompileShader(shader);
+            uint shader = _gl.CreateShader(shaderType);
+            _gl.ShaderSource(shader, shaderSource);
+            _gl.CompileShader(shader);
 
-            string infoLog = Gl.GetShaderInfoLog(shader);
+            string infoLog = _gl.GetShaderInfoLog(shader);
             if (!string.IsNullOrWhiteSpace(infoLog))
             {
-                Gl.DeleteShader(shader);
+                _gl.DeleteShader(shader);
 
                 Logger.LogError(infoLog);
                 Logger.Assert(false, "Error compiling vertex shader");
@@ -84,16 +85,16 @@ namespace AcidarX.Core.Renderer
             return shader;
         }
 
-        private static bool LinkProgram(uint rendererId)
+        private bool LinkProgram(uint rendererId)
         {
-            Gl.LinkProgram(rendererId);
+            _gl.LinkProgram(rendererId);
 
-            Gl.GetProgram(rendererId, GLEnum.LinkStatus, out int status);
+            _gl.GetProgram(rendererId, GLEnum.LinkStatus, out int status);
             if (status == 0)
             {
-                string infoLog = Gl.GetProgramInfoLog(rendererId);
+                string infoLog = _gl.GetProgramInfoLog(rendererId);
 
-                Gl.DeleteProgram(rendererId);
+                _gl.DeleteProgram(rendererId);
 
                 Logger.LogError(infoLog);
                 Logger.Assert(false, "Error linking program");
@@ -108,7 +109,7 @@ namespace AcidarX.Core.Renderer
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            Gl.DeleteShader(_rendererID);
+            _gl.DeleteShader(_rendererID);
         }
 
         ~Shader()

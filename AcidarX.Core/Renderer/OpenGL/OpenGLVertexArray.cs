@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
-using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core.Renderer.OpenGL
 {
     public sealed class OpenGLVertexArray : VertexArray
     {
         private static readonly ILogger<OpenGLVertexArray> Logger = AXLogger.CreateLogger<OpenGLVertexArray>();
+        private readonly GL _gl;
         private readonly RendererID _rendererID;
         private readonly List<VertexBuffer> _vertexBuffers;
         private IndexBuffer _indexBuffer;
         private bool _isDisposed;
         private uint _vertexAttributeIndex;
 
-        public OpenGLVertexArray()
+        public OpenGLVertexArray(GL gl)
         {
+            _gl = gl;
             _vertexBuffers = new List<VertexBuffer>();
 
-            _rendererID = (RendererID) Gl.CreateVertexArray();
+            _rendererID = (RendererID) _gl.CreateVertexArray();
             Bind();
         }
 
@@ -35,12 +36,12 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            Gl.BindVertexArray(_rendererID);
+            _gl.BindVertexArray(_rendererID);
         }
 
         public override void Unbind()
         {
-            Gl.BindVertexArray(0);
+            _gl.BindVertexArray(0);
         }
 
         public override unsafe void AddVertexBuffer(VertexBuffer vertexBuffer)
@@ -53,8 +54,8 @@ namespace AcidarX.Core.Renderer.OpenGL
 
             foreach (BufferElement element in layout)
             {
-                Gl.EnableVertexAttribArray(_vertexAttributeIndex);
-                Gl.VertexAttribPointer(_vertexAttributeIndex, element.GetComponentCount(),
+                _gl.EnableVertexAttribArray(_vertexAttributeIndex);
+                _gl.VertexAttribPointer(_vertexAttributeIndex, element.GetComponentCount(),
                     ShaderDataTypeToOpenGLBaseType(element.Type),
                     element.Normalized, layout.Value.Stride, (void*) element.Offset);
                 _vertexAttributeIndex++;
@@ -100,7 +101,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
             _vertexBuffers.Clear();
-            Gl.DeleteVertexArrays(1, _rendererID);
+            _gl.DeleteVertexArrays(1, _rendererID);
         }
 
         public override string ToString() => string.Format("VertexArray|{0}", _rendererID);

@@ -1,48 +1,60 @@
 ﻿using System;
 using AcidarX.Core.Renderer.OpenGL;
+using Silk.NET.OpenGL;
 
 namespace AcidarX.Core.Renderer
 {
-    public static class GraphicsFactory
+    public class GraphicsFactory
     {
-        public static AXRenderer CreateRenderer()
+        private readonly RenderCommandDispatcher _renderCommandDispatcher;
+
+        public GraphicsFactory(RenderCommandDispatcher renderCommandDispatcher, GL gl)
+        {
+            _renderCommandDispatcher = renderCommandDispatcher;
+            Gl = gl;
+        }
+
+        public GL Gl { get; }
+
+
+        public AXRenderer CreateRenderer()
         {
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new AXRenderer(new RenderCommandDispatcher(new OpenGLRendererAPI())),
+                API.OpenGL => new AXRenderer(_renderCommandDispatcher),
                 _ => throw new Exception("Not supported API")
             };
         }
 
-        public static IndexBuffer CreateIndexBuffer<T>(T[] indices)
+        public IndexBuffer CreateIndexBuffer<T>(T[] indices)
             where T : unmanaged
         {
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLIndexBuffer<T>(new ReadOnlySpan<T>(indices)),
+                API.OpenGL => new OpenGLIndexBuffer<T>(Gl, new ReadOnlySpan<T>(indices)),
                 _ => throw new Exception("Not supported API")
             };
         }
 
-        public static VertexBuffer CreateVertexBuffer<T>(T[] vertices)
+        public VertexBuffer CreateVertexBuffer<T>(T[] vertices)
             where T : unmanaged
         {
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLVertexBuffer<T>(new ReadOnlySpan<T>(vertices)),
+                API.OpenGL => new OpenGLVertexBuffer<T>(Gl, new ReadOnlySpan<T>(vertices)),
                 _ => throw new Exception("Not supported API")
             };
         }
 
-        public static VertexArray CreateVertexArray()
+        public VertexArray CreateVertexArray()
         {
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLVertexArray(),
+                API.OpenGL => new OpenGLVertexArray(Gl),
                 _ => throw new Exception("Not supported API")
             };
         }
