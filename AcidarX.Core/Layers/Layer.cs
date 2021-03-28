@@ -1,14 +1,40 @@
 ﻿using System;
 using AcidarX.Core.Events;
+using AcidarX.Core.Renderer;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Layers
 {
+    public class LayerFactory
+    {
+        private readonly GraphicsFactory _graphicsFactory;
+        private readonly AXRenderer _renderer;
+
+        public LayerFactory(GraphicsFactory graphicsFactory, AXRenderer renderer)
+        {
+            _graphicsFactory = graphicsFactory;
+            _renderer = renderer;
+        }
+
+        public T CreateLayer<T>() where T : Layer =>
+            (T) Activator.CreateInstance(typeof(T), _graphicsFactory, _renderer);
+    }
+
     public abstract class Layer : IDisposable
     {
         private static readonly ILogger<Layer> Logger = AXLogger.CreateLogger<Layer>();
 
+        public Layer(string debugName, GraphicsFactory graphicsFactory, AXRenderer renderer) : this(debugName)
+        {
+            GraphicsFactory = graphicsFactory;
+            Renderer = renderer;
+        }
+
         public Layer(string debugName) => DebugName = debugName;
+
+        protected GraphicsFactory GraphicsFactory { get; }
+        protected AXRenderer Renderer { get; }
+
 
         public string DebugName { get; }
         public bool IsDisposed { get; private set; }

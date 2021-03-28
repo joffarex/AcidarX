@@ -72,13 +72,10 @@ namespace AcidarX.Sandbox
 
         private static VertexArray _triangleVertexArray;
         private static Shader _triangleShader;
-        private readonly GraphicsFactory _graphicsFactory;
-        private readonly AXRenderer _renderer;
 
-        public ExampleLayer(GraphicsFactory graphicsFactory, AXRenderer renderer) : base("Example layer")
+        public ExampleLayer(GraphicsFactory graphicsFactory, AXRenderer renderer)
+            : base("Example layer", graphicsFactory, renderer)
         {
-            _graphicsFactory = graphicsFactory;
-            _renderer = renderer;
         }
 
         public override void OnAttach()
@@ -89,7 +86,7 @@ namespace AcidarX.Sandbox
         {
             #region square
 
-            _squareVertexArray = _graphicsFactory.CreateVertexArray();
+            _squareVertexArray = GraphicsFactory.CreateVertexArray();
 
             float[] squareVertices =
             {
@@ -100,7 +97,7 @@ namespace AcidarX.Sandbox
                 -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
             };
 
-            VertexBuffer squareVertexBuffer = _graphicsFactory.CreateVertexBuffer(squareVertices);
+            VertexBuffer squareVertexBuffer = GraphicsFactory.CreateVertexBuffer(squareVertices);
             squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3),
@@ -113,16 +110,16 @@ namespace AcidarX.Sandbox
                 0, 1, 3,
                 1, 2, 3
             };
-            IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(squareIndices);
+            IndexBuffer squareIndexBuffer = GraphicsFactory.CreateIndexBuffer(squareIndices);
             _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            _squareShader = new Shader(_graphicsFactory.Gl, SquareVertexShaderSource, SquareFragmentShaderSource);
+            _squareShader = new Shader(GraphicsFactory.Gl, SquareVertexShaderSource, SquareFragmentShaderSource);
 
             #endregion
 
             #region triangle
 
-            _triangleVertexArray = _graphicsFactory.CreateVertexArray();
+            _triangleVertexArray = GraphicsFactory.CreateVertexArray();
 
             float[] triangleVertices =
             {
@@ -132,7 +129,7 @@ namespace AcidarX.Sandbox
                 0.0f, 0.5f, 0.0f
             };
 
-            VertexBuffer triangleVertexBuffer = _graphicsFactory.CreateVertexBuffer(triangleVertices);
+            VertexBuffer triangleVertexBuffer = GraphicsFactory.CreateVertexBuffer(triangleVertices);
             triangleVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3)
@@ -143,10 +140,10 @@ namespace AcidarX.Sandbox
             {
                 0, 1, 2
             };
-            IndexBuffer triangleIndexBuffer = _graphicsFactory.CreateIndexBuffer(triangleIndices);
+            IndexBuffer triangleIndexBuffer = GraphicsFactory.CreateIndexBuffer(triangleIndices);
             _triangleVertexArray.SetIndexBuffer(triangleIndexBuffer);
 
-            _triangleShader = new Shader(_graphicsFactory.Gl, TriangleVertexShaderSource, TriangleFragmentShaderSource);
+            _triangleShader = new Shader(GraphicsFactory.Gl, TriangleVertexShaderSource, TriangleFragmentShaderSource);
 
             #endregion
         }
@@ -168,15 +165,15 @@ namespace AcidarX.Sandbox
 
         public override void OnRender(double deltaTime)
         {
-            _renderer.BeginScene();
+            Renderer.BeginScene();
 
             _squareShader.Bind();
-            _renderer.Submit(_squareVertexArray);
+            Renderer.Submit(_squareVertexArray);
 
             _triangleShader.Bind();
-            _renderer.Submit(_triangleVertexArray);
+            Renderer.Submit(_triangleVertexArray);
 
-            _renderer.EndScene();
+            Renderer.EndScene();
         }
 
         public override void OnEvent(Event e)

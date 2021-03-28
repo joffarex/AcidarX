@@ -1,23 +1,19 @@
 ﻿using AcidarX.Core;
-using AcidarX.Core.Renderer;
+using AcidarX.Core.Layers;
 using AcidarX.Core.Windowing;
 using AcidarX.Sandbox;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var windowOptions = AXWindowOptions.CreateDefault();
-using IHost host = Host.CreateDefaultBuilder().ConfigureServices(x =>
+using IHost host = Entrypoint.CreateAXHost(windowOptions).ConfigureServices(services =>
 {
-    IServiceCollection services = x.AddAcidarX(windowOptions);
-
     ServiceProvider provider = services.BuildServiceProvider();
 
     var application = provider.GetRequiredService<AXApplication>();
-    var graphicsFactory = provider.GetRequiredService<GraphicsFactory>();
-    var renderer = provider.GetRequiredService<AXRenderer>();
-    application.PushLayer(new ExampleLayer(graphicsFactory, renderer));
+    var layerFactory = provider.GetRequiredService<LayerFactory>();
+
+    application.PushLayer(layerFactory.CreateLayer<ExampleLayer>());
     application.Run();
 }).Build();
-
 host.Start();
-    

@@ -20,11 +20,11 @@ namespace AcidarX.Core
         private readonly AXWindow _window;
         private ImGuiLayer _imGuiLayer;
 
-        public AXApplication(AXWindowOptions axWindowOptions, AXRenderer renderer, GraphicsFactory graphicsFactory)
+        public AXApplication(AXWindow window, AXRenderer renderer, GraphicsFactory graphicsFactory)
         {
             _layers = new LayerStack();
 
-            _window = new AXWindow(axWindowOptions);
+            _window = window;
             _window.EventCallback = OnEvent;
 
             _renderer = renderer;

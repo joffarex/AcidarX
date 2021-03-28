@@ -104,6 +104,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             {
                 vertexBuffer.Dispose();
             }
+
             _vertexBuffers.Clear();
             _indexBuffer.Dispose();
             _gl.DeleteVertexArrays(1, _rendererID);

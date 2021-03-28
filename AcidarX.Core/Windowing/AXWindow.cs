@@ -8,7 +8,7 @@ using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Windowing
 {
-    public partial class AXWindow : IWindowProvider
+    public partial class AXWindow
     {
         private static readonly ILogger<AXWindow> Logger = AXLogger.CreateLogger<AXWindow>();
         private readonly AXWindowOptions _axWindowOptions;
