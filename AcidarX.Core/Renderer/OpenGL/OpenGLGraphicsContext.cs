@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Silk.NET.OpenGL;
+﻿using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Renderer.OpenGL
@@ -25,7 +24,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void ClearColor()
         {
-            Gl.ClearColor(Color.BlueViolet);
+            Gl.ClearColor(24 / 255.0f, 24 / 255.0f, 24 / 255.0f, 1.0f);
         }
     }
 }

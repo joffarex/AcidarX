@@ -2,6 +2,7 @@
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
@@ -11,7 +12,56 @@ namespace AcidarX.Core
 {
     public abstract class AXApplication
     {
+        private const string VertexShaderSource = @"
+        #version 330 core
+        layout (location = 0) in vec3 a_Position;
+        
+        out vec3 v_Position;
+
+        void main()
+        {
+            v_Position = a_Position;
+            gl_Position = vec4(a_Position, 1.0);
+        }
+        ";
+
+        private const string FragmentShaderSource = @"
+        #version 330 core
+
+        layout (location = 0) out vec4 color;
+
+        in vec3 v_Position;
+
+        void main()
+        {
+            color = vec4(v_Position * 0.5f + 0.5f, 1.0f);
+        }
+        ";
+
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
+
+        private static uint _vertexBuffer;
+        private static uint _indexBuffer;
+        private static uint _vertexArray;
+        private static AXShader _shader;
+
+        //Vertex data, uploaded to the VBO.
+        private static readonly float[] Vertices =
+        {
+            //X    Y      Z
+            0.5f, 0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            -0.5f, 0.5f, 0.5f
+        };
+
+        //Index data, uploaded to the EBO.
+        private static readonly uint[] Indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
+
         private readonly LayerStack _layers;
         private readonly AXWindow _window;
         private ImGuiLayer _imGuiLayer;
@@ -62,47 +112,6 @@ namespace AcidarX.Core
             _window.Run();
         }
 
-        private static uint _vertexBuffer;
-        private static uint _indexBuffer;
-        private static uint _vertexArray;
-        private static uint _shader;
-
-        private const string VertexShaderSource = @"
-        #version 330 core //Using version GLSL version 3.3
-        layout (location = 0) in vec4 vPos;
-        
-        void main()
-        {
-            gl_Position = vec4(vPos.x, vPos.y, vPos.z, 1.0);
-        }
-        ";
-
-        private const string FragmentShaderSource = @"
-        #version 330 core
-        out vec4 FragColor;
-        void main()
-        {
-            FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-        }
-        ";
-
-        //Vertex data, uploaded to the VBO.
-        private static readonly float[] Vertices =
-        {
-            //X    Y      Z
-            0.5f, 0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.5f
-        };
-
-        //Index data, uploaded to the EBO.
-        private static readonly uint[] Indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
-
         private unsafe bool OnLoad(AppLoadEvent e)
         {
             Logger.Assert(Gl != null, "OpenGL context has not been initialized");
@@ -113,57 +122,23 @@ namespace AcidarX.Core
             _vertexArray = Gl.GenVertexArray();
             Gl.BindVertexArray(_vertexArray);
 
-            _vertexBuffer = Gl.GenBuffer(); 
-            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer); 
+            _vertexBuffer = Gl.GenBuffer();
+            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer);
             fixed (void* v = &Vertices[0])
             {
                 Gl.BufferData(BufferTargetARB.ArrayBuffer,
-                    (nuint) (Vertices.Length * sizeof(uint)), v, BufferUsageARB.StaticDraw); 
+                    (nuint) (Vertices.Length * sizeof(uint)), v, BufferUsageARB.StaticDraw);
             }
 
             _indexBuffer = Gl.GenBuffer();
-            Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _indexBuffer); 
+            Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _indexBuffer);
             fixed (void* i = &Indices[0])
             {
                 Gl.BufferData(BufferTargetARB.ElementArrayBuffer,
                     (nuint) (Indices.Length * sizeof(uint)), i, BufferUsageARB.StaticDraw);
             }
 
-            uint vertexShader = Gl.CreateShader(ShaderType.VertexShader);
-            Gl.ShaderSource(vertexShader, VertexShaderSource);
-            Gl.CompileShader(vertexShader);
-
-            string infoLog = Gl.GetShaderInfoLog(vertexShader);
-            if (!string.IsNullOrWhiteSpace(infoLog))
-            {
-                Logger.LogError($"Error compiling vertex shader {infoLog}");
-            }
-
-            uint fragmentShader = Gl.CreateShader(ShaderType.FragmentShader);
-            Gl.ShaderSource(fragmentShader, FragmentShaderSource);
-            Gl.CompileShader(fragmentShader);
-
-            infoLog = Gl.GetShaderInfoLog(fragmentShader);
-            if (!string.IsNullOrWhiteSpace(infoLog))
-            {
-                Logger.LogError($"Error compiling fragment shader {infoLog}");
-            }
-
-            _shader = Gl.CreateProgram();
-            Gl.AttachShader(_shader, vertexShader);
-            Gl.AttachShader(_shader, fragmentShader);
-            Gl.LinkProgram(_shader);
-
-            Gl.GetProgram(_shader, GLEnum.LinkStatus, out var status);
-            if (status == 0)
-            {
-                Logger.LogError($"Error linking shader {Gl.GetProgramInfoLog(_shader)}");
-            }
-
-            Gl.DetachShader(_shader, vertexShader);
-            Gl.DetachShader(_shader, fragmentShader);
-            Gl.DeleteShader(vertexShader);
-            Gl.DeleteShader(fragmentShader);
+            _shader = new AXShader(VertexShaderSource, FragmentShaderSource);
 
             Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float),
                 null);
@@ -184,10 +159,21 @@ namespace AcidarX.Core
 
         private unsafe bool OnRender(AppRenderEvent e)
         {
+            _window.GraphicsContext.Clear();
+            _window.GraphicsContext.ClearColor();
+
             foreach (Layer layer in _layers)
             {
                 layer.OnRender(e.DeltaTime);
             }
+
+            _shader.Bind();
+            Gl.BindVertexArray(_vertexArray);
+
+            Gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length,
+                DrawElementsType.UnsignedInt, null);
+
+            _shader.Unbind();
 
             _imGuiLayer.Begin(e.DeltaTime);
             foreach (Layer layer in _layers)
@@ -196,15 +182,6 @@ namespace AcidarX.Core
             }
 
             _imGuiLayer.End();
-
-            _window.GraphicsContext.Clear();
-            _window.GraphicsContext.ClearColor();
-
-            Gl.BindVertexArray(_vertexArray);
-            Gl.UseProgram(_shader);
-
-            Gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length,
-                DrawElementsType.UnsignedInt, null);
 
             return true;
         }
@@ -221,7 +198,8 @@ namespace AcidarX.Core
 
         private static bool OnWindowClose(WindowCloseEvent e)
         {
-            Logger.LogInformation($"[{e}]: Closing Window... WOW REPEATED!!!");
+            _shader.Dispose();
+
             return true; // Handled
         }
     }

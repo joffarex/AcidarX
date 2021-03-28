@@ -23,7 +23,9 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender()
         {
-            ImGuiNET.ImGui.ShowStyleEditor();
+            ImGuiNET.ImGui.Begin("Test");
+            ImGuiNET.ImGui.Text("AX is cool");
+            ImGuiNET.ImGui.End();
         }
 
         public override void OnUpdate(double deltaTime)
