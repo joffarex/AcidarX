@@ -40,8 +40,8 @@ namespace AcidarX.Core
 
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
 
-        private static uint _vertexBuffer;
-        private static uint _indexBuffer;
+        private static VertexBuffer _vertexBuffer;
+        private static IndexBuffer _indexBuffer;
         private static uint _vertexArray;
         private static AXShader _shader;
 
@@ -122,21 +122,8 @@ namespace AcidarX.Core
             _vertexArray = Gl.GenVertexArray();
             Gl.BindVertexArray(_vertexArray);
 
-            _vertexBuffer = Gl.GenBuffer();
-            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vertexBuffer);
-            fixed (void* v = &Vertices[0])
-            {
-                Gl.BufferData(BufferTargetARB.ArrayBuffer,
-                    (nuint) (Vertices.Length * sizeof(uint)), v, BufferUsageARB.StaticDraw);
-            }
-
-            _indexBuffer = Gl.GenBuffer();
-            Gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _indexBuffer);
-            fixed (void* i = &Indices[0])
-            {
-                Gl.BufferData(BufferTargetARB.ElementArrayBuffer,
-                    (nuint) (Indices.Length * sizeof(uint)), i, BufferUsageARB.StaticDraw);
-            }
+            _vertexBuffer = BufferFactory.CreateVertexBuffer(Vertices);
+            _indexBuffer = BufferFactory.CreateIndexBuffer(Indices);
 
             _shader = new AXShader(VertexShaderSource, FragmentShaderSource);
 
@@ -170,7 +157,7 @@ namespace AcidarX.Core
             _shader.Bind();
             Gl.BindVertexArray(_vertexArray);
 
-            Gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length,
+            Gl.DrawElements(PrimitiveType.Triangles, _indexBuffer.GetCount(),
                 DrawElementsType.UnsignedInt, null);
 
             _shader.Unbind();
