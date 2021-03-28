@@ -3,7 +3,7 @@ using AcidarX.Core.Renderer.OpenGL;
 
 namespace AcidarX.Core.Renderer
 {
-    public static class BufferFactory
+    public static class GraphicsObject
     {
         public static IndexBuffer CreateIndexBuffer<T>(T[] indices)
             where T : unmanaged
@@ -23,6 +23,16 @@ namespace AcidarX.Core.Renderer
             {
                 RendererAPI.None => null,
                 RendererAPI.OpenGL => new OpenGLVertexBuffer<T>(new ReadOnlySpan<T>(vertices)),
+                _ => throw new Exception("Not supported API")
+            };
+        }
+
+        public static VertexArray CreateVertexArray()
+        {
+            return Renderer.API switch
+            {
+                RendererAPI.None => null,
+                RendererAPI.OpenGL => new OpenGLVertexArray(),
                 _ => throw new Exception("Not supported API")
             };
         }

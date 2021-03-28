@@ -11,7 +11,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         private static readonly ILogger<OpenGLVertexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLVertexBuffer<T>>();
         private readonly uint _rendererID;
         private bool _isDisposed;
-        private BufferLayout _layout;
+        private BufferLayout? _layout;
 
         public OpenGLVertexBuffer(ReadOnlySpan<T> vertices)
         {
@@ -49,7 +49,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             _layout = layout;
         }
 
-        public override BufferLayout GetLayout() => _layout;
+        public override BufferLayout? GetLayout() => _layout;
 
         protected override void Dispose(bool manual)
         {

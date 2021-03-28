@@ -9,12 +9,13 @@ using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 using Shader = AcidarX.Core.Renderer.Shader;
+using VertexArray = AcidarX.Core.Renderer.VertexArray;
 
 namespace AcidarX.Core
 {
     public abstract class AXApplication
     {
-        private const string VertexShaderSource = @"
+        private const string SquareVertexShaderSource = @"
         #version 330 core
         layout (location = 0) in vec3 a_Position;
         layout (location = 1) in vec4 a_Color;
@@ -30,7 +31,7 @@ namespace AcidarX.Core
         }
         ";
 
-        private const string FragmentShaderSource = @"
+        private const string SquareFragmentShaderSource = @"
         #version 330 core
 
         layout (location = 0) out vec4 color;
@@ -44,29 +45,39 @@ namespace AcidarX.Core
         }
         ";
 
+        private const string TriangleVertexShaderSource = @"
+        #version 330 core
+        layout (location = 0) in vec3 a_Position;
+        
+        out vec3 v_Position;
+
+        void main()
+        {
+            v_Position = a_Position;
+            gl_Position = vec4(a_Position, 1.0);
+        }
+        ";
+
+        private const string TriangleFragmentShaderSource = @"
+        #version 330 core
+
+        layout (location = 0) out vec4 color;
+
+        in vec3 v_Position;
+
+        void main()
+        {
+            color = vec4(0.4f, 0.0f, 0.8f, 1.0f);
+        }
+        ";
+
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
 
-        private static VertexBuffer _vertexBuffer;
-        private static IndexBuffer _indexBuffer;
-        private static uint _vertexArray;
-        private static Shader _shader;
+        private static VertexArray _squareVertexArray;
+        private static Shader _squareShader;
 
-        //Vertex data, uploaded to the VBO.
-        private static readonly float[] Vertices =
-        {
-            //X    Y      Z
-            0.5f, 0.5f, 0.0f, 0.8f, 0.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.0f, 0.6f, 0.0f, 1.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f, 0.4f, 0.0f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
-        };
-
-        //Index data, uploaded to the EBO.
-        private static readonly uint[] Indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
+        private static VertexArray _triangleVertexArray;
+        private static Shader _triangleShader;
 
         private readonly LayerStack _layers;
         private readonly AXWindow _window;
@@ -118,58 +129,76 @@ namespace AcidarX.Core
             _window.Run();
         }
 
-        public static VertexAttribPointerType ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-        {
-            switch (type)
-            {
-                case ShaderDataType.Float:
-                case ShaderDataType.Float2:
-                case ShaderDataType.Float3:
-                case ShaderDataType.Float4:
-                case ShaderDataType.Mat3:
-                case ShaderDataType.Mat4: return VertexAttribPointerType.Float;
-                case ShaderDataType.Int:
-                case ShaderDataType.Int2:
-                case ShaderDataType.Int3:
-                case ShaderDataType.Int4: return VertexAttribPointerType.Int;
-                case ShaderDataType.Bool: return VertexAttribPointerType.Byte;
-                case ShaderDataType.None: return 0;
-                default:
-                    Logger.Assert(false, "Unknown ShaderDataType");
-                    return 0;
-            }
-        }
-
-        private unsafe bool OnLoad(AppLoadEvent e)
+        private bool OnLoad(AppLoadEvent e)
         {
             Logger.Assert(Gl != null, "OpenGL context has not been initialized");
 
             _imGuiLayer = new ImGuiLayer(Gl, _window.NativeWindow, _window.InputContext);
             PushLayer(_imGuiLayer);
 
-            _vertexArray = Gl.GenVertexArray();
-            Gl.BindVertexArray(_vertexArray);
+            #region square
 
-            _vertexBuffer = BufferFactory.CreateVertexBuffer(Vertices);
-            _vertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
+            _squareVertexArray = GraphicsObject.CreateVertexArray();
+
+            float[] squareVertices =
+            {
+                //X    Y      Z
+                0.5f, 0.5f, 0.0f, 0.8f, 0.0f, 1.0f, 1.0f,
+                0.5f, -0.5f, 0.0f, 0.6f, 0.0f, 1.0f, 1.0f,
+                -0.5f, -0.5f, 0.0f, 0.4f, 0.0f, 1.0f, 1.0f,
+                -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
+            };
+
+            VertexBuffer squareVertexBuffer = GraphicsObject.CreateVertexBuffer(squareVertices);
+            squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3),
                 new("a_Color", ShaderDataType.Float4)
             }));
+            _squareVertexArray.AddVertexBuffer(squareVertexBuffer);
 
-            _indexBuffer = BufferFactory.CreateIndexBuffer(Indices);
-
-            _shader = new Shader(VertexShaderSource, FragmentShaderSource);
-
-            uint index = 0;
-            BufferLayout layout = _vertexBuffer.GetLayout();
-            foreach (BufferElement element in layout)
+            uint[] squareIndices =
             {
-                Gl.EnableVertexAttribArray(index);
-                Gl.VertexAttribPointer(index, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type),
-                    element.Normalized, layout.Stride, (void*) element.Offset);
-                index++;
-            }
+                0, 1, 3,
+                1, 2, 3
+            };
+            IndexBuffer squareIndexBuffer = GraphicsObject.CreateIndexBuffer(squareIndices);
+            _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
+
+            _squareShader = new Shader(SquareVertexShaderSource, SquareFragmentShaderSource);
+
+            #endregion
+
+            #region triangle
+
+            _triangleVertexArray = GraphicsObject.CreateVertexArray();
+
+            float[] triangleVertices =
+            {
+                //X    Y      Z
+                -0.5f, -0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f,
+                0.0f, 0.5f, 0.0f
+            };
+
+            VertexBuffer triangleVertexBuffer = GraphicsObject.CreateVertexBuffer(triangleVertices);
+            triangleVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
+            {
+                new("a_Position", ShaderDataType.Float3)
+            }));
+            _triangleVertexArray.AddVertexBuffer(triangleVertexBuffer);
+
+            uint[] triangleIndices =
+            {
+                0, 1, 2
+            };
+            IndexBuffer triangleIndexBuffer = GraphicsObject.CreateIndexBuffer(triangleIndices);
+            _triangleVertexArray.SetIndexBuffer(triangleIndexBuffer);
+
+            _triangleShader = new Shader(TriangleVertexShaderSource, TriangleFragmentShaderSource);
+
+            #endregion
+
 
             return true;
         }
@@ -194,13 +223,23 @@ namespace AcidarX.Core
                 layer.OnRender(e.DeltaTime);
             }
 
-            _shader.Bind();
-            Gl.BindVertexArray(_vertexArray);
+            _squareShader.Bind();
+            _squareVertexArray.Bind();
 
-            Gl.DrawElements(PrimitiveType.Triangles, _indexBuffer.GetCount(),
+            Gl.DrawElements(PrimitiveType.Triangles, _squareVertexArray.GetIndexBuffer().GetCount(),
                 DrawElementsType.UnsignedInt, null);
 
-            _shader.Unbind();
+            _squareShader.Unbind();
+            _squareVertexArray.Unbind();
+
+            _triangleShader.Bind();
+            _triangleVertexArray.Bind();
+
+            Gl.DrawElements(PrimitiveType.Triangles, _triangleVertexArray.GetIndexBuffer().GetCount(),
+                DrawElementsType.UnsignedInt, null);
+
+            _triangleShader.Unbind();
+            _triangleVertexArray.Unbind();
 
             _imGuiLayer.Begin(e.DeltaTime);
             foreach (Layer layer in _layers)
@@ -225,9 +264,10 @@ namespace AcidarX.Core
 
         private static bool OnWindowClose(WindowCloseEvent e)
         {
-            _shader.Dispose();
+            _squareShader.Dispose();
+            _squareVertexArray.Dispose();
 
-            return true; // Handled
+            return true;
         }
     }
 }

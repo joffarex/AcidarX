@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Renderer
@@ -14,6 +15,8 @@ namespace AcidarX.Core.Renderer
 
         public BufferLayout(List<BufferElement> elements)
         {
+            Logger.Assert(elements.Any(), "Layout must contain at least one element");
+
             Elements = elements;
             Stride = 0;
             Stride = CalculateOffsetAndStride();
