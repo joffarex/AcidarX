@@ -21,7 +21,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
             int size = Marshal.SizeOf<T>();
 
-            OpenGLGraphicsContext.Gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (vertices.Length * size), vertices,
+            Gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (vertices.Length * size), vertices,
                 GLEnum.StaticDraw);
         }
 
@@ -37,12 +37,12 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            OpenGLGraphicsContext.Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID);
+            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID);
         }
 
         public override void Unbind()
         {
-            OpenGLGraphicsContext.Gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+            Gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
         }
 
         public override void SetLayout(BufferLayout layout)
@@ -56,7 +56,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            OpenGLGraphicsContext.Gl.DeleteBuffers(1, _rendererID);
+            Gl.DeleteBuffers(1, _rendererID);
         }
 
         public override string ToString() => string.Format("VertexBuffer|{0}", _rendererID);

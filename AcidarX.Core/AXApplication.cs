@@ -6,10 +6,8 @@ using AcidarX.Core.Layers;
 using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
-using Silk.NET.OpenGL;
+using Silk.NET.Maths;
 using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
-using Shader = AcidarX.Core.Renderer.Shader;
-using VertexArray = AcidarX.Core.Renderer.VertexArray;
 
 namespace AcidarX.Core
 {
@@ -82,6 +80,7 @@ namespace AcidarX.Core
         private readonly LayerStack _layers;
         private readonly AXWindow _window;
         private ImGuiLayer _imGuiLayer;
+        private readonly AXRenderer _renderer;
 
         protected AXApplication(AXWindowOptions axWindowOptions)
         {
@@ -90,6 +89,8 @@ namespace AcidarX.Core
             _window = new AXWindow(axWindowOptions);
             _window.Init();
             _window.EventCallback = OnEvent;
+
+            _renderer = GraphicsFactory.CreateRenderer();
         }
 
         private void OnEvent(Event e)
@@ -138,7 +139,7 @@ namespace AcidarX.Core
 
             #region square
 
-            _squareVertexArray = GraphicsObject.CreateVertexArray();
+            _squareVertexArray = GraphicsFactory.CreateVertexArray();
 
             float[] squareVertices =
             {
@@ -149,7 +150,7 @@ namespace AcidarX.Core
                 -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f
             };
 
-            VertexBuffer squareVertexBuffer = GraphicsObject.CreateVertexBuffer(squareVertices);
+            VertexBuffer squareVertexBuffer = GraphicsFactory.CreateVertexBuffer(squareVertices);
             squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3),
@@ -162,7 +163,7 @@ namespace AcidarX.Core
                 0, 1, 3,
                 1, 2, 3
             };
-            IndexBuffer squareIndexBuffer = GraphicsObject.CreateIndexBuffer(squareIndices);
+            IndexBuffer squareIndexBuffer = GraphicsFactory.CreateIndexBuffer(squareIndices);
             _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
 
             _squareShader = new Shader(SquareVertexShaderSource, SquareFragmentShaderSource);
@@ -171,7 +172,7 @@ namespace AcidarX.Core
 
             #region triangle
 
-            _triangleVertexArray = GraphicsObject.CreateVertexArray();
+            _triangleVertexArray = GraphicsFactory.CreateVertexArray();
 
             float[] triangleVertices =
             {
@@ -181,7 +182,7 @@ namespace AcidarX.Core
                 0.0f, 0.5f, 0.0f
             };
 
-            VertexBuffer triangleVertexBuffer = GraphicsObject.CreateVertexBuffer(triangleVertices);
+            VertexBuffer triangleVertexBuffer = GraphicsFactory.CreateVertexBuffer(triangleVertices);
             triangleVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
                 new("a_Position", ShaderDataType.Float3)
@@ -192,7 +193,7 @@ namespace AcidarX.Core
             {
                 0, 1, 2
             };
-            IndexBuffer triangleIndexBuffer = GraphicsObject.CreateIndexBuffer(triangleIndices);
+            IndexBuffer triangleIndexBuffer = GraphicsFactory.CreateIndexBuffer(triangleIndices);
             _triangleVertexArray.SetIndexBuffer(triangleIndexBuffer);
 
             _triangleShader = new Shader(TriangleVertexShaderSource, TriangleFragmentShaderSource);
@@ -213,33 +214,26 @@ namespace AcidarX.Core
             return true;
         }
 
-        private unsafe bool OnRender(AppRenderEvent e)
+        private bool OnRender(AppRenderEvent e)
         {
-            _window.GraphicsContext.Clear();
-            _window.GraphicsContext.ClearColor();
+            _renderer.RenderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f / 255.0f, 24.0f / 255.0f,
+                24.0f / 255.0f, 1.0f));
+            _renderer.RenderCommandDispatcher.Clear();
+
+            _renderer.BeginScene();
+
+            _squareShader.Bind();
+            _renderer.Submit(_squareVertexArray);
+
+            _triangleShader.Bind();
+            _renderer.Submit(_triangleVertexArray);
+
+            _renderer.EndScene();
 
             foreach (Layer layer in _layers)
             {
                 layer.OnRender(e.DeltaTime);
             }
-
-            _squareShader.Bind();
-            _squareVertexArray.Bind();
-
-            Gl.DrawElements(PrimitiveType.Triangles, _squareVertexArray.GetIndexBuffer().GetCount(),
-                DrawElementsType.UnsignedInt, null);
-
-            _squareShader.Unbind();
-            _squareVertexArray.Unbind();
-
-            _triangleShader.Bind();
-            _triangleVertexArray.Bind();
-
-            Gl.DrawElements(PrimitiveType.Triangles, _triangleVertexArray.GetIndexBuffer().GetCount(),
-                DrawElementsType.UnsignedInt, null);
-
-            _triangleShader.Unbind();
-            _triangleVertexArray.Unbind();
 
             _imGuiLayer.Begin(e.DeltaTime);
             foreach (Layer layer in _layers)

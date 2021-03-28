@@ -9,10 +9,10 @@ namespace AcidarX.Core.Renderer.OpenGL
     public sealed class OpenGLVertexArray : VertexArray
     {
         private static readonly ILogger<OpenGLVertexArray> Logger = AXLogger.CreateLogger<OpenGLVertexArray>();
+        private readonly RendererID _rendererID;
         private readonly List<VertexBuffer> _vertexBuffers;
         private IndexBuffer _indexBuffer;
         private bool _isDisposed;
-        private readonly RendererID _rendererID;
         private uint _vertexAttributeIndex;
 
         public OpenGLVertexArray()

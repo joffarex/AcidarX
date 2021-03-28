@@ -16,15 +16,5 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Gl = GL.GetApi(_window);
         }
-
-        public override void Clear()
-        {
-            Gl.Clear((uint) ClearBufferMask.ColorBufferBit);
-        }
-
-        public override void ClearColor()
-        {
-            Gl.ClearColor(24 / 255.0f, 24 / 255.0f, 24 / 255.0f, 1.0f);
-        }
     }
 }
