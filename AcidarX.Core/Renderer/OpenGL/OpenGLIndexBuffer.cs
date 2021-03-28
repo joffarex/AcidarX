@@ -12,13 +12,13 @@ namespace AcidarX.Core.Renderer.OpenGL
     {
         private static readonly ILogger<OpenGLIndexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLIndexBuffer<T>>();
         private readonly uint _count;
-        private readonly uint _rendererID;
+        private readonly RendererID _rendererID;
         private bool _isDisposed;
 
         public OpenGLIndexBuffer(ReadOnlySpan<T> indices)
         {
             _count = (uint) indices.Length;
-            Gl.CreateBuffers(1, out _rendererID);
+            _rendererID = (RendererID) Gl.CreateBuffer();
             Bind();
 
             int size = Marshal.SizeOf<T>();

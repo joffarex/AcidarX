@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
+using static AcidarX.Core.Renderer.OpenGL.OpenGLGraphicsContext;
 
 namespace AcidarX.Core.Renderer.OpenGL
 {
@@ -9,13 +10,13 @@ namespace AcidarX.Core.Renderer.OpenGL
         where T : unmanaged
     {
         private static readonly ILogger<OpenGLVertexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLVertexBuffer<T>>();
-        private readonly uint _rendererID;
+        private readonly RendererID _rendererID;
         private bool _isDisposed;
         private BufferLayout? _layout;
 
         public OpenGLVertexBuffer(ReadOnlySpan<T> vertices)
         {
-            OpenGLGraphicsContext.Gl.CreateBuffers(1, out _rendererID);
+            _rendererID = (RendererID) Gl.CreateBuffer();
             Bind();
 
             int size = Marshal.SizeOf<T>();

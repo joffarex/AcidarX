@@ -9,7 +9,7 @@ namespace AcidarX.Core.Renderer
     {
         private static readonly ILogger<Shader> Logger = AXLogger.CreateLogger<Shader>();
 
-        private readonly uint _rendererID;
+        private readonly RendererID _rendererID;
 
         private bool _isDisposed;
 
@@ -27,7 +27,7 @@ namespace AcidarX.Core.Renderer
                 return;
             }
 
-            _rendererID = Gl.CreateProgram();
+            _rendererID = (RendererID) Gl.CreateProgram();
             Gl.AttachShader(_rendererID, vertexShader.Value);
             Gl.AttachShader(_rendererID, fragmentShader.Value);
 
