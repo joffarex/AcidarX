@@ -100,7 +100,12 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
+            foreach (VertexBuffer vertexBuffer in _vertexBuffers)
+            {
+                vertexBuffer.Dispose();
+            }
             _vertexBuffers.Clear();
+            _indexBuffer.Dispose();
             _gl.DeleteVertexArrays(1, _rendererID);
         }
 

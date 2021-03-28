@@ -188,6 +188,8 @@ namespace AcidarX.Sandbox
         {
             _squareShader.Dispose();
             _squareVertexArray.Dispose();
+            _triangleShader.Dispose();
+            _triangleVertexArray.Dispose();
         }
     }
 }
