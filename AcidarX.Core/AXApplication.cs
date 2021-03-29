@@ -5,6 +5,7 @@ using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
+using AcidarX.Core.Utils;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
@@ -118,6 +119,8 @@ namespace AcidarX.Core
             {
                 layer.OnImGuiRender();
             }
+
+            FpsUtils.ImGuiWindow(e.DeltaTime);
 
             _imGuiLayer.End();
 
