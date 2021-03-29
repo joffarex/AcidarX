@@ -27,6 +27,11 @@ namespace AcidarX.Core.Renderer
             _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader); });
         }
 
+        public void UseShader(Shader shader, List<UniformPublicInfo> uniforms)
+        {
+            _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader, uniforms); });
+        }
+
         public void SetClearColor(Vector4D<float> color)
         {
             _renderQueue.Enqueue(() => { _rendererAPI.SetClearColor(color); });

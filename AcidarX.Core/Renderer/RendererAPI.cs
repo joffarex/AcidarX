@@ -1,4 +1,5 @@
-﻿using Silk.NET.Maths;
+﻿using System.Collections.Generic;
+using Silk.NET.Maths;
 
 namespace AcidarX.Core.Renderer
 {
@@ -16,6 +17,7 @@ namespace AcidarX.Core.Renderer
         public abstract void Clear();
 
         public abstract void UseShader(Shader shader);
+        public abstract void UseShader(Shader shader, IEnumerable<UniformPublicInfo> uniforms);
         public abstract void DrawIndexed(VertexArray vertexArray);
     }
 }

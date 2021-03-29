@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using AcidarX.Core;
+using AcidarX.Core.Camera;
 using AcidarX.Core.Events;
+using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
@@ -10,6 +13,7 @@ namespace AcidarX.Sandbox
 {
     public class ExampleLayer : Layer
     {
+        private const float _cameraSpeed = 1.5f;
         private static readonly ILogger<ExampleLayer> Logger = AXLogger.CreateLogger<ExampleLayer>();
 
         private static VertexArray _squareVertexArray;
@@ -18,11 +22,15 @@ namespace AcidarX.Sandbox
         private static VertexArray _triangleVertexArray;
         private static Shader _triangleShader;
         private readonly AssetManager _assetManager;
-        private readonly GraphicsFactory _graphicsFactory;
+
+        private readonly OrthographicCamera _camera;
 
         public ExampleLayer(AXRenderer renderer, GraphicsFactory graphicsFactory, AssetManager assetManager)
-            : base("Example layer", renderer, graphicsFactory) =>
+            : base("Example layer", renderer, graphicsFactory)
+        {
             _assetManager = assetManager;
+            _camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+        }
 
         public override void OnAttach()
         {
@@ -100,9 +108,6 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender()
         {
-            ImGuiNET.ImGui.Begin("Test");
-            ImGuiNET.ImGui.Text("AX is cool");
-            ImGuiNET.ImGui.End();
         }
 
         public override void OnUpdate(double deltaTime)
@@ -111,13 +116,34 @@ namespace AcidarX.Sandbox
 
         public override void OnRender(double deltaTime)
         {
-            Renderer.BeginScene();
+            Renderer.BeginScene(_camera);
 
-            Renderer.UseShader(_squareShader);
-            Renderer.Submit(_squareVertexArray);
+            if (KeyboardState.IsKeyPressed(AXKey.A))
+            {
+                Vector3 pos = _camera.Position;
+                _camera.Position = new Vector3(pos.X - _cameraSpeed * (float) deltaTime, pos.Y, pos.Z);
+            }
 
-            Renderer.UseShader(_triangleShader);
-            Renderer.Submit(_triangleVertexArray);
+            if (KeyboardState.IsKeyPressed(AXKey.D))
+            {
+                Vector3 pos = _camera.Position;
+                _camera.Position = new Vector3(pos.X + _cameraSpeed * (float) deltaTime, pos.Y, pos.Z);
+            }
+
+            if (KeyboardState.IsKeyPressed(AXKey.W))
+            {
+                Vector3 pos = _camera.Position;
+                _camera.Position = new Vector3(pos.X, pos.Y - _cameraSpeed * (float) deltaTime, pos.Z);
+            }
+
+            if (KeyboardState.IsKeyPressed(AXKey.S))
+            {
+                Vector3 pos = _camera.Position;
+                _camera.Position = new Vector3(pos.X, pos.Y + _cameraSpeed * (float) deltaTime, pos.Z);
+            }
+
+            Renderer.Submit(_squareVertexArray, _squareShader);
+            Renderer.Submit(_triangleVertexArray, _triangleShader);
 
             Renderer.EndScene();
         }

@@ -15,6 +15,6 @@
         public int Height { get; }
         public bool VSync { get; }
 
-        public static AXWindowOptions CreateDefault() => new("AcidarX", 1280, 720, true);
+        public static AXWindowOptions CreateDefault() => new("AcidarX", 1280, 720, false);
     }
 }
