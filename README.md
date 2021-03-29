@@ -16,7 +16,7 @@ Features to add before starting making actual games:
 - [ ] ImGui integration for debugging purposes
 - [ ] Simple level editor with ImGui
 - [ ] REALLY basic physics engine
-- [ ] Maybe do things more C# way (Use DI, for example)
+- [x] Maybe do things more C# way (Use DI, for example)
 
 Make some simple games for framework showcase: 
 ----------------------------------------------
