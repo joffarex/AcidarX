@@ -20,6 +20,7 @@ namespace AcidarX.Core.Hosting
                 .AddSingleton<AXWindow>()
                 .AddSingleton(provider => provider.GetRequiredService<AXWindow>().NativeWindow)
                 .AddSingleton(provider => GL.GetApi(provider.GetRequiredService<IWindow>()))
+                .AddSingleton<AssetManager>()
                 .AddSingleton<RendererAPI>(provider => new OpenGLRendererAPI(provider.GetRequiredService<GL>()))
                 .AddSingleton<RenderCommandDispatcher>()
                 .AddSingleton<GraphicsFactory>()

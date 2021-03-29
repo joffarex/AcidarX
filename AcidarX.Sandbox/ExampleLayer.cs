@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AcidarX.Core;
 using AcidarX.Core.Events;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
@@ -9,62 +10,6 @@ namespace AcidarX.Sandbox
 {
     public class ExampleLayer : Layer
     {
-        private const string SquareVertexShaderSource = @"
-        #version 330 core
-        layout (location = 0) in vec3 a_Position;
-        layout (location = 1) in vec4 a_Color;
-        
-        out vec3 v_Position;
-        out vec4 v_Color;
-
-        void main()
-        {
-            v_Position = a_Position;
-            v_Color = a_Color;
-            gl_Position = vec4(a_Position * 1.5f, 1.0);
-        }
-        ";
-
-        private const string SquareFragmentShaderSource = @"
-        #version 330 core
-
-        layout (location = 0) out vec4 color;
-
-        in vec3 v_Position;
-        in vec4 v_Color;
-
-        void main()
-        {
-            color = v_Color;
-        }
-        ";
-
-        private const string TriangleVertexShaderSource = @"
-        #version 330 core
-        layout (location = 0) in vec3 a_Position;
-        
-        out vec3 v_Position;
-
-        void main()
-        {
-            v_Position = a_Position;
-            gl_Position = vec4(a_Position, 1.0);
-        }
-        ";
-
-        private const string TriangleFragmentShaderSource = @"
-        #version 330 core
-
-        layout (location = 0) out vec4 color;
-
-        in vec3 v_Position;
-
-        void main()
-        {
-            color = vec4(0.4f, 0.0f, 0.8f, 1.0f);
-        }
-        ";
-
         private static readonly ILogger<ExampleLayer> Logger = AXLogger.CreateLogger<ExampleLayer>();
 
         private static VertexArray _squareVertexArray;
@@ -72,11 +17,12 @@ namespace AcidarX.Sandbox
 
         private static VertexArray _triangleVertexArray;
         private static Shader _triangleShader;
+        private readonly AssetManager _assetManager;
+        private readonly GraphicsFactory _graphicsFactory;
 
-        public ExampleLayer(GraphicsFactory graphicsFactory, AXRenderer renderer)
-            : base("Example layer", graphicsFactory, renderer)
-        {
-        }
+        public ExampleLayer(AXRenderer renderer, GraphicsFactory graphicsFactory, AssetManager assetManager)
+            : base("Example layer", renderer, graphicsFactory) =>
+            _assetManager = assetManager;
 
         public override void OnAttach()
         {
@@ -113,7 +59,7 @@ namespace AcidarX.Sandbox
             IndexBuffer squareIndexBuffer = GraphicsFactory.CreateIndexBuffer(squareIndices);
             _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            _squareShader = new Shader(GraphicsFactory.Gl, SquareVertexShaderSource, SquareFragmentShaderSource);
+            _squareShader = _assetManager.GetShader("assets/Shaders/Square");
 
             #endregion
 
@@ -143,7 +89,7 @@ namespace AcidarX.Sandbox
             IndexBuffer triangleIndexBuffer = GraphicsFactory.CreateIndexBuffer(triangleIndices);
             _triangleVertexArray.SetIndexBuffer(triangleIndexBuffer);
 
-            _triangleShader = new Shader(GraphicsFactory.Gl, TriangleVertexShaderSource, TriangleFragmentShaderSource);
+            _triangleShader = _assetManager.GetShader("assets/Shaders/Triangle");
 
             #endregion
         }
