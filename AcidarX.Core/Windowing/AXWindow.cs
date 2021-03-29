@@ -1,6 +1,7 @@
 ﻿using System;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
+using AcidarX.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -8,7 +9,7 @@ using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Windowing
 {
-    public partial class AXWindow
+    public partial class AXWindow : IDisposable
     {
         private static readonly ILogger<AXWindow> Logger = AXLogger.CreateLogger<AXWindow>();
         private readonly AXWindowOptions _axWindowOptions;
@@ -40,6 +41,12 @@ namespace AcidarX.Core.Windowing
         public IInputContext InputContext { get; private set; }
 
         public IWindow NativeWindow { get; }
+
+        public void Dispose()
+        {
+            InputContext?.Dispose();
+            NativeWindow?.Dispose();
+        }
 
         private void InitInputContextOnLoad()
         {

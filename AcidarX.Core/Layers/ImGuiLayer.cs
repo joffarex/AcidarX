@@ -1,4 +1,5 @@
-﻿using AcidarX.ImGui;
+﻿using AcidarX.Core.Logging;
+using AcidarX.ImGui;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;

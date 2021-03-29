@@ -1,5 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Events;
+using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
 using Microsoft.Extensions.Logging;
 

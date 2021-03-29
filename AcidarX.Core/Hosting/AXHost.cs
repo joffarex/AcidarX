@@ -7,9 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
-namespace AcidarX.Core
+namespace AcidarX.Core.Hosting
 {
-    public static class Entrypoint
+    public static class AXHost
     {
         public static IServiceCollection AddAcidarX
             (this IServiceCollection serviceCollection, AXWindowOptions axWindowOptions)
@@ -28,7 +28,7 @@ namespace AcidarX.Core
                 .AddSingleton<AXApplication>();
         }
 
-        public static IHostBuilder CreateAXHost(AXWindowOptions options) => Host.CreateDefaultBuilder()
+        public static IHostBuilder Create(AXWindowOptions options) => Host.CreateDefaultBuilder()
             .ConfigureServices(services => services.AddAcidarX(options));
     }
 }

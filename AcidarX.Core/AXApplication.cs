@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
@@ -9,15 +11,15 @@ using Silk.NET.Maths;
 
 namespace AcidarX.Core
 {
-    public class AXApplication
+    public class AXApplication : IDisposable
     {
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
 
         private readonly GraphicsFactory _graphicsFactory;
-
         private readonly LayerStack _layers;
         private readonly AXRenderer _renderer;
         private readonly AXWindow _window;
+
         private ImGuiLayer _imGuiLayer;
 
         public AXApplication(AXWindow window, AXRenderer renderer, GraphicsFactory graphicsFactory)
@@ -29,6 +31,11 @@ namespace AcidarX.Core
 
             _renderer = renderer;
             _graphicsFactory = graphicsFactory;
+        }
+
+        public void Dispose()
+        {
+            _window?.Dispose();
         }
 
         private void OnEvent(Event e)

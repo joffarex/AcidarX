@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AcidarX.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using AcidarX.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 

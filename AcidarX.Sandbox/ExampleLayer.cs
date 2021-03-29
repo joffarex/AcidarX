@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using AcidarX.Core;
 using AcidarX.Core.Events;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +21,7 @@ namespace AcidarX.Sandbox
         {
             v_Position = a_Position;
             v_Color = a_Color;
-            gl_Position = vec4(a_Position, 1.0);
+            gl_Position = vec4(a_Position * 1.5f, 1.0);
         }
         ";
 
@@ -61,7 +61,7 @@ namespace AcidarX.Sandbox
 
         void main()
         {
-            color = vec4(0.4f, 1.0f, 0.8f, 1.0f);
+            color = vec4(0.4f, 0.0f, 0.8f, 1.0f);
         }
         ";
 
