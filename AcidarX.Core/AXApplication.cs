@@ -17,19 +17,20 @@ namespace AcidarX.Core
 
         private readonly GraphicsFactory _graphicsFactory;
         private readonly LayerStack _layers;
-        private readonly AXRenderer _renderer;
+        private readonly RenderCommandDispatcher _renderCommandDispatcher;
         private readonly AXWindow _window;
 
         private ImGuiLayer _imGuiLayer;
 
-        public AXApplication(AXWindow window, AXRenderer renderer, GraphicsFactory graphicsFactory)
+        public AXApplication
+            (AXWindow window, RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory)
         {
             _layers = new LayerStack();
 
             _window = window;
             _window.EventCallback = OnEvent;
 
-            _renderer = renderer;
+            _renderCommandDispatcher = renderCommandDispatcher;
             _graphicsFactory = graphicsFactory;
         }
 
@@ -100,15 +101,18 @@ namespace AcidarX.Core
 
         private bool OnRender(AppRenderEvent e)
         {
-            _renderer.RenderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f / 255.0f, 24.0f / 255.0f,
+            _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f / 255.0f, 24.0f / 255.0f,
                 24.0f / 255.0f, 1.0f));
-            _renderer.RenderCommandDispatcher.Clear();
+            _renderCommandDispatcher.Clear();
 
             foreach (Layer layer in _layers)
             {
                 layer.OnRender(e.DeltaTime);
             }
 
+            _renderCommandDispatcher.Dispatch();
+
+            // This is currently not tied to our renderer api
             _imGuiLayer.Begin(e.DeltaTime);
             foreach (Layer layer in _layers)
             {

@@ -22,8 +22,14 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         }
 
+        public override void UseShader(Shader shader)
+        {
+            shader.Bind();
+        }
+
         public override unsafe void DrawIndexed(VertexArray vertexArray)
         {
+            vertexArray.Bind();
             _gl.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndexBuffer().GetCount(),
                 DrawElementsType.UnsignedInt, null);
         }

@@ -167,10 +167,10 @@ namespace AcidarX.Sandbox
         {
             Renderer.BeginScene();
 
-            _squareShader.Bind();
+            Renderer.UseShader(_squareShader);
             Renderer.Submit(_squareVertexArray);
 
-            _triangleShader.Bind();
+            Renderer.UseShader(_triangleShader);
             Renderer.Submit(_triangleVertexArray);
 
             Renderer.EndScene();

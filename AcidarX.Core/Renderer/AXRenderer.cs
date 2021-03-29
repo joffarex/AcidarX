@@ -2,20 +2,26 @@
 {
     public sealed class AXRenderer
     {
-        public AXRenderer
-            (RenderCommandDispatcher renderCommandDispatcher) => RenderCommandDispatcher = renderCommandDispatcher;
+        private readonly RenderCommandDispatcher _renderCommandDispatcher;
 
-        public RenderCommandDispatcher RenderCommandDispatcher { get; }
+        public AXRenderer
+            (RenderCommandDispatcher renderCommandDispatcher) => _renderCommandDispatcher = renderCommandDispatcher;
+
         public static API API => RendererAPI.API;
 
         public void BeginScene()
         {
         }
 
+        public void UseShader(Shader shader)
+        {
+            _renderCommandDispatcher.UseShader(shader);
+        }
+
         public void Submit(VertexArray vertexArray)
         {
             vertexArray.Bind();
-            RenderCommandDispatcher.DrawIndexed(vertexArray);
+            _renderCommandDispatcher.DrawIndexed(vertexArray);
         }
 
         public void EndScene()
