@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using AcidarX.Core.Logging;
 using Microsoft.Extensions.Logging;
@@ -30,20 +29,21 @@ namespace AcidarX.Core.Renderer.OpenGL
             shader.Bind();
         }
 
-        public override void UseShader(Shader shader, IEnumerable<UniformPublicInfo> uniforms)
+        public override void UseShader(Shader shader, IEnumerable<ShaderInputData> uniforms)
         {
-            shader.Bind();
+            var openGLShader = (OpenGLShader) shader;
+            openGLShader.Bind();
 
             // TODO: check performance impact
-            foreach (UniformPublicInfo uniformPublicInfo in uniforms)
+            foreach (ShaderInputData uniformPublicInfo in uniforms)
             {
-                Logger.Assert(shader.UniformFieldInfos.Any(x => x.Type == uniformPublicInfo.Type),
-                    $"Shader does not contain uniform with type: {uniformPublicInfo.Type}");
-
                 switch (uniformPublicInfo.Type)
                 {
-                    case UniformType.FloatMat4:
-                        shader.UploadMatrix4(uniformPublicInfo.Name, (Matrix4x4) uniformPublicInfo.Data);
+                    case ShaderDataType.Mat4:
+                        openGLShader.UploadMatrix4(uniformPublicInfo.Name, (Matrix4x4) uniformPublicInfo.Data);
+                        break;
+                    case ShaderDataType.Float4:
+                        openGLShader.UploadFloat4(uniformPublicInfo.Name, (Vector4) uniformPublicInfo.Data);
                         break;
                     default:
                         Logger.Assert(false, "Unknown Uniform Type");

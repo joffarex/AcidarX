@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using AcidarX.Core.Camera;
-using Silk.NET.OpenGL;
 
 namespace AcidarX.Core.Renderer
 {
@@ -30,7 +29,7 @@ namespace AcidarX.Core.Renderer
             _renderCommandDispatcher.UseShader(shader);
         }
 
-        public void UseShader(Shader shader, List<UniformPublicInfo> uniforms)
+        public void UseShader(Shader shader, List<ShaderInputData> uniforms)
         {
             _renderCommandDispatcher.UseShader(shader, uniforms);
         }
@@ -44,25 +43,32 @@ namespace AcidarX.Core.Renderer
         {
             Submit(vertexArray, shader, Matrix4x4.CreateTranslation(position));
         }
-        
+
         public void Submit(VertexArray vertexArray, Shader shader, Matrix4x4 transform)
         {
-            _renderCommandDispatcher.UseShader(shader, new List<UniformPublicInfo>
+            _renderCommandDispatcher.UseShader(shader, new List<ShaderInputData>
             {
-                new UniformPublicInfo
-                {
-                    Name = "u_ViewProjection",
-                    Type = UniformType.FloatMat4,
-                    Data = _sceneData.ViewProjectionMatrix
-                },
-                new UniformPublicInfo
-                {
-                    Name = "u_Model",
-                    Type = UniformType.FloatMat4,
-                    Data = transform,
-                }
+                new() {Name = "u_ViewProjection", Type = ShaderDataType.Mat4, Data = _sceneData.ViewProjectionMatrix},
+                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform}
             });
-            
+            vertexArray.Bind();
+            _renderCommandDispatcher.DrawIndexed(vertexArray);
+        }
+
+        public void Submit(VertexArray vertexArray, Shader shader, Vector4 color)
+        {
+            Submit(vertexArray, shader, Matrix4x4.Identity, color);
+        }
+
+
+        public void Submit(VertexArray vertexArray, Shader shader, Matrix4x4 transform, Vector4 color)
+        {
+            _renderCommandDispatcher.UseShader(shader, new List<ShaderInputData>
+            {
+                new() {Name = "u_ViewProjection", Type = ShaderDataType.Mat4, Data = _sceneData.ViewProjectionMatrix},
+                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform},
+                new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = color}
+            });
             vertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(vertexArray);
         }

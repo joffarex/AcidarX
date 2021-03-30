@@ -17,7 +17,7 @@ namespace AcidarX.Core.Renderer
         public abstract void Clear();
 
         public abstract void UseShader(Shader shader);
-        public abstract void UseShader(Shader shader, IEnumerable<UniformPublicInfo> uniforms);
+        public abstract void UseShader(Shader shader, IEnumerable<ShaderInputData> uniforms);
         public abstract void DrawIndexed(VertexArray vertexArray);
     }
 }

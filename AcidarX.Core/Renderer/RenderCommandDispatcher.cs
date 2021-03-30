@@ -27,7 +27,7 @@ namespace AcidarX.Core.Renderer
             _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader); });
         }
 
-        public void UseShader(Shader shader, List<UniformPublicInfo> uniforms)
+        public void UseShader(Shader shader, List<ShaderInputData> uniforms)
         {
             _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader, uniforms); });
         }

@@ -25,6 +25,10 @@ namespace AcidarX.Sandbox
 
         private readonly OrthographicCamera _camera;
 
+        private Vector4 _color = new(1.0f, 0.0f, 0.0f, 1.0f);
+
+        private Vector3 _squarePosition = Vector3.Zero;
+
         public ExampleLayer(AXRenderer renderer, GraphicsFactory graphicsFactory, AssetManager assetManager)
             : base("Example layer", renderer, graphicsFactory)
         {
@@ -108,13 +112,15 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender()
         {
+            ImGuiNET.ImGui.Begin("Triangle");
+            ImGuiNET.ImGui.SetWindowFontScale(1.4f);
+            ImGuiNET.ImGui.ColorPicker4("Color", ref _color);
+            ImGuiNET.ImGui.End();
         }
 
         public override void OnUpdate(double deltaTime)
         {
         }
-
-        private Vector3 _squarePosition = Vector3.Zero;
 
         public override void OnRender(double deltaTime)
         {
@@ -145,14 +151,13 @@ namespace AcidarX.Sandbox
             }
 
             Renderer.Submit(_squareVertexArray, _squareShader);
-            Renderer.Submit(_triangleVertexArray, _triangleShader);
+            Renderer.Submit(_triangleVertexArray, _triangleShader, _color);
 
             Renderer.EndScene();
         }
 
         public override void OnEvent(Event e)
         {
-            // Logger.LogTrace($"{e} from examplelayer");
         }
 
         public override void Dispose(bool manual)

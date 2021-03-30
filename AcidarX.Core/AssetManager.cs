@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AcidarX.Core.Renderer;
 using AcidarX.Core.Utils;
 using Silk.NET.OpenGL;
 using Shader = AcidarX.Core.Renderer.Shader;
@@ -9,8 +10,13 @@ namespace AcidarX.Core
     {
         private static readonly Dictionary<string, Shader> Shaders = new();
         private readonly GL _gl;
+        private readonly GraphicsFactory _graphicsFactory;
 
-        public AssetManager(GL gl) => _gl = gl;
+        public AssetManager(GL gl, GraphicsFactory graphicsFactory)
+        {
+            _gl = gl;
+            _graphicsFactory = graphicsFactory;
+        }
 
         public Shader GetShader(string resourceName)
         {
@@ -24,7 +30,7 @@ namespace AcidarX.Core
 
             string vertexSource = FileUtils.LoadSource(vertexPath);
             string fragmentSource = FileUtils.LoadSource(fragmentPath);
-            shader = new Shader(_gl, vertexSource, fragmentSource);
+            shader = _graphicsFactory.CreateShader(vertexSource, fragmentSource);
             Shaders.Add(resourceName, shader);
             return shader;
         }

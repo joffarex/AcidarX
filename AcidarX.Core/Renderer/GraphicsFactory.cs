@@ -62,6 +62,16 @@ namespace AcidarX.Core.Renderer
             };
         }
 
+        public Shader CreateShader(string vertexSource, string fragmentSource)
+        {
+            return AXRenderer.API switch
+            {
+                API.None => null,
+                API.OpenGL => new OpenGLShader(Gl, vertexSource, fragmentSource),
+                _ => throw new Exception("Not supported API")
+            };
+        }
+
         public ImGuiLayer CreateImGuiLayer(IWindow window, IInputContext inputContext) => new(Gl, window, inputContext);
     }
 }
