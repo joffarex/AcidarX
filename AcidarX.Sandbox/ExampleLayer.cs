@@ -114,6 +114,8 @@ namespace AcidarX.Sandbox
         {
         }
 
+        private Vector3 _squarePosition = Vector3.Zero;
+
         public override void OnRender(double deltaTime)
         {
             Renderer.BeginScene(_camera);
@@ -133,13 +135,13 @@ namespace AcidarX.Sandbox
             if (KeyboardState.IsKeyPressed(AXKey.W))
             {
                 Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X, pos.Y - _cameraSpeed * (float) deltaTime, pos.Z);
+                _camera.Position = new Vector3(pos.X, pos.Y + _cameraSpeed * (float) deltaTime, pos.Z);
             }
 
             if (KeyboardState.IsKeyPressed(AXKey.S))
             {
                 Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X, pos.Y + _cameraSpeed * (float) deltaTime, pos.Z);
+                _camera.Position = new Vector3(pos.X, pos.Y - _cameraSpeed * (float) deltaTime, pos.Z);
             }
 
             Renderer.Submit(_squareVertexArray, _squareShader);

@@ -37,15 +37,32 @@ namespace AcidarX.Core.Renderer
 
         public void Submit(VertexArray vertexArray, Shader shader)
         {
-            var viewProjectionUniform = new UniformPublicInfo
+            Submit(vertexArray, shader, Matrix4x4.Identity);
+        }
+
+        public void Submit(VertexArray vertexArray, Shader shader, Vector3 position)
+        {
+            Submit(vertexArray, shader, Matrix4x4.CreateTranslation(position));
+        }
+        
+        public void Submit(VertexArray vertexArray, Shader shader, Matrix4x4 transform)
+        {
+            _renderCommandDispatcher.UseShader(shader, new List<UniformPublicInfo>
             {
-                Name = "u_ViewProjection",
-                Type = UniformType.FloatMat4,
-                Data = _sceneData.ViewProjectionMatrix
-            };
-
-            _renderCommandDispatcher.UseShader(shader, new List<UniformPublicInfo> {viewProjectionUniform});
-
+                new UniformPublicInfo
+                {
+                    Name = "u_ViewProjection",
+                    Type = UniformType.FloatMat4,
+                    Data = _sceneData.ViewProjectionMatrix
+                },
+                new UniformPublicInfo
+                {
+                    Name = "u_Model",
+                    Type = UniformType.FloatMat4,
+                    Data = transform,
+                }
+            });
+            
             vertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(vertexArray);
         }
