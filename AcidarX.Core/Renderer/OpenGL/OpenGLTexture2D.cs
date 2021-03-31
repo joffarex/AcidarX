@@ -4,6 +4,7 @@ using AcidarX.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -25,7 +26,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         private readonly uint _width;
         private bool _isDisposed;
 
-        public unsafe OpenGLTexture2D(GL gl, string path, bool withAlpha = true)
+        public unsafe OpenGLTexture2D(GL gl, string path)
         {
             _gl = gl;
             _path = path;
@@ -34,6 +35,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             img.Mutate(x => x.Flip(FlipMode.Vertical));
             _width = (uint) img.Width;
             _height = (uint) img.Height;
+            bool withAlpha = img.Metadata.GetPngMetadata().ColorType == PngColorType.RgbWithAlpha;
 
             // TODO: Figure out every possible combination with SixLabors api and create mappings
             _internalFormat = withAlpha ? InternalFormat.Rgba : InternalFormat.Rgb;
