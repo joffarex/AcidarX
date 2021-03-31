@@ -9,6 +9,7 @@ namespace AcidarX.Core
     public class AssetManager
     {
         private static readonly Dictionary<string, Shader> Shaders = new();
+        private static readonly Dictionary<string, Texture2D> Texture2Ds = new();
         private readonly GL _gl;
         private readonly GraphicsFactory _graphicsFactory;
 
@@ -33,6 +34,20 @@ namespace AcidarX.Core
             shader = _graphicsFactory.CreateShader(vertexSource, fragmentSource);
             Shaders.Add(resourceName, shader);
             return shader;
+        }
+
+        public Texture2D GetTexture2D(string resourceName)
+        {
+            string texturePath = PathUtils.GetFullPath(resourceName);
+
+            if (Texture2Ds.TryGetValue(texturePath, out Texture2D texture2D))
+            {
+                return texture2D;
+            }
+
+            texture2D = _graphicsFactory.CreateTexture(texturePath);
+            Texture2Ds.Add(texturePath, texture2D);
+            return texture2D;
         }
     }
 }

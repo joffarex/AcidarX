@@ -73,6 +73,18 @@ namespace AcidarX.Core.Renderer
             _renderCommandDispatcher.DrawIndexed(vertexArray);
         }
 
+        public void Submit(VertexArray vertexArray, Shader shader, Matrix4x4 transform, Texture2D texture2D)
+        {
+            _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0, texture2D);
+            _renderCommandDispatcher.UseShader(shader, new List<ShaderInputData>
+            {
+                new() {Name = "u_ViewProjection", Type = ShaderDataType.Mat4, Data = _sceneData.ViewProjectionMatrix},
+                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform}
+            });
+            vertexArray.Bind();
+            _renderCommandDispatcher.DrawIndexed(vertexArray);
+        }
+
         public void EndScene()
         {
         }

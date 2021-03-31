@@ -17,7 +17,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
     public sealed class OpenGLShader : Shader
     {
-        private static readonly ILogger<Shader> Logger = AXLogger.CreateLogger<Shader>();
+        private static readonly ILogger<OpenGLShader> Logger = AXLogger.CreateLogger<OpenGLShader>();
         private readonly GL _gl;
 
         private readonly RendererID _rendererID;

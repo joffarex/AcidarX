@@ -19,6 +19,12 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.ClearColor(color);
         }
 
+        public override void EnableProps()
+        {
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        }
+
         public override void Clear()
         {
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
@@ -50,6 +56,11 @@ namespace AcidarX.Core.Renderer.OpenGL
                         break;
                 }
             }
+        }
+
+        public override void UseTexture2D(TextureSlot slot, Texture2D texture2D)
+        {
+            texture2D.Use(slot);
         }
 
         public override unsafe void DrawIndexed(VertexArray vertexArray)

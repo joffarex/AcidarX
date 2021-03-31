@@ -15,9 +15,11 @@ namespace AcidarX.Core.Renderer
 
         public abstract void SetClearColor(Vector4D<float> color);
         public abstract void Clear();
+        public abstract void EnableProps();
 
         public abstract void UseShader(Shader shader);
         public abstract void UseShader(Shader shader, IEnumerable<ShaderInputData> uniforms);
+        public abstract void UseTexture2D(TextureSlot slot, Texture2D texture2D);
         public abstract void DrawIndexed(VertexArray vertexArray);
     }
 }

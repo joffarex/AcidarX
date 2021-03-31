@@ -72,6 +72,16 @@ namespace AcidarX.Core.Renderer
             };
         }
 
+        public Texture2D CreateTexture(string path)
+        {
+            return AXRenderer.API switch
+            {
+                API.None => null,
+                API.OpenGL => new OpenGLTexture2D(Gl, path),
+                _ => throw new Exception("Not supported API")
+            };
+        }
+
         public ImGuiLayer CreateImGuiLayer(IWindow window, IInputContext inputContext) => new(Gl, window, inputContext);
     }
 }

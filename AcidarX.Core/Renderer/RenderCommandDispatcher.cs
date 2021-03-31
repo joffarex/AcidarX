@@ -22,6 +22,11 @@ namespace AcidarX.Core.Renderer
             _renderQueue.Enqueue(() => { _rendererAPI.DrawIndexed(vertexArray); });
         }
 
+        public void EnableProps()
+        {
+            _renderQueue.Enqueue(() => { _rendererAPI.EnableProps(); });
+        }
+
         public void UseShader(Shader shader)
         {
             _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader); });
@@ -35,6 +40,11 @@ namespace AcidarX.Core.Renderer
         public void SetClearColor(Vector4D<float> color)
         {
             _renderQueue.Enqueue(() => { _rendererAPI.SetClearColor(color); });
+        }
+
+        public void UseTexture2D(TextureSlot slot, Texture2D texture2D)
+        {
+            _renderQueue.Enqueue(() => { _rendererAPI.UseTexture2D(slot, texture2D); });
         }
 
         public void Clear()

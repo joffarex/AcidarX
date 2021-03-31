@@ -102,8 +102,8 @@ namespace AcidarX.Core
 
         private bool OnRender(AppRenderEvent e)
         {
-            _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f / 255.0f, 24.0f / 255.0f,
-                24.0f / 255.0f, 1.0f));
+            _renderCommandDispatcher.EnableProps();
+            _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
             _renderCommandDispatcher.Clear();
 
             foreach (Layer layer in _layers)
