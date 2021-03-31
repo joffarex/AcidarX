@@ -13,11 +13,11 @@ namespace AcidarX.Core.Renderer.OpenGL
     public sealed class OpenGLTexture2D : Texture2D
     {
         private static readonly ILogger<OpenGLTexture2D> Logger = AXLogger.CreateLogger<OpenGLTexture2D>();
+        private readonly PixelFormat _dataFormat;
         private readonly GL _gl;
         private readonly uint _height;
         private readonly InternalFormat _internalFormat;
         private readonly string _path;
-        private readonly PixelFormat _pixelFormat;
 
         private readonly RendererID _rendererID;
 
@@ -38,8 +38,8 @@ namespace AcidarX.Core.Renderer.OpenGL
             bool withAlpha = img.Metadata.GetPngMetadata().ColorType == PngColorType.RgbWithAlpha;
 
             // TODO: Figure out every possible combination with SixLabors api and create mappings
-            _internalFormat = withAlpha ? InternalFormat.Rgba : InternalFormat.Rgb;
-            _pixelFormat = withAlpha ? PixelFormat.Rgba : PixelFormat.Rgb;
+            _internalFormat = withAlpha ? InternalFormat.Rgba8 : InternalFormat.Rgb8;
+            _dataFormat = withAlpha ? PixelFormat.Rgba : PixelFormat.Rgb;
 
             fixed (void* data = &MemoryMarshal.GetReference(img.GetPixelRowSpan(0)))
             {
@@ -53,7 +53,7 @@ namespace AcidarX.Core.Renderer.OpenGL
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
 
-                _gl.TexImage2D(_textureTarget, 0, (int) _internalFormat, _width, _height, 0, _pixelFormat,
+                _gl.TexImage2D(_textureTarget, 0, (int) _internalFormat, _width, _height, 0, _dataFormat,
                     PixelType.UnsignedByte, data);
                 _gl.GenerateMipmap(_textureTarget);
                 // _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _pixelFormat, PixelType.UnsignedByte, data);
@@ -91,7 +91,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override unsafe void SetData(void* data)
         {
-            _gl.TexSubImage2D(_textureTarget, 0, 0, 0, _width, _height, _pixelFormat, PixelType.UnsignedByte, data);
+            _gl.TexSubImage2D(_textureTarget, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
         }
 
         public override uint GetWidth() => _width;

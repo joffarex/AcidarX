@@ -19,7 +19,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.ClearColor(color);
         }
 
-        public override void EnableProps()
+        public override void EnableBlending()
         {
             _gl.Enable(EnableCap.Blend);
             _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
