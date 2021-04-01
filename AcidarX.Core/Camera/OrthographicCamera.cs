@@ -28,7 +28,7 @@ namespace AcidarX.Core.Camera
         public float Bottom { get; }
         public float Top { get; }
 
-        public Matrix4x4 ProjectionMatrix { get; }
+        public Matrix4x4 ProjectionMatrix { get; private set; }
 
         public Matrix4x4 ViewMatrix
         {
@@ -66,6 +66,13 @@ namespace AcidarX.Core.Camera
 
             Matrix4x4.Invert(transform, out _viewMatrix);
             ViewProjectionMatrix = _viewMatrix * ProjectionMatrix;
+        }
+
+        public void SetProjection(float left, float right, float bottom, float top)
+        {
+            _viewMatrix = Matrix4x4.Identity;
+            ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
+            ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
         }
     }
 }

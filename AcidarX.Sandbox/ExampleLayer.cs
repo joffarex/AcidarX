@@ -3,7 +3,6 @@ using System.Numerics;
 using AcidarX.Core;
 using AcidarX.Core.Camera;
 using AcidarX.Core.Events;
-using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
@@ -13,7 +12,6 @@ namespace AcidarX.Sandbox
 {
     public class ExampleLayer : Layer
     {
-        private const float _cameraSpeed = 1.5f;
         private static readonly ILogger<ExampleLayer> Logger = AXLogger.CreateLogger<ExampleLayer>();
 
         private static VertexArray _squareVertexArray;
@@ -22,7 +20,7 @@ namespace AcidarX.Sandbox
 
         private readonly AssetManager _assetManager;
 
-        private readonly OrthographicCamera _camera;
+        private readonly OrthographicCameraController _cameraController;
 
         private readonly Vector3 _squarePosition = Vector3.Zero;
 
@@ -33,7 +31,7 @@ namespace AcidarX.Sandbox
             : base("Example layer", renderer, graphicsFactory)
         {
             _assetManager = assetManager;
-            _camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+            _cameraController = new OrthographicCameraController(16.0f / 9.0f);
         }
 
         public override void OnAttach()
@@ -92,35 +90,12 @@ namespace AcidarX.Sandbox
 
         public override void OnUpdate(double deltaTime)
         {
+            _cameraController.OnUpdate(deltaTime);
         }
 
         public override void OnRender(double deltaTime)
         {
-            Renderer.BeginScene(_camera);
-
-            if (KeyboardState.IsKeyPressed(AXKey.A))
-            {
-                Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X - _cameraSpeed * (float) deltaTime, pos.Y, pos.Z);
-            }
-
-            if (KeyboardState.IsKeyPressed(AXKey.D))
-            {
-                Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X + _cameraSpeed * (float) deltaTime, pos.Y, pos.Z);
-            }
-
-            if (KeyboardState.IsKeyPressed(AXKey.W))
-            {
-                Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X, pos.Y + _cameraSpeed * (float) deltaTime, pos.Z);
-            }
-
-            if (KeyboardState.IsKeyPressed(AXKey.S))
-            {
-                Vector3 pos = _camera.Position;
-                _camera.Position = new Vector3(pos.X, pos.Y - _cameraSpeed * (float) deltaTime, pos.Z);
-            }
+            Renderer.BeginScene(_cameraController.Camera);
 
             Matrix4x4 transform = Matrix4x4.CreateTranslation(_squarePosition) *
                                   Matrix4x4.CreateScale(new Vector3(1.5f, 1.5f, 1.5f));
@@ -131,6 +106,7 @@ namespace AcidarX.Sandbox
 
         public override void OnEvent(Event e)
         {
+            _cameraController.OnEvent(e);
         }
 
         public override void Dispose(bool manual)
