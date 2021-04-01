@@ -56,6 +56,9 @@ namespace AcidarX.Core.Renderer.OpenGL
                     case ShaderDataType.Float4:
                         openGLShader.UploadFloat4(uniformPublicInfo.Name, (Vector4) uniformPublicInfo.Data);
                         break;
+                    case ShaderDataType.Float3:
+                        openGLShader.UploadFloat3(uniformPublicInfo.Name, (Vector3) uniformPublicInfo.Data);
+                        break;
                     default:
                         Logger.Assert(false, "Unknown Uniform Type");
                         break;

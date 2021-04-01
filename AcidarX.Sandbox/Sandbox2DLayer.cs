@@ -19,7 +19,6 @@ namespace AcidarX.Sandbox
         private readonly AXRenderer2D _renderer2D;
 
         private Vector4 _squareColor;
-        private Vector3 _squarePosition;
 
         public Sandbox2DLayer(AXRenderer2D renderer2D, AssetManager assetManager)
             : base("Sandbox 2D layer")
@@ -36,7 +35,6 @@ namespace AcidarX.Sandbox
         public override void OnLoad()
         {
             _squareColor = new Vector4(0.4f, 0.1f, 0.8f, 1.0f);
-            _squarePosition = Vector3.Zero;
 
             _renderer2D.Init(_assetManager.GetShader("assets/Shaders/FlatColor"));
         }
@@ -50,7 +48,6 @@ namespace AcidarX.Sandbox
             ImGuiNET.ImGui.Begin("Square");
             ImGuiNET.ImGui.SetWindowFontScale(1.5f);
             ImGuiNET.ImGui.ColorPicker4("Color", ref _squareColor);
-            ImGuiNET.ImGui.DragFloat3("Position", ref _squarePosition);
             ImGuiNET.ImGui.End();
         }
 
@@ -63,7 +60,8 @@ namespace AcidarX.Sandbox
         {
             _renderer2D.BeginScene(_cameraController.Camera);
 
-            _renderer2D.DrawQuad(_squarePosition, Vector2.One, _squareColor);
+            _renderer2D.DrawQuad(Vector2.Zero, Vector2.One * 1.2f, _squareColor);
+            _renderer2D.DrawQuad(-Vector2.One * 0.5f, Vector2.One * 0.8f, new Vector4(0.8f, 0.1f, 0.4f, 1.0f));
 
             _renderer2D.EndScene();
         }
