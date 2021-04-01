@@ -25,6 +25,11 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
+        public override void OnWindowResize(Vector2D<int> size)
+        {
+            _gl.Viewport(0, 0, (uint) size.X, (uint) size.Y);
+        }
+
         public override void Clear()
         {
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));

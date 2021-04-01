@@ -27,6 +27,11 @@ namespace AcidarX.Core.Renderer
             _rendererAPI.EnableBlending();
         }
 
+        public void OnWindowResize(Vector2D<int> size)
+        {
+            _renderQueue.Enqueue(() => { _rendererAPI.OnWindowResize(size); });
+        }
+
         public void UseShader(Shader shader)
         {
             _renderQueue.Enqueue(() => { _rendererAPI.UseShader(shader); });

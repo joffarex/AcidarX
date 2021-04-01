@@ -8,10 +8,10 @@ namespace AcidarX.Core.Camera
     public class OrthographicCameraController
     {
         private readonly float _cameraSpeed;
+        private readonly float _zoomSpeed;
         private float _aspectRatio;
         private Vector3 _cameraPosition;
         private float _zoomLevel;
-        private readonly float _zoomSpeed;
 
         public OrthographicCameraController(float aspectRatio)
         {

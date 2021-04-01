@@ -237,7 +237,7 @@ void main()
                 _frameBegun = false;
                 ImGuiNET.ImGui.Render();
 
-                _gl.Viewport(0, 0, (uint) _windowWidth, (uint) _windowHeight);
+                // _gl.Viewport(0, 0, (uint) _windowWidth, (uint) _windowHeight);
                 RenderImDrawData(ImGuiNET.ImGui.GetDrawData());
 
                 ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
