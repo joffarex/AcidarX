@@ -17,6 +17,6 @@ namespace AcidarX.Core.Layers
         }
 
         public T CreateLayer<T>() where T : Layer =>
-            (T) Activator.CreateInstance(typeof(T), _renderer, _graphicsFactory, _assetManager);
+            (T) Activator.CreateInstance(typeof(T), _renderer, _assetManager, _graphicsFactory);
     }
 }

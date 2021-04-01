@@ -1,7 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Events;
 using AcidarX.Core.Logging;
-using AcidarX.Core.Renderer;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Layers
@@ -10,17 +9,7 @@ namespace AcidarX.Core.Layers
     {
         private static readonly ILogger<Layer> Logger = AXLogger.CreateLogger<Layer>();
 
-        public Layer(string debugName, AXRenderer renderer, GraphicsFactory graphicsFactory) : this(debugName)
-        {
-            GraphicsFactory = graphicsFactory;
-            Renderer = renderer;
-        }
-
         public Layer(string debugName) => DebugName = debugName;
-
-        protected GraphicsFactory GraphicsFactory { get; }
-        protected AXRenderer Renderer { get; }
-
 
         public string DebugName { get; }
         public bool IsDisposed { get; private set; }

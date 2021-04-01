@@ -10,31 +10,28 @@ using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Sandbox
 {
-    public sealed class ExampleLayer : Layer
+    public sealed class Sandbox2DLayer : Layer
     {
-        private static readonly ILogger<ExampleLayer> Logger = AXLogger.CreateLogger<ExampleLayer>();
+        private static readonly ILogger<Sandbox2DLayer> Logger = AXLogger.CreateLogger<Sandbox2DLayer>();
+
 
         private static VertexArray _squareVertexArray;
         private static Shader _squareShader;
-        private static Texture2D _squareTexture;
         private readonly AssetManager _assetManager;
 
         private readonly OrthographicCameraController _cameraController;
         private readonly GraphicsFactory _graphicsFactory;
 
         private readonly AXRenderer _renderer;
+        private Vector4 _squareColor;
+        private Vector3 _squarePosition;
 
-        private readonly Vector3 _squarePosition = Vector3.Zero;
-
-        private Vector4 _color = new(1.0f, 0.0f, 0.0f, 1.0f);
-
-
-        public ExampleLayer(AXRenderer renderer, GraphicsFactory graphicsFactory, AssetManager assetManager)
-            : base("Example layer")
+        public Sandbox2DLayer(AXRenderer renderer, AssetManager assetManager, GraphicsFactory graphicsFactory)
+            : base("Sandbox 2D layer")
         {
             _renderer = renderer;
-            _graphicsFactory = graphicsFactory;
             _assetManager = assetManager;
+            _graphicsFactory = graphicsFactory;
             _cameraController = new OrthographicCameraController(16.0f / 9.0f);
         }
 
@@ -44,30 +41,24 @@ namespace AcidarX.Sandbox
 
         public override void OnLoad()
         {
-            #region square
+            _squareColor = new Vector4(0.4f, 0.1f, 0.8f, 1.0f);
+            _squarePosition = Vector3.Zero;
 
             _squareVertexArray = _graphicsFactory.CreateVertexArray();
-            _squareTexture = _assetManager.GetTexture2D("assets/Textures/awesomeface.png");
 
             float[] squareVertices =
             {
-                // X, Y, Z | R, G, B, A | U, V
-                // -0.5f, -0.5f, 0.0f, 0.4f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                // 0.5f, -0.5f, 0.0f, 0.6f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                // 0.5f, 0.5f, 0.0f, 0.8f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                // -0.5f, 0.5f, 0.5f, 0.2f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-                -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
+                // X, Y, Z
+                -0.5f, -0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f,
+                0.5f, 0.5f, 0.0f,
+                -0.5f, 0.5f, 0.5f
             };
 
             VertexBuffer squareVertexBuffer = _graphicsFactory.CreateVertexBuffer(squareVertices);
             squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
             {
-                new("a_Position", ShaderDataType.Float3),
-                new("a_Color", ShaderDataType.Float4),
-                new("a_TextureCoordinates", ShaderDataType.Float2)
+                new("a_Position", ShaderDataType.Float3)
             }));
             _squareVertexArray.AddVertexBuffer(squareVertexBuffer);
 
@@ -79,9 +70,7 @@ namespace AcidarX.Sandbox
             IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(squareIndices);
             _squareVertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            _squareShader = _assetManager.GetShader("assets/Shaders/Square");
-
-            #endregion
+            _squareShader = _assetManager.GetShader("assets/Shaders/FlatColor");
         }
 
         public override void OnDetach()
@@ -90,6 +79,11 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender()
         {
+            ImGuiNET.ImGui.Begin("Square");
+            ImGuiNET.ImGui.SetWindowFontScale(1.5f);
+            ImGuiNET.ImGui.ColorPicker4("Color", ref _squareColor);
+            ImGuiNET.ImGui.DragFloat3("Position", ref _squarePosition);
+            ImGuiNET.ImGui.End();
         }
 
         public override void OnUpdate(double deltaTime)
@@ -101,9 +95,8 @@ namespace AcidarX.Sandbox
         {
             _renderer.BeginScene(_cameraController.Camera);
 
-            Matrix4x4 transform = Matrix4x4.CreateTranslation(_squarePosition) *
-                                  Matrix4x4.CreateScale(new Vector3(1.5f, 1.5f, 1.5f));
-            _renderer.Submit(_squareVertexArray, _squareShader, transform, _squareTexture);
+            var transform = Matrix4x4.CreateTranslation(_squarePosition);
+            _renderer.Submit(_squareVertexArray, _squareShader, transform, _squareColor);
 
             _renderer.EndScene();
         }
@@ -116,7 +109,6 @@ namespace AcidarX.Sandbox
         public override void Dispose(bool manual)
         {
             _squareShader.Dispose();
-            _squareVertexArray.Dispose();
         }
     }
 }
