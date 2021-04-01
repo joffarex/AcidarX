@@ -8,17 +8,17 @@ namespace AcidarX.Core.Layers
     public abstract class Layer : IDisposable
     {
         private static readonly ILogger<Layer> Logger = AXLogger.CreateLogger<Layer>();
+        private bool _isDisposed;
 
         public Layer(string debugName) => DebugName = debugName;
 
         public string DebugName { get; }
-        public bool IsDisposed { get; private set; }
 
         public void Dispose()
         {
-            Logger.Assert(!IsDisposed, $"{this} is already disposed");
+            Logger.Assert(!_isDisposed, $"{this} is already disposed");
 
-            IsDisposed = true;
+            _isDisposed = true;
             Dispose(true);
             // prevent the destructor from being called
             GC.SuppressFinalize(this);
@@ -47,5 +47,10 @@ namespace AcidarX.Core.Layers
         }
 
         public abstract void Dispose(bool manual);
+
+        ~Layer()
+        {
+            Dispose(false);
+        }
     }
 }

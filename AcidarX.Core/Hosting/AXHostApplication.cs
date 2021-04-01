@@ -21,7 +21,6 @@ namespace AcidarX.Core.Hosting
 
         public void Dispose()
         {
-            Application.Dispose();
             _host.StopAsync().GetAwaiter().GetResult();
             _host.Dispose();
         }

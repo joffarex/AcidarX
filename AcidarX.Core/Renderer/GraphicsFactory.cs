@@ -9,26 +9,9 @@ namespace AcidarX.Core.Renderer
 {
     public class GraphicsFactory
     {
-        private readonly RenderCommandDispatcher _renderCommandDispatcher;
-
-        public GraphicsFactory(RenderCommandDispatcher renderCommandDispatcher, GL gl)
-        {
-            _renderCommandDispatcher = renderCommandDispatcher;
-            Gl = gl;
-        }
+        public GraphicsFactory(GL gl) => Gl = gl;
 
         public GL Gl { get; }
-
-
-        public AXRenderer CreateRenderer()
-        {
-            return AXRenderer.API switch
-            {
-                API.None => null,
-                API.OpenGL => new AXRenderer(_renderCommandDispatcher),
-                _ => throw new Exception("Not supported API")
-            };
-        }
 
         public IndexBuffer CreateIndexBuffer<T>(T[] indices)
             where T : unmanaged

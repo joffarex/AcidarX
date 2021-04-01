@@ -14,17 +14,19 @@ namespace AcidarX.Core.Hosting
         public static IServiceCollection AddAcidarX
             (this IServiceCollection serviceCollection, AXWindowOptions axWindowOptions)
         {
+            // TODO: fix disposal order
             return serviceCollection
                 .AddSingleton<LayerStack>()
                 .AddSingleton(axWindowOptions)
                 .AddSingleton<AXWindow>()
                 .AddSingleton(provider => provider.GetRequiredService<AXWindow>().NativeWindow)
                 .AddSingleton(provider => GL.GetApi(provider.GetRequiredService<IWindow>()))
-                .AddSingleton<AssetManager>()
                 .AddSingleton<RendererAPI>(provider => new OpenGLRendererAPI(provider.GetRequiredService<GL>()))
                 .AddSingleton<RenderCommandDispatcher>()
                 .AddSingleton<GraphicsFactory>()
-                .AddSingleton(provider => provider.GetRequiredService<GraphicsFactory>().CreateRenderer())
+                .AddSingleton<AssetManager>()
+                // .AddSingleton<AXRenderer>()
+                .AddSingleton<AXRenderer2D>()
                 .AddSingleton<LayerFactory>()
                 .AddSingleton<AXApplication>();
         }

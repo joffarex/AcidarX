@@ -6,17 +6,15 @@ namespace AcidarX.Core.Layers
     public class LayerFactory
     {
         private readonly AssetManager _assetManager;
-        private readonly GraphicsFactory _graphicsFactory;
-        private readonly AXRenderer _renderer;
+        private readonly AXRenderer2D _renderer2D;
 
-        public LayerFactory(AXRenderer renderer, GraphicsFactory graphicsFactory, AssetManager assetManager)
+        public LayerFactory(AXRenderer2D renderer2D, AssetManager assetManager)
         {
-            _renderer = renderer;
-            _graphicsFactory = graphicsFactory;
+            _renderer2D = renderer2D;
             _assetManager = assetManager;
         }
 
         public T CreateLayer<T>() where T : Layer =>
-            (T) Activator.CreateInstance(typeof(T), _renderer, _assetManager, _graphicsFactory);
+            (T) Activator.CreateInstance(typeof(T), _renderer2D, _assetManager);
     }
 }

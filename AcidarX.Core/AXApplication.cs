@@ -169,6 +169,8 @@ namespace AcidarX.Core
                 layer.Dispose();
             }
 
+            Renderer2DData.Dispose();
+
             return true;
         }
     }
