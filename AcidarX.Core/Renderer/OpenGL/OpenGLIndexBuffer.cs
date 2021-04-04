@@ -58,6 +58,6 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.DeleteBuffers(1, _rendererID);
         }
 
-        public override string ToString() => string.Format("IndexBuffer|{0}", _rendererID);
+        public override string ToString() => $"IndexBuffer|{_rendererID}";
     }
 }

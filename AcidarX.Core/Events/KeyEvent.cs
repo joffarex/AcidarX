@@ -24,7 +24,7 @@ namespace AcidarX.Core.Events
         public int RepeatCount { get; }
 
 
-        public override string ToString() => string.Format("KeyPressedEvent: {0} ({1} Repeats)", KeyCode, RepeatCount);
+        public override string ToString() => $"KeyPressedEvent: {KeyCode} ({RepeatCount} Repeats)";
     }
 
     public class KeyReleasedEvent : KeyEvent
@@ -32,13 +32,13 @@ namespace AcidarX.Core.Events
         public KeyReleasedEvent
             (int keyCode, AXKey key) : base(keyCode, key) => EventType = GetStaticType<KeyReleasedEvent>();
 
-        public override string ToString() => string.Format("KeyReleasedEvent: {0}", KeyCode);
+        public override string ToString() => $"KeyReleasedEvent: {KeyCode}";
     }
 
     public class KeyTypedEvent : KeyEvent
     {
         public KeyTypedEvent(int keyCode, AXKey key) : base(keyCode, key) => EventType = GetStaticType<KeyTypedEvent>();
 
-        public override string ToString() => string.Format("KeyTypedEvent: {0}", KeyCode);
+        public override string ToString() => $"KeyTypedEvent: {KeyCode}";
     }
 }

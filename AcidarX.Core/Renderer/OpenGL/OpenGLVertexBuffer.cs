@@ -61,6 +61,6 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.DeleteBuffers(1, _rendererID);
         }
 
-        public override string ToString() => string.Format("VertexBuffer|{0}", _rendererID);
+        public override string ToString() => $"VertexBuffer|{_rendererID}";
     }
 }

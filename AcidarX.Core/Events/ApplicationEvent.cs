@@ -14,7 +14,7 @@ namespace AcidarX.Core.Events
 
         public override int GetCategoryFlags() => (int) EventCategory.Application;
 
-        public override string ToString() => string.Format("WindowResizeEvent: {0},{1}", Size.X, Size.Y);
+        public override string ToString() => $"WindowResizeEvent: {Size.X},{Size.Y}";
     }
 
     public class WindowCloseEvent : Event

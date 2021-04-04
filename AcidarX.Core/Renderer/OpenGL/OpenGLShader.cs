@@ -232,6 +232,6 @@ namespace AcidarX.Core.Renderer.OpenGL
             Dispose(false);
         }
 
-        public override string ToString() => string.Format("Shader|{0}", _rendererID);
+        public override string ToString() => $"Shader|{_rendererID}";
     }
 }

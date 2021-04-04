@@ -176,6 +176,6 @@ namespace AcidarX.Core.Renderer.OpenGL
             Dispose(false);
         }
 
-        public override string ToString() => string.Format("Texture|{0}", _rendererID);
+        public override string ToString() => $"Texture|{_rendererID}";
     }
 }

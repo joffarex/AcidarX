@@ -111,6 +111,6 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.DeleteVertexArrays(1, _rendererID);
         }
 
-        public override string ToString() => string.Format("VertexArray|{0}", _rendererID);
+        public override string ToString() => $"VertexArray|{_rendererID}";
     }
 }

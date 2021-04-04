@@ -24,8 +24,7 @@ namespace AcidarX.ECS
             Scale = transformComponent.Scale;
         }
 
-        public override string ToString() => string.Format("[{0}]: {{ Translation: {1}, Scale: {2} }}",
-            GetType().Name, Translation, Scale);
+        public override string ToString() => $"[{GetType().Name}]: {{ Translation: {Translation}, Scale: {Scale} }}";
     }
 
     public readonly struct Transform3DComponent : IComponent
@@ -34,8 +33,7 @@ namespace AcidarX.ECS
 
         public Transform3DComponent(Matrix4x4 translation) => Translation = translation;
 
-        public override string ToString() => string.Format("[{0}]: {{ Translation: {1} }}",
-            GetType().Name, Translation);
+        public override string ToString() => $"[{GetType().Name}]: {{ Translation: {Translation} }}";
     }
 
     public readonly struct PositionComponent : IComponent
@@ -58,8 +56,7 @@ namespace AcidarX.ECS
             Z = fullPosition.Z;
         }
 
-        public override string ToString() => string.Format("[{0}]: {{ X: {1}, Y: {2}, Z: {3} }}",
-            GetType().Name, X, Y, Z);
+        public override string ToString() => $"[{GetType().Name}]: {{ X: {X}, Y: {Y}, Z: {Z} }}";
     }
 
     public struct SpriteRendererComponent<TTexture> : IComponent
@@ -76,6 +73,6 @@ namespace AcidarX.ECS
             Color, Textures, IsDirty) = (color, texture, true);
 
         public override string ToString() =>
-            string.Format("[{0}]: {{ Color: {1}, Texture: {2} }}", GetType().Name, Color, Textures);
+            $"[{GetType().Name}]: {{ Color: {Color}, Texture: {Textures} }}";
     }
 }

@@ -15,7 +15,7 @@ namespace AcidarX.Core.Events
 
         public override int GetCategoryFlags() => (int) EventCategory.Mouse | (int) EventCategory.Input;
 
-        public override string ToString() => string.Format("MouseMoveEvent: {0},{1}", MousePos.X, MousePos.Y);
+        public override string ToString() => $"MouseMoveEvent: {MousePos.X},{MousePos.Y}";
     }
 
     public class MouseScrollEvent : Event
@@ -30,7 +30,7 @@ namespace AcidarX.Core.Events
 
         public override int GetCategoryFlags() => (int) EventCategory.Mouse | (int) EventCategory.Input;
 
-        public override string ToString() => string.Format("MouseScrollEvent: {0},{1}", Offset.X, Offset.Y);
+        public override string ToString() => $"MouseScrollEvent: {Offset.X},{Offset.Y}";
     }
 
     public abstract class MouseButtonEvent : Event
@@ -51,7 +51,7 @@ namespace AcidarX.Core.Events
             (int buttonCode, AXMouseButton mouseButton) : base(buttonCode, mouseButton) =>
             EventType = GetStaticType<MouseButtonPressedEvent>();
 
-        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", ButtonCode);
+        public override string ToString() => $"MouseBeingPressedEvent: {ButtonCode}";
     }
 
     public class MouseButtonReleasedEvent : MouseButtonEvent
@@ -60,6 +60,6 @@ namespace AcidarX.Core.Events
             (int buttonCode, AXMouseButton mouseButton) : base(buttonCode, mouseButton) =>
             EventType = GetStaticType<MouseButtonReleasedEvent>();
 
-        public override string ToString() => string.Format("MouseBeingPressedEvent: {0}", ButtonCode);
+        public override string ToString() => $"MouseBeingPressedEvent: {ButtonCode}";
     }
 }
