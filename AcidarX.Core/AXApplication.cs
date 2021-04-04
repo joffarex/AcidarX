@@ -128,17 +128,21 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
+                using var renderTimer = new InstrumentationTimer(nameof(OnRender));
+
                 {
-                    using var timer = new AXTimer("AXApplication.OnRender");
+                    using var appRenderTimer = new InstrumentationTimer("OnAppRender");
 
                     {
-                        using var prepTimer = new AXTimer("Renderer.Prep");
+                        using var prepTimer = new InstrumentationTimer("OnPrep");
+
                         _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
                         _renderCommandDispatcher.Clear();
                     }
 
                     {
-                        using var layerRendererTimer = new AXTimer("Renderer.Draw");
+                        using var drawTimer = new InstrumentationTimer("OnDraw");
+
                         foreach (Layer layer in _layers)
                         {
                             layer.OnRender(e.DeltaTime);
@@ -148,17 +152,20 @@ namespace AcidarX.Core
                     }
                 }
 
-                // This is currently not tied to our renderer api
-                _imGuiLayer.Begin(e.DeltaTime);
-                foreach (Layer layer in _layers)
                 {
-                    layer.OnImGuiRender();
+                    using var imGuiRenderTimer = new InstrumentationTimer("OnImGuiRender");
+
+                    // This is currently not tied to our renderer api
+                    _imGuiLayer.Begin(e.DeltaTime);
+                    foreach (Layer layer in _layers)
+                    {
+                        layer.OnImGuiRender();
+                    }
+
+                    FpsUtils.ImGuiWindow(e.DeltaTime);
+
+                    _imGuiLayer.End();
                 }
-
-                FpsUtils.ImGuiWindow(e.DeltaTime);
-                AXTimer.ImGuiWindow();
-
-                _imGuiLayer.End();
             }
 
             return true;
