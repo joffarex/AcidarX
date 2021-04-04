@@ -1,5 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer.OpenGL;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -19,7 +20,8 @@ namespace AcidarX.Core.Renderer
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLIndexBuffer<T>(Gl, new ReadOnlySpan<T>(indices)),
+                API.OpenGL => AXProfiler.Capture(
+                    () => new OpenGLIndexBuffer<T>(Gl, new ReadOnlySpan<T>(indices))),
                 _ => throw new Exception("Not supported API")
             };
         }
@@ -27,12 +29,16 @@ namespace AcidarX.Core.Renderer
         public VertexBuffer CreateVertexBuffer<T>(T[] vertices)
             where T : unmanaged
         {
-            return AXRenderer.API switch
+            return AXProfiler.Capture(() =>
             {
-                API.None => null,
-                API.OpenGL => new OpenGLVertexBuffer<T>(Gl, new ReadOnlySpan<T>(vertices)),
-                _ => throw new Exception("Not supported API")
-            };
+                return AXRenderer.API switch
+                {
+                    API.None => null,
+                    API.OpenGL => AXProfiler.Capture(
+                        () => new OpenGLVertexBuffer<T>(Gl, new ReadOnlySpan<T>(vertices))),
+                    _ => throw new Exception("Not supported API")
+                };
+            });
         }
 
         public VertexArray CreateVertexArray()
@@ -40,7 +46,7 @@ namespace AcidarX.Core.Renderer
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLVertexArray(Gl),
+                API.OpenGL => AXProfiler.Capture(() => new OpenGLVertexArray(Gl)),
                 _ => throw new Exception("Not supported API")
             };
         }
@@ -50,7 +56,8 @@ namespace AcidarX.Core.Renderer
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLShader(Gl, vertexSource, fragmentSource),
+                API.OpenGL => AXProfiler.Capture(
+                    () => new OpenGLShader(Gl, vertexSource, fragmentSource)),
                 _ => throw new Exception("Not supported API")
             };
         }
@@ -60,7 +67,7 @@ namespace AcidarX.Core.Renderer
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLTexture2D(Gl, path),
+                API.OpenGL => AXProfiler.Capture(() => new OpenGLTexture2D(Gl, path)),
                 _ => throw new Exception("Not supported API")
             };
         }
@@ -70,7 +77,7 @@ namespace AcidarX.Core.Renderer
             return AXRenderer.API switch
             {
                 API.None => null,
-                API.OpenGL => new OpenGLTexture2D(Gl, width, height),
+                API.OpenGL => AXProfiler.Capture(() => new OpenGLTexture2D(Gl, width, height)),
                 _ => throw new Exception("Not supported API")
             };
         }

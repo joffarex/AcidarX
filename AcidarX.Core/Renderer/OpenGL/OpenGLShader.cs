@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 
@@ -95,34 +96,37 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         private void GetUniforms()
         {
-            _gl.GetProgram(_rendererID, ProgramPropertyARB.ActiveUniforms, out int numberOfUniforms);
-
-            UniformFieldData[] uniforms = new UniformFieldData[numberOfUniforms];
-
-            for (uint i = 0; i < numberOfUniforms; i++)
+            AXProfiler.Capture(() =>
             {
-                string name = _gl.GetActiveUniform(_rendererID, i, out int size, out UniformType type);
-                int location = _gl.GetUniformLocation(_rendererID, name);
-                UniformFieldData fieldData;
-                fieldData.Location = location;
-                fieldData.Name = name;
-                fieldData.Size = size;
-                fieldData.Type = type;
+                _gl.GetProgram(_rendererID, ProgramPropertyARB.ActiveUniforms, out int numberOfUniforms);
 
-                uniforms[i] = fieldData;
-            }
+                UniformFieldData[] uniforms = new UniformFieldData[numberOfUniforms];
 
-            _uniformFieldData = uniforms;
+                for (uint i = 0; i < numberOfUniforms; i++)
+                {
+                    string name = _gl.GetActiveUniform(_rendererID, i, out int size, out UniformType type);
+                    int location = _gl.GetUniformLocation(_rendererID, name);
+                    UniformFieldData fieldData;
+                    fieldData.Location = location;
+                    fieldData.Name = name;
+                    fieldData.Size = size;
+                    fieldData.Type = type;
+
+                    uniforms[i] = fieldData;
+                }
+
+                _uniformFieldData = uniforms;
+            });
         }
 
         public override void Bind()
         {
-            _gl.UseProgram(_rendererID);
+            AXProfiler.Capture(() => { _gl.UseProgram(_rendererID); });
         }
 
         public override void Unbind()
         {
-            _gl.UseProgram(0);
+            AXProfiler.Capture(() => { _gl.UseProgram(0); });
         }
 
         private uint? CreateShader(ShaderType shaderType, string shaderSource)
@@ -224,7 +228,9 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            _gl.DeleteShader(_rendererID);
+
+            AXProfiler.Capture(
+                () => { _gl.DeleteShader(_rendererID); });
         }
 
         ~OpenGLShader()

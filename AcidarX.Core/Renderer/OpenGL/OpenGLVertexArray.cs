@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 
@@ -37,39 +38,45 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            _gl.BindVertexArray(_rendererID);
+            AXProfiler.Capture(() => { _gl.BindVertexArray(_rendererID); });
         }
 
         public override void Unbind()
         {
-            _gl.BindVertexArray(0);
+            AXProfiler.Capture(() => { _gl.BindVertexArray(0); });
         }
 
         public override unsafe void AddVertexBuffer(VertexBuffer vertexBuffer)
         {
-            Bind();
-            vertexBuffer.Bind();
-
-            BufferLayout? layout = vertexBuffer.GetLayout();
-            Logger.Assert(layout.HasValue, "Layout should be initialized");
-
-            foreach (BufferElement element in layout)
+            AXProfiler.Capture(() =>
             {
-                _gl.EnableVertexAttribArray(_vertexAttributeIndex);
-                _gl.VertexAttribPointer(_vertexAttributeIndex, element.GetComponentCount(),
-                    ShaderDataTypeToOpenGLBaseType(element.Type),
-                    element.Normalized, layout.Value.Stride, (void*) element.Offset);
-                _vertexAttributeIndex++;
-            }
+                Bind();
+                vertexBuffer.Bind();
 
-            _vertexBuffers.Add(vertexBuffer);
+                BufferLayout? layout = vertexBuffer.GetLayout();
+                Logger.Assert(layout.HasValue, "Layout should be initialized");
+
+                foreach (BufferElement element in layout)
+                {
+                    _gl.EnableVertexAttribArray(_vertexAttributeIndex);
+                    _gl.VertexAttribPointer(_vertexAttributeIndex, element.GetComponentCount(),
+                        ShaderDataTypeToOpenGLBaseType(element.Type),
+                        element.Normalized, layout.Value.Stride, (void*) element.Offset);
+                    _vertexAttributeIndex++;
+                }
+
+                _vertexBuffers.Add(vertexBuffer);
+            });
         }
 
         public override void SetIndexBuffer(IndexBuffer indexBuffer)
         {
-            Bind();
-            indexBuffer.Bind();
-            _indexBuffer = indexBuffer;
+            AXProfiler.Capture(() =>
+            {
+                Bind();
+                indexBuffer.Bind();
+                _indexBuffer = indexBuffer;
+            });
         }
 
         public override IndexBuffer GetIndexBuffer() => _indexBuffer;
@@ -101,14 +108,17 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            foreach (VertexBuffer vertexBuffer in _vertexBuffers)
+            AXProfiler.Capture(() =>
             {
-                vertexBuffer.Dispose();
-            }
+                foreach (VertexBuffer vertexBuffer in _vertexBuffers)
+                {
+                    vertexBuffer.Dispose();
+                }
 
-            _vertexBuffers.Clear();
-            _indexBuffer.Dispose();
-            _gl.DeleteVertexArrays(1, _rendererID);
+                _vertexBuffers.Clear();
+                _indexBuffer.Dispose();
+                _gl.DeleteVertexArrays(1, _rendererID);
+            });
         }
 
         public override string ToString() => $"VertexArray|{_rendererID}";

@@ -1,4 +1,5 @@
-﻿using Silk.NET.OpenGL;
+﻿using AcidarX.Core.Profiling;
+using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 namespace AcidarX.Core.Renderer.OpenGL
@@ -14,7 +15,7 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Init()
         {
-            Gl = GL.GetApi(_window);
+            AXProfiler.Capture(() => { Gl = GL.GetApi(_window); });
         }
     }
 }

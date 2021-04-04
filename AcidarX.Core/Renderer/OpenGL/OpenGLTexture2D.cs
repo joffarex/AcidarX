@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 using SixLabors.ImageSharp;
@@ -96,25 +97,28 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            _gl.BindTexture(_textureTarget, _rendererID);
+            AXProfiler.Capture(() => { _gl.BindTexture(_textureTarget, _rendererID); });
         }
 
         public override void Unbind()
         {
-            _gl.BindTexture(_textureTarget, 0);
+            AXProfiler.Capture(() => { _gl.BindTexture(_textureTarget, 0); });
         }
 
         public override void Use(TextureSlot slot)
         {
-            _gl.BindTextureUnit((uint) slot, _rendererID);
+            AXProfiler.Capture(() => { _gl.BindTextureUnit((uint) slot, _rendererID); });
         }
 
         public override unsafe void SetData(void* data, uint size)
         {
-            // bytes per pixel
-            int bpp = _dataFormat == PixelFormat.Rgba ? 4 : 3;
-            Logger.Assert(size == _width * _height * bpp, "Data must be entire texture");
-            _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
+            AXProfiler.Capture(() =>
+            {
+                // bytes per pixel
+                int bpp = _dataFormat == PixelFormat.Rgba ? 4 : 3;
+                Logger.Assert(size == _width * _height * bpp, "Data must be entire texture");
+                _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
+            });
         }
 
         public override uint GetWidth() => _width;
@@ -168,7 +172,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            _gl.DeleteTexture(_rendererID);
+            AXProfiler.Capture(() => { _gl.DeleteTexture(_rendererID); });
         }
 
         ~OpenGLTexture2D()

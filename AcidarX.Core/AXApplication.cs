@@ -81,8 +81,11 @@ namespace AcidarX.Core
 
         public void PushLayer(Layer layer)
         {
-            _layers.PushLayer(layer);
-            layer.OnAttach();
+            AXProfiler.Capture(() =>
+            {
+                _layers.PushLayer(layer);
+                layer.OnAttach();
+            });
         }
 
         public void PushOverlay(Layer overlay)
@@ -98,7 +101,7 @@ namespace AcidarX.Core
 
         private bool OnLoad(AppLoadEvent e)
         {
-            AXProfiler.Capture(nameof(OnLoad), () =>
+            AXProfiler.Capture(() =>
             {
                 _imGuiLayer = _graphicsFactory.CreateImGuiLayer(_window.NativeWindow, _window.InputContext);
                 PushLayer(_imGuiLayer);
@@ -118,7 +121,7 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
-                AXProfiler.Capture(nameof(OnUpdate), () =>
+                AXProfiler.Capture(() =>
                 {
                     foreach (Layer layer in _layers)
                     {
@@ -134,7 +137,7 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
-                AXProfiler.Capture(nameof(OnRender), () =>
+                AXProfiler.Capture(() =>
                 {
                     AXProfiler.Capture("OnDraw", () =>
                     {

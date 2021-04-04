@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using AcidarX.Core.Profiling;
 
 namespace AcidarX.Core.Camera
 {
@@ -11,22 +12,24 @@ namespace AcidarX.Core.Camera
 
         public OrthographicCamera(float left, float right, float bottom, float top)
         {
-            Left = left;
-            Right = right;
-            Bottom = bottom;
-            Top = top;
+            AXProfiler.Capture(() =>
+            {
+                Left = left;
+                Right = right;
+                Bottom = bottom;
+                Top = top;
 
-            Rotation = 0;
-
-            _viewMatrix = Matrix4x4.Identity;
-            ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
-            ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
+                Rotation = 0;
+                _viewMatrix = Matrix4x4.Identity;
+                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
+                ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
+            });
         }
 
-        public float Left { get; }
-        public float Right { get; }
-        public float Bottom { get; }
-        public float Top { get; }
+        public float Left { get; private set; }
+        public float Right { get; private set; }
+        public float Bottom { get; private set; }
+        public float Top { get; private set; }
 
         public Matrix4x4 ProjectionMatrix { get; private set; }
 
@@ -61,18 +64,24 @@ namespace AcidarX.Core.Camera
 
         private void RecalculateViewMatrix()
         {
-            Matrix4x4 transform = Matrix4x4.CreateTranslation(_position) *
-                                  Matrix4x4.CreateRotationZ((float) (Math.PI / 180f) * _rotation);
+            AXProfiler.Capture(() =>
+            {
+                Matrix4x4 transform = Matrix4x4.CreateTranslation(_position) *
+                                      Matrix4x4.CreateRotationZ((float) (Math.PI / 180f) * _rotation);
 
-            Matrix4x4.Invert(transform, out _viewMatrix);
-            ViewProjectionMatrix = _viewMatrix * ProjectionMatrix;
+                Matrix4x4.Invert(transform, out _viewMatrix);
+                ViewProjectionMatrix = _viewMatrix * ProjectionMatrix;
+            });
         }
 
         public void SetProjection(float left, float right, float bottom, float top)
         {
-            _viewMatrix = Matrix4x4.Identity;
-            ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
-            ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
+            AXProfiler.Capture(() =>
+            {
+                _viewMatrix = Matrix4x4.Identity;
+                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
+                ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
+            });
         }
     }
 }

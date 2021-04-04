@@ -1,5 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Layers;
+using AcidarX.Core.Profiling;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,12 +9,15 @@ namespace AcidarX.Core.Hosting
 {
     public class AXHostApplication : IDisposable
     {
-        private readonly IHost _host;
+        private IHost _host;
 
         public AXHostApplication(AXWindowOptions windowOptions)
         {
-            _host = AXHost.Create(windowOptions).Build();
-            _host.Start();
+            AXProfiler.Capture(() =>
+            {
+                _host = AXHost.Create(windowOptions).Build();
+                _host.Start();
+            });
         }
 
         private AXApplication Application => _host.Services.GetRequiredService<AXApplication>();
@@ -21,8 +25,11 @@ namespace AcidarX.Core.Hosting
 
         public void Dispose()
         {
-            _host.StopAsync().GetAwaiter().GetResult();
-            _host.Dispose();
+            AXProfiler.Capture(() =>
+            {
+                _host.StopAsync().GetAwaiter().GetResult();
+                _host.Dispose();
+            });
         }
 
         public static AXHostApplication Create(AXWindowOptions windowOptions) => new(windowOptions);

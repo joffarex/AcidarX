@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 
@@ -39,12 +40,13 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID);
+            AXProfiler.Capture(
+                () => { _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _rendererID); });
         }
 
         public override void Unbind()
         {
-            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+            AXProfiler.Capture(() => { _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0); });
         }
 
         public override void SetLayout(BufferLayout layout)
@@ -58,7 +60,7 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            _gl.DeleteBuffers(1, _rendererID);
+            AXProfiler.Capture(() => { _gl.DeleteBuffers(1, _rendererID); });
         }
 
         public override string ToString() => $"VertexBuffer|{_rendererID}";

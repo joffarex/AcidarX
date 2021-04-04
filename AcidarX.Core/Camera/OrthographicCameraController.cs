@@ -2,6 +2,7 @@
 using System.Numerics;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
+using AcidarX.Core.Profiling;
 
 namespace AcidarX.Core.Camera
 {
@@ -27,51 +28,63 @@ namespace AcidarX.Core.Camera
 
         public void OnUpdate(double deltaTime)
         {
-            if (KeyboardState.IsKeyPressed(AXKey.A))
+            AXProfiler.Capture(() =>
             {
-                _cameraPosition.X -= _cameraSpeed * (float) deltaTime;
-            }
+                if (KeyboardState.IsKeyPressed(AXKey.A))
+                {
+                    _cameraPosition.X -= _cameraSpeed * (float) deltaTime;
+                }
 
-            if (KeyboardState.IsKeyPressed(AXKey.D))
-            {
-                _cameraPosition.X += _cameraSpeed * (float) deltaTime;
-            }
+                if (KeyboardState.IsKeyPressed(AXKey.D))
+                {
+                    _cameraPosition.X += _cameraSpeed * (float) deltaTime;
+                }
 
-            if (KeyboardState.IsKeyPressed(AXKey.W))
-            {
-                _cameraPosition.Y += _cameraSpeed * (float) deltaTime;
-            }
+                if (KeyboardState.IsKeyPressed(AXKey.W))
+                {
+                    _cameraPosition.Y += _cameraSpeed * (float) deltaTime;
+                }
 
-            if (KeyboardState.IsKeyPressed(AXKey.S))
-            {
-                _cameraPosition.Y -= _cameraSpeed * (float) deltaTime;
-            }
+                if (KeyboardState.IsKeyPressed(AXKey.S))
+                {
+                    _cameraPosition.Y -= _cameraSpeed * (float) deltaTime;
+                }
 
-            Camera.Position = _cameraPosition;
+                Camera.Position = _cameraPosition;
+            });
         }
 
         public void OnEvent(Event e)
         {
-            var eventDispatcher = new EventDispatcher(e);
-            eventDispatcher.Dispatch<MouseScrollEvent>(OnMouseScroll);
-            eventDispatcher.Dispatch<WindowResizeEvent>(OnWindowResize);
+            AXProfiler.Capture(() =>
+            {
+                var eventDispatcher = new EventDispatcher(e);
+                eventDispatcher.Dispatch<MouseScrollEvent>(OnMouseScroll);
+                eventDispatcher.Dispatch<WindowResizeEvent>(OnWindowResize);
+            });
         }
 
         private bool OnMouseScroll(MouseScrollEvent e)
         {
-            _zoomLevel -= e.Offset.Y * _zoomSpeed;
-            _zoomLevel = Math.Max(_zoomLevel, 0.25f);
-            Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
-                _zoomLevel);
+            AXProfiler.Capture(() =>
+            {
+                _zoomLevel -= e.Offset.Y * _zoomSpeed;
+                _zoomLevel = Math.Max(_zoomLevel, 0.25f);
+                Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
+                    _zoomLevel);
+            });
 
             return false;
         }
 
         private bool OnWindowResize(WindowResizeEvent e)
         {
-            _aspectRatio = (float) e.Size.X / e.Size.Y;
-            Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
-                _zoomLevel);
+            AXProfiler.Capture(() =>
+            {
+                _aspectRatio = (float) e.Size.X / e.Size.Y;
+                Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
+                    _zoomLevel);
+            });
 
             return false;
         }

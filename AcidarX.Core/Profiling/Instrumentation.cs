@@ -63,15 +63,8 @@ namespace AcidarX.Core.Profiling
             }
 
             string name = result.Name;
-            _outputStream.WriteLine("{");
-            _outputStream.WriteLine("\"cat\":\"function\",");
-            _outputStream.WriteLine($"\"dur\":{result.End - result.Start},");
-            _outputStream.WriteLine($"\"name\":\"{name}\",");
-            _outputStream.WriteLine("\"ph\":\"X\",");
-            _outputStream.WriteLine("\"pid\":0,");
-            _outputStream.WriteLine($"\"tid\":{result.ThreadID},");
-            _outputStream.WriteLine($"\"ts\":{result.Start}");
-            _outputStream.WriteLine("}");
+            _outputStream.Write(
+                $"{{\"cat\":\"function\",\"dur\":{result.End - result.Start},\"name\":\"{name}\",\"ph\":\"X\",\"pid\":0,\"tid\":{result.ThreadID},\"ts\":{result.Start}}}");
         }
 
         public void WriteHeader()

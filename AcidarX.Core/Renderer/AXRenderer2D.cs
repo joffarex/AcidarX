@@ -2,6 +2,7 @@
 using System.Numerics;
 using AcidarX.Core.Camera;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Renderer
@@ -50,46 +51,50 @@ namespace AcidarX.Core.Renderer
             {
                 new()
                 {
-                    Name = "u_ViewProjection", Type = ShaderDataType.Mat4, Data = Renderer2DData.ViewProjectionMatrix
+                    Name = "u_ViewProjection", Type = ShaderDataType.Mat4,
+                    Data = Renderer2DData.ViewProjectionMatrix
                 }
             });
         }
 
         public unsafe void Init()
         {
-            Renderer2DData.VertexArray = _graphicsFactory.CreateVertexArray();
-
-            Renderer2DData.Vertices = new[]
+            AXProfiler.Capture(() =>
             {
-                // X, Y, Z | U, V
-                -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-                0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f
-            };
+                Renderer2DData.VertexArray = _graphicsFactory.CreateVertexArray();
 
-            VertexBuffer squareVertexBuffer = _graphicsFactory.CreateVertexBuffer(Renderer2DData.Vertices);
-            squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
-            {
-                new("a_Position", ShaderDataType.Float3),
-                new("a_TextureCoordinates", ShaderDataType.Float2)
-            }));
-            Renderer2DData.VertexArray.AddVertexBuffer(squareVertexBuffer);
+                Renderer2DData.Vertices = new[]
+                {
+                    // X, Y, Z | U, V
+                    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                    0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f
+                };
 
-            Renderer2DData.Indices = new uint[]
-            {
-                0, 1, 2,
-                2, 3, 0
-            };
-            IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(Renderer2DData.Indices);
-            Renderer2DData.VertexArray.SetIndexBuffer(squareIndexBuffer);
+                VertexBuffer squareVertexBuffer = _graphicsFactory.CreateVertexBuffer(Renderer2DData.Vertices);
+                squareVertexBuffer.SetLayout(new BufferLayout(new List<BufferElement>
+                {
+                    new("a_Position", ShaderDataType.Float3),
+                    new("a_TextureCoordinates", ShaderDataType.Float2)
+                }));
+                Renderer2DData.VertexArray.AddVertexBuffer(squareVertexBuffer);
 
-            // If we are drawing with color API, use this texture
-            Renderer2DData.WhiteTexture = _graphicsFactory.CreateTexture(1, 1);
-            var whiteTextureData = 0xffffffff;
-            Renderer2DData.WhiteTexture.SetData(&whiteTextureData, sizeof(uint));
+                Renderer2DData.Indices = new uint[]
+                {
+                    0, 1, 2,
+                    2, 3, 0
+                };
+                IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(Renderer2DData.Indices);
+                Renderer2DData.VertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            Renderer2DData.TextureShader = _assetManager.GetShader("assets/Shaders/Texture");
+                // If we are drawing with color API, use this texture
+                Renderer2DData.WhiteTexture = _graphicsFactory.CreateTexture(1, 1);
+                var whiteTextureData = 0xffffffff;
+                Renderer2DData.WhiteTexture.SetData(&whiteTextureData, sizeof(uint));
+
+                Renderer2DData.TextureShader = _assetManager.GetShader("assets/Shaders/Texture");
+            });
         }
 
         public void DrawQuad(Vector2 position, Vector2 size, Vector4 color)
