@@ -20,6 +20,8 @@ namespace AcidarX.Sandbox
 
         private Vector4 _squareColor;
 
+        private Texture2D _texture;
+
         public Sandbox2DLayer(AXRenderer2D renderer2D, AssetManager assetManager)
             : base("Sandbox 2D layer")
         {
@@ -36,7 +38,8 @@ namespace AcidarX.Sandbox
         {
             _squareColor = new Vector4(0.4f, 0.1f, 0.8f, 1.0f);
 
-            _renderer2D.Init(_assetManager.GetShader("assets/Shaders/FlatColor"));
+            _texture = _assetManager.GetTexture2D("assets/Textures/awesomeface.png");
+            _renderer2D.Init();
         }
 
         public override void OnDetach()
@@ -62,6 +65,8 @@ namespace AcidarX.Sandbox
 
             _renderer2D.DrawQuad(Vector2.Zero, Vector2.One * 1.2f, _squareColor);
             _renderer2D.DrawQuad(-Vector2.One * 0.5f, Vector2.One * 0.8f, new Vector4(0.8f, 0.1f, 0.4f, 1.0f));
+            _renderer2D.DrawQuad(new Vector3(Vector2.One * 0.3f, 0.1f), Vector2.One, _texture);
+            _renderer2D.DrawQuad(new Vector3(Vector2.One * -0.5f, -0.1f), Vector2.One * 1.1f, _texture);
 
             _renderer2D.EndScene();
         }

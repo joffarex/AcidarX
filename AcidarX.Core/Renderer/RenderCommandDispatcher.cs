@@ -22,9 +22,9 @@ namespace AcidarX.Core.Renderer
             _renderQueue.Enqueue(() => { _rendererAPI.DrawIndexed(vertexArray); });
         }
 
-        public void EnableBlending()
+        public void Init()
         {
-            _rendererAPI.EnableBlending();
+            _rendererAPI.Init();
         }
 
         public void OnWindowResize(Vector2D<int> size)

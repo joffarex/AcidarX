@@ -105,7 +105,7 @@ namespace AcidarX.Core
                 layer.OnLoad();
             }
 
-            _renderCommandDispatcher.EnableBlending();
+            _renderCommandDispatcher.Init();
 
             return true;
         }

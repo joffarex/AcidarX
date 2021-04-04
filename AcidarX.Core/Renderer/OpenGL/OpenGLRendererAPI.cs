@@ -19,7 +19,7 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.ClearColor(color);
         }
 
-        public override void EnableBlending()
+        public override void Init()
         {
             _gl.Enable(EnableCap.Blend);
             _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -32,6 +32,10 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Clear()
         {
+            // Enables Z-index sorting, positive value means on top, negative means on bottom
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthFunc(DepthFunction.Lequal);
+
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         }
 

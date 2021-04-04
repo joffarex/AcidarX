@@ -15,7 +15,7 @@ namespace AcidarX.Core.Renderer
 
         public abstract void SetClearColor(Vector4D<float> color);
         public abstract void Clear();
-        public abstract void EnableBlending();
+        public abstract void Init();
         public abstract void OnWindowResize(Vector2D<int> size);
 
         public abstract void UseShader(Shader shader);
