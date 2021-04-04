@@ -98,15 +98,18 @@ namespace AcidarX.Core
 
         private bool OnLoad(AppLoadEvent e)
         {
-            _imGuiLayer = _graphicsFactory.CreateImGuiLayer(_window.NativeWindow, _window.InputContext);
-            PushLayer(_imGuiLayer);
-
-            foreach (Layer layer in _layers)
+            AXProfiler.Capture(nameof(OnLoad), () =>
             {
-                layer.OnLoad();
-            }
+                _imGuiLayer = _graphicsFactory.CreateImGuiLayer(_window.NativeWindow, _window.InputContext);
+                PushLayer(_imGuiLayer);
 
-            _renderCommandDispatcher.Init();
+                foreach (Layer layer in _layers)
+                {
+                    layer.OnLoad();
+                }
+
+                _renderCommandDispatcher.Init();
+            });
 
             return true;
         }
@@ -115,10 +118,13 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
-                foreach (Layer layer in _layers)
+                AXProfiler.Capture(nameof(OnUpdate), () =>
                 {
-                    layer.OnUpdate(e.DeltaTime);
-                }
+                    foreach (Layer layer in _layers)
+                    {
+                        layer.OnUpdate(e.DeltaTime);
+                    }
+                });
             }
 
             return true;
@@ -128,20 +134,12 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
-                using var renderTimer = new InstrumentationTimer(nameof(OnRender));
-
+                AXProfiler.Capture(nameof(OnRender), () =>
                 {
-                    using var appRenderTimer = new InstrumentationTimer("OnAppRender");
-
+                    AXProfiler.Capture("OnDraw", () =>
                     {
-                        using var prepTimer = new InstrumentationTimer("OnPrep");
-
                         _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
                         _renderCommandDispatcher.Clear();
-                    }
-
-                    {
-                        using var drawTimer = new InstrumentationTimer("OnDraw");
 
                         foreach (Layer layer in _layers)
                         {
@@ -149,23 +147,22 @@ namespace AcidarX.Core
                         }
 
                         _renderCommandDispatcher.Dispatch();
-                    }
-                }
+                    });
 
-                {
-                    using var imGuiRenderTimer = new InstrumentationTimer("OnImGuiRender");
-
-                    // This is currently not tied to our renderer api
-                    _imGuiLayer.Begin(e.DeltaTime);
-                    foreach (Layer layer in _layers)
+                    AXProfiler.Capture("OnImGuiRender", () =>
                     {
-                        layer.OnImGuiRender();
-                    }
+                        // This is currently not tied to our renderer api
+                        _imGuiLayer.Begin(e.DeltaTime);
+                        foreach (Layer layer in _layers)
+                        {
+                            layer.OnImGuiRender();
+                        }
 
-                    FpsUtils.ImGuiWindow(e.DeltaTime);
+                        FpsUtils.ImGuiWindow(e.DeltaTime);
 
-                    _imGuiLayer.End();
-                }
+                        _imGuiLayer.End();
+                    });
+                });
             }
 
             return true;
