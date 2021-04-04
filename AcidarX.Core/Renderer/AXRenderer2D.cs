@@ -10,15 +10,15 @@ namespace AcidarX.Core.Renderer
     {
         public static Matrix4x4 ViewProjectionMatrix { get; set; }
         public static VertexArray VertexArray { get; set; }
-        public static Shader FlatColorShader { get; set; }
         public static Shader TextureShader { get; set; }
+        public static Texture2D WhiteTexture { get; set; }
         public static float[] Vertices { get; set; }
         public static uint[] Indices { get; set; }
 
         public static void Dispose()
         {
             VertexArray?.Dispose();
-            FlatColorShader?.Dispose();
+            WhiteTexture?.Dispose();
             TextureShader?.Dispose();
         }
     }
@@ -46,14 +46,6 @@ namespace AcidarX.Core.Renderer
         {
             Renderer2DData.ViewProjectionMatrix = camera.ViewProjectionMatrix;
 
-            _renderCommandDispatcher.UseShader(Renderer2DData.FlatColorShader, new List<ShaderInputData>
-            {
-                new()
-                {
-                    Name = "u_ViewProjection", Type = ShaderDataType.Mat4, Data = Renderer2DData.ViewProjectionMatrix
-                }
-            });
-
             _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
             {
                 new()
@@ -63,7 +55,7 @@ namespace AcidarX.Core.Renderer
             });
         }
 
-        public void Init()
+        public unsafe void Init()
         {
             Renderer2DData.VertexArray = _graphicsFactory.CreateVertexArray();
 
@@ -92,7 +84,11 @@ namespace AcidarX.Core.Renderer
             IndexBuffer squareIndexBuffer = _graphicsFactory.CreateIndexBuffer(Renderer2DData.Indices);
             Renderer2DData.VertexArray.SetIndexBuffer(squareIndexBuffer);
 
-            Renderer2DData.FlatColorShader = _assetManager.GetShader("assets/Shaders/FlatColor");
+            // If we are drawing with color API, use this texture
+            Renderer2DData.WhiteTexture = _graphicsFactory.CreateTexture(1, 1);
+            var whiteTextureData = 0xffffffff;
+            Renderer2DData.WhiteTexture.SetData(&whiteTextureData, sizeof(uint));
+
             Renderer2DData.TextureShader = _assetManager.GetShader("assets/Shaders/Texture");
         }
 
@@ -106,13 +102,15 @@ namespace AcidarX.Core.Renderer
             Matrix4x4 transform = Matrix4x4.CreateTranslation(position) *
                                   Matrix4x4.CreateScale(new Vector3(size, 1.0f));
 
-            _renderCommandDispatcher.UseShader(Renderer2DData.FlatColorShader, new List<ShaderInputData>
+            _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0, Renderer2DData.WhiteTexture);
+            _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
             {
                 new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform},
                 new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = color}
             });
             Renderer2DData.VertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(Renderer2DData.VertexArray);
+            _renderCommandDispatcher.UnbindTexture2D(Renderer2DData.WhiteTexture);
         }
 
         public void DrawQuad(Vector2 position, Vector2 size, Texture2D texture2D)
@@ -128,10 +126,12 @@ namespace AcidarX.Core.Renderer
             _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0, texture2D);
             _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
             {
-                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform}
+                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform},
+                new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = Vector4.One}
             });
             Renderer2DData.VertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(Renderer2DData.VertexArray);
+            _renderCommandDispatcher.UnbindTexture2D(texture2D);
         }
 
         public void EndScene()

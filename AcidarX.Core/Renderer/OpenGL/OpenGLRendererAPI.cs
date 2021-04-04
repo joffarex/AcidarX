@@ -81,5 +81,10 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndexBuffer().GetCount(),
                 DrawElementsType.UnsignedInt, null);
         }
+
+        public override void UnbindTexture2D(Texture2D texture2D)
+        {
+            texture2D.Unbind();
+        }
     }
 }

@@ -22,6 +22,11 @@ namespace AcidarX.Core.Renderer
             _renderQueue.Enqueue(() => { _rendererAPI.DrawIndexed(vertexArray); });
         }
 
+        public void UnbindTexture2D(Texture2D texture2D)
+        {
+            _renderQueue.Enqueue(() => { _rendererAPI.UnbindTexture2D(texture2D); });
+        }
+
         public void Init()
         {
             _rendererAPI.Init();
