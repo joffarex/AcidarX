@@ -4,6 +4,7 @@ using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
+using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer;
 using AcidarX.Core.Utils;
 using AcidarX.Core.Windowing;
@@ -127,15 +128,25 @@ namespace AcidarX.Core
         {
             if (!_minimized)
             {
-                _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
-                _renderCommandDispatcher.Clear();
-
-                foreach (Layer layer in _layers)
                 {
-                    layer.OnRender(e.DeltaTime);
-                }
+                    using var timer = new AXTimer("AXApplication.OnRender");
 
-                _renderCommandDispatcher.Dispatch();
+                    {
+                        using var prepTimer = new AXTimer("Renderer.Prep");
+                        _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
+                        _renderCommandDispatcher.Clear();
+                    }
+
+                    {
+                        using var layerRendererTimer = new AXTimer("Renderer.Draw");
+                        foreach (Layer layer in _layers)
+                        {
+                            layer.OnRender(e.DeltaTime);
+                        }
+
+                        _renderCommandDispatcher.Dispatch();
+                    }
+                }
 
                 // This is currently not tied to our renderer api
                 _imGuiLayer.Begin(e.DeltaTime);
@@ -145,6 +156,7 @@ namespace AcidarX.Core
                 }
 
                 FpsUtils.ImGuiWindow(e.DeltaTime);
+                AXTimer.ImGuiWindow();
 
                 _imGuiLayer.End();
             }

@@ -35,7 +35,6 @@ namespace AcidarX.Core.Layers
 
         public override void OnImGuiRender()
         {
-            ImGuiNET.ImGui.ShowDemoWindow();
         }
 
         public void Begin(double deltaTime)
