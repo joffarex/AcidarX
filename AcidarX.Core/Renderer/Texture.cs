@@ -4,38 +4,38 @@ namespace AcidarX.Core.Renderer
 {
     public enum TextureSlot
     {
-        Texture0,
-        Texture1,
-        Texture2,
-        Texture3,
-        Texture4,
-        Texture5,
-        Texture6,
-        Texture7,
-        Texture8,
-        Texture9,
-        Texture10,
-        Texture11,
-        Texture12,
-        Texture13,
-        Texture14,
-        Texture15,
-        Texture16,
-        Texture17,
-        Texture18,
-        Texture19,
-        Texture20,
-        Texture21,
-        Texture22,
-        Texture23,
-        Texture24,
-        Texture25,
-        Texture26,
-        Texture27,
-        Texture28,
-        Texture29,
-        Texture30,
-        Texture31
+        Texture0 = 0,
+        Texture1 = 1,
+        Texture2 = 2,
+        Texture3 = 3,
+        Texture4 = 4,
+        Texture5 = 5,
+        Texture6 = 6,
+        Texture7 = 7,
+        Texture8 = 8,
+        Texture9 = 9,
+        Texture10 = 10,
+        Texture11 = 11,
+        Texture12 = 12,
+        Texture13 = 13,
+        Texture14 = 14,
+        Texture15 = 15,
+        Texture16 = 16,
+        Texture17 = 17,
+        Texture18 = 18,
+        Texture19 = 19,
+        Texture20 = 20,
+        Texture21 = 21,
+        Texture22 = 22,
+        Texture23 = 23,
+        Texture24 = 24,
+        Texture25 = 25,
+        Texture26 = 26,
+        Texture27 = 27,
+        Texture28 = 28,
+        Texture29 = 29,
+        Texture30 = 30,
+        Texture31 = 31
     }
 
 
@@ -45,7 +45,7 @@ namespace AcidarX.Core.Renderer
         public abstract void Bind();
         public abstract void Unbind();
         public abstract void Use(TextureSlot slot);
-        public abstract unsafe void SetData(void* data);
+        public abstract unsafe void SetData(void* data, uint size);
 
 
         public abstract uint GetWidth();

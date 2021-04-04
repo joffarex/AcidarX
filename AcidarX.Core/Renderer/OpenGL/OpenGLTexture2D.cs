@@ -43,9 +43,10 @@ namespace AcidarX.Core.Renderer.OpenGL
 
             fixed (void* data = &MemoryMarshal.GetReference(img.GetPixelRowSpan(0)))
             {
-                _rendererID = (RendererID) _gl.GenTexture();
-                // _gl.TextureStorage2D(_rendererID, 1, (GLEnum)_internalFormat, _width, _height);
-                Bind();
+                _gl.CreateTextures(_textureTarget, 1, out uint generatedId);
+                _rendererID = (RendererID) generatedId;
+
+                _gl.TextureStorage2D(_rendererID, 1, (GLEnum) _internalFormat, _width, _height);
 
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Repeat);
@@ -53,13 +54,34 @@ namespace AcidarX.Core.Renderer.OpenGL
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
 
-                _gl.TexImage2D(_textureTarget, 0, (int) _internalFormat, _width, _height, 0, _dataFormat,
-                    PixelType.UnsignedByte, data);
+                _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
                 _gl.GenerateMipmap(_textureTarget);
-                // _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _pixelFormat, PixelType.UnsignedByte, data);
             }
 
             img.Dispose();
+        }
+
+        public OpenGLTexture2D(GL gl, uint width, uint height)
+        {
+            _gl = gl;
+            _path = "Generated";
+            _textureTarget = TextureTarget.Texture2D;
+            _width = width;
+            _height = height;
+
+            _internalFormat = InternalFormat.Rgba8;
+            _dataFormat = PixelFormat.Rgba;
+
+            _gl.CreateTextures(_textureTarget, 1, out uint generatedId);
+            _rendererID = (RendererID) generatedId;
+
+            _gl.TextureStorage2D(_rendererID, 1, (GLEnum) _internalFormat, _width, _height);
+
+            _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
+            _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Repeat);
+
+            _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
+            _gl.TexParameter(_textureTarget, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
         }
 
         public override void Dispose()
@@ -74,7 +96,6 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Bind()
         {
-            // _gl.BindTextureUnit(0);
             _gl.BindTexture(_textureTarget, _rendererID);
         }
 
@@ -85,13 +106,15 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Use(TextureSlot slot)
         {
-            _gl.ActiveTexture(SlotToUnitMapper(slot));
-            Bind();
+            _gl.BindTextureUnit((uint) slot, _rendererID);
         }
 
-        public override unsafe void SetData(void* data)
+        public override unsafe void SetData(void* data, uint size)
         {
-            _gl.TexSubImage2D(_textureTarget, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
+            // bytes per pixel
+            int bpp = _dataFormat == PixelFormat.Rgba ? 4 : 3;
+            Logger.Assert(size == _width * _height * bpp, "Data must be entire texture");
+            _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
         }
 
         public override uint GetWidth() => _width;
