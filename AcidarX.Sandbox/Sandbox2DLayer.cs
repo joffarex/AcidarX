@@ -71,6 +71,9 @@ namespace AcidarX.Sandbox
                 Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
                 Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
             });
+
+            StressTest();
+
             // _renderer2D.DrawQuad(new QuadProperties
             // {
             //     Position = new Vector3(Vector2.One * 0.3f, 3.0f), Texture2D = _texture,
@@ -83,6 +86,27 @@ namespace AcidarX.Sandbox
             // });
 
             _renderer2D.EndScene();
+        }
+
+        private void StressTest()
+        {
+            const float offset = 0.1f;
+            const int quadPerAxis = 90;
+
+            for (var x = 0; x < quadPerAxis; x++)
+            {
+                for (var y = 0; y < quadPerAxis; y++)
+                {
+                    float xPos = offset + (x * 1.1f);
+                    float yPos = offset + (y * 1.1f);
+
+                    _renderer2D.DrawQuad(new QuadProperties
+                    {
+                        Position = new Vector3(xPos, yPos, 0.0f), Size = Vector2.One * 0.1f,
+                        Color = new Vector4(xPos / quadPerAxis, yPos / quadPerAxis, 0.8f, 1.0f)
+                    });
+                }
+            }
         }
 
         public override void OnEvent(Event e)
