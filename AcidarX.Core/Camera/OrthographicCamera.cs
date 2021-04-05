@@ -21,7 +21,7 @@ namespace AcidarX.Core.Camera
 
                 Rotation = 0;
                 _viewMatrix = Matrix4x4.Identity;
-                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
+                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, 0.0f, 100.0f);
                 ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
             });
         }
@@ -79,7 +79,7 @@ namespace AcidarX.Core.Camera
             AXProfiler.Capture(() =>
             {
                 _viewMatrix = Matrix4x4.Identity;
-                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, -1.0f, 1.0f);
+                ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, 0.0f, 100.0f);
                 ViewProjectionMatrix = ProjectionMatrix * _viewMatrix;
             });
         }

@@ -24,6 +24,16 @@ namespace AcidarX.Core.Renderer
         }
     }
 
+    public record QuadProperties
+    {
+        public Vector3 Position { get; init; } = Vector3.One;
+        public Vector2 Size { get; init; } = Vector2.One;
+        public Vector4 Color { get; init; } = Vector4.One;
+        public Texture2D Texture2D { get; init; }
+        public float TilingFactor { get; init; } = 1.0f;
+        public float RotationInRadians { get; init; }
+    }
+
     public sealed class AXRenderer2D
     {
         private static readonly ILogger<AXRenderer2D> Logger = AXLogger.CreateLogger<AXRenderer2D>();
@@ -97,47 +107,29 @@ namespace AcidarX.Core.Renderer
             });
         }
 
-        public void DrawQuad(Vector2 position, Vector2 size, Vector4 color)
+        public void DrawQuad(QuadProperties quadProperties)
         {
-            DrawQuad(new Vector3(position, 0.0f), size, color);
-        }
+            var transform = Matrix4x4.CreateTranslation(quadProperties.Position);
+            if (quadProperties.RotationInRadians != 0.0f)
+            {
+                transform *= Matrix4x4.CreateRotationZ(quadProperties.RotationInRadians);
+            }
 
-        public void DrawQuad(Vector3 position, Vector2 size, Vector4 color)
-        {
-            Matrix4x4 transform = Matrix4x4.CreateTranslation(position) *
-                                  Matrix4x4.CreateScale(new Vector3(size, 1.0f));
+            transform *= Matrix4x4.CreateScale(new Vector3(quadProperties.Size, 1.0f));
 
-            _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0, Renderer2DData.WhiteTexture);
+            _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0,
+                quadProperties.Texture2D ?? Renderer2DData.WhiteTexture);
             _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
             {
                 new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform},
-                new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = color}
+                new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = quadProperties.Color},
+                new() {Name = "u_TilingFactor", Type = ShaderDataType.Float, Data = quadProperties.TilingFactor}
             });
             Renderer2DData.VertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(Renderer2DData.VertexArray);
-            _renderCommandDispatcher.UnbindTexture2D(Renderer2DData.WhiteTexture);
+            _renderCommandDispatcher.UnbindTexture2D(quadProperties.Texture2D ?? Renderer2DData.WhiteTexture);
         }
 
-        public void DrawQuad(Vector2 position, Vector2 size, Texture2D texture2D)
-        {
-            DrawQuad(new Vector3(position, 0.0f), size, texture2D);
-        }
-
-        public void DrawQuad(Vector3 position, Vector2 size, Texture2D texture2D)
-        {
-            Matrix4x4 transform = Matrix4x4.CreateTranslation(position) *
-                                  Matrix4x4.CreateScale(new Vector3(size, 1.0f));
-
-            _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0, texture2D);
-            _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
-            {
-                new() {Name = "u_Model", Type = ShaderDataType.Mat4, Data = transform},
-                new() {Name = "u_Color", Type = ShaderDataType.Float4, Data = Vector4.One}
-            });
-            Renderer2DData.VertexArray.Bind();
-            _renderCommandDispatcher.DrawIndexed(Renderer2DData.VertexArray);
-            _renderCommandDispatcher.UnbindTexture2D(texture2D);
-        }
 
         public void EndScene()
         {

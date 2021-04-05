@@ -1,7 +1,6 @@
 ﻿// #define AX_PROFILE
+
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using AcidarX.Core.Logging;
 using Microsoft.Extensions.Logging;
 

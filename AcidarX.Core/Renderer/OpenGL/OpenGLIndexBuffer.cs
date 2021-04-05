@@ -14,8 +14,8 @@ namespace AcidarX.Core.Renderer.OpenGL
         private static readonly ILogger<OpenGLIndexBuffer<T>> Logger = AXLogger.CreateLogger<OpenGLIndexBuffer<T>>();
         private readonly uint _count;
         private readonly GL _gl;
-        private bool _isDisposed;
         private readonly RendererID _rendererID;
+        private bool _isDisposed;
 
         public OpenGLIndexBuffer(GL gl, ReadOnlySpan<T> indices)
         {

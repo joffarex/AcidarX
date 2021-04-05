@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using AcidarX.Core;
 using AcidarX.Core.Camera;
 using AcidarX.Core.Events;
@@ -55,10 +56,26 @@ namespace AcidarX.Sandbox
         {
             _renderer2D.BeginScene(_cameraController.Camera);
 
-            _renderer2D.DrawQuad(Vector2.Zero, Vector2.One * 1.2f, new Vector4(0.4f, 0.1f, 0.8f, 1.0f));
-            _renderer2D.DrawQuad(-Vector2.One * 0.5f, Vector2.One * 0.8f, new Vector4(0.8f, 0.1f, 0.4f, 1.0f));
-            _renderer2D.DrawQuad(new Vector3(Vector2.One * 0.3f, 0.1f), Vector2.One, _texture);
-            _renderer2D.DrawQuad(new Vector3(Vector2.One * -0.5f, -0.1f), Vector2.One * 1.1f, _texture);
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.Zero, 1.0f), Size = Vector2.One * 1.2f,
+                Color = new Vector4(0.4f, 0.1f, 0.8f, 1.0f), RotationInRadians = 45 * (float) (Math.PI / 180.0f)
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f)
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.One * 0.3f, 3.0f), Texture2D = _texture,
+                Color = new Vector4(1.0f, 0.6f, 0.6f, 1.0f)
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.One * -0.5f, 0.0f), Size = Vector2.One * 1.1f, Texture2D = _texture,
+                RotationInRadians = 45 * (float) (Math.PI / 180.0f), TilingFactor = 2.0f
+            });
 
             _renderer2D.EndScene();
         }
