@@ -51,7 +51,7 @@ namespace AcidarX.Core.Renderer
                 {
                     API.None => null,
                     API.OpenGL => AXProfiler.Capture(
-                        () => new OpenGLVertexBuffer<T>(Gl, Marshal.SizeOf<T>(), count)),
+                        () => new OpenGLVertexBuffer<T>(Gl, count)),
                     _ => throw new Exception("Not supported API")
                 };
             });
