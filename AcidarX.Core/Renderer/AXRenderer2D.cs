@@ -18,9 +18,13 @@ namespace AcidarX.Core.Renderer
         public static Texture2D WhiteTexture { get; set; }
 
         public static uint MaxQuads { get; } = 10000;
-        public static uint MaxVertices { get; } = MaxQuads * 4;
-        public static uint MaxIndices { get; } = MaxQuads * 6;
+        public static uint VertexPerQuad { get; } = 4;
+        public static uint IndexPerQuad { get; } = 6;
+        public static uint MaxVertices { get; } = MaxQuads * VertexPerQuad;
+        public static uint MaxIndices { get; } = MaxQuads * IndexPerQuad;
         public static uint QuadIndexCount { get; set; } = 0; // How many indices has been drawn, so we can flush data
+        public static Vector3[] QuadVertexPositions { get; set; } = new Vector3[VertexPerQuad];
+        public static Vector2[] QuadTextureCoordinates { get; set; } = new Vector2[VertexPerQuad];
 
         public static QuadVertex* QuadVertexBufferBase { get; set; } = null;
         public static QuadVertex* QuadVertexBufferPtr { get; set; } = null;
@@ -69,6 +73,16 @@ namespace AcidarX.Core.Renderer
             _renderCommandDispatcher = renderCommandDispatcher;
             _graphicsFactory = graphicsFactory;
             _assetManager = assetManager;
+
+            Renderer2DData.QuadVertexPositions[0] = new Vector3(-0.5f, -0.5f, 0.0f); // bottom left
+            Renderer2DData.QuadVertexPositions[1] = new Vector3(0.5f, -0.5f, 0.0f); // bottom right
+            Renderer2DData.QuadVertexPositions[2] = new Vector3(0.5f, 0.5f, 0.0f); // top right
+            Renderer2DData.QuadVertexPositions[3] = new Vector3(-0.5f, 0.5f, 0.0f); // top left
+
+            Renderer2DData.QuadTextureCoordinates[0] = Vector2.Zero;
+            Renderer2DData.QuadTextureCoordinates[1] = Vector2.UnitX;
+            Renderer2DData.QuadTextureCoordinates[2] = Vector2.One;
+            Renderer2DData.QuadTextureCoordinates[3] = Vector2.UnitY;
         }
 
         public static API API => RendererAPI.API;
@@ -99,7 +113,7 @@ namespace AcidarX.Core.Renderer
                 var quadIndices = new uint[Renderer2DData.MaxIndices];
 
                 uint offset = 0;
-                for (var i = 0; i < Renderer2DData.MaxIndices; i += 6)
+                for (uint i = 0; i < Renderer2DData.MaxIndices; i += Renderer2DData.IndexPerQuad)
                 {
                     quadIndices[i + 0] = offset + 0;
                     quadIndices[i + 1] = offset + 1;
@@ -109,7 +123,7 @@ namespace AcidarX.Core.Renderer
                     quadIndices[i + 4] = offset + 3;
                     quadIndices[i + 5] = offset + 0;
 
-                    offset += 4;
+                    offset += Renderer2DData.VertexPerQuad;
                 }
 
                 IndexBuffer quadIndexBuffer = _graphicsFactory.CreateIndexBuffer(quadIndices);
@@ -169,41 +183,27 @@ namespace AcidarX.Core.Renderer
             // Renderer2DData.QuadVertexBufferPtr->TextureCoordinate = new Vector2(0.0f, 1.0f);
             // Renderer2DData.QuadVertexBufferPtr++;
 
-            Renderer2DData.QuadVertices.Add(new QuadVertex()
+            var transform = Matrix4x4.CreateTranslation(quadProperties.Position);
+            if (quadProperties.RotationInRadians != 0.0f)
             {
-                Position = quadProperties.Position, Color = quadProperties.Color, TextureCoordinate = Vector2.Zero
-            });
-            Renderer2DData.QuadVertices.Add(new QuadVertex()
-            {
-                Position = new Vector3(quadProperties.Position.X + quadProperties.Size.X, quadProperties.Position.Y,
-                    0.0f),
-                Color = quadProperties.Color, TextureCoordinate = new Vector2(1.0f, 0.0f)
-            });
-            Renderer2DData.QuadVertices.Add(new QuadVertex()
-            {
-                Position = new Vector3(
-                    quadProperties.Position.X + quadProperties.Size.X,
-                    quadProperties.Position.Y + quadProperties.Size.Y,
-                    0.0f),
-                Color = quadProperties.Color, TextureCoordinate = Vector2.One
-            });
-            Renderer2DData.QuadVertices.Add(new QuadVertex()
-            {
-                Position = new Vector3(quadProperties.Position.X,
-                    quadProperties.Position.Y + quadProperties.Size.Y, 0.0f),
-                Color = quadProperties.Color, TextureCoordinate = new Vector2(0.0f, 1.0f)
-            });
+                transform *= Matrix4x4.CreateRotationZ(quadProperties.RotationInRadians);
+            }
 
-            Renderer2DData.QuadIndexCount += 6;
+            transform *= Matrix4x4.CreateScale(new Vector3(quadProperties.Size, 1.0f));
 
-            // var transform = Matrix4x4.CreateTranslation(quadProperties.Position);
-            // if (quadProperties.RotationInRadians != 0.0f)
-            // {
-            //     transform *= Matrix4x4.CreateRotationZ(quadProperties.RotationInRadians);
-            // }
-            //
-            // transform *= Matrix4x4.CreateScale(new Vector3(quadProperties.Size, 1.0f));
-            //
+            for (var i = 0; i < Renderer2DData.VertexPerQuad; i++)
+            {
+                Vector3 transformedPosition = Vector3.Transform(Renderer2DData.QuadVertexPositions[i], transform);
+
+                Renderer2DData.QuadVertices.Add(new QuadVertex()
+                {
+                    Position = transformedPosition,
+                    Color = quadProperties.Color, TextureCoordinate = Renderer2DData.QuadTextureCoordinates[i]
+                });
+            }
+
+            Renderer2DData.QuadIndexCount += Renderer2DData.IndexPerQuad;
+
             // _renderCommandDispatcher.UseTexture2D(TextureSlot.Texture0,
             //     quadProperties.Texture2D ?? Renderer2DData.WhiteTexture);
             // _renderCommandDispatcher.UseShader(Renderer2DData.TextureShader, new List<ShaderInputData>
@@ -220,7 +220,7 @@ namespace AcidarX.Core.Renderer
         public unsafe void EndScene()
         {
             Renderer2DData.VertexBuffer.SetData(new ReadOnlySpan<QuadVertex>(Renderer2DData.QuadVertices.ToArray()));
-            
+
             // CHORE: leaving this for maintenance purposes
             // long dataSize = Renderer2DData.QuadVertexBufferPtr - Renderer2DData.QuadVertexBufferBase;
             // Renderer2DData.VertexBuffer.SetData(Renderer2DData.QuadVertexBufferBase, dataSize * sizeof(QuadVertex));
