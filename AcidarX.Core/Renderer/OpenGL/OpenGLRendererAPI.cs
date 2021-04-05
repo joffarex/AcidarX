@@ -80,10 +80,11 @@ namespace AcidarX.Core.Renderer.OpenGL
             texture2D.Use(slot);
         }
 
-        public override unsafe void DrawIndexed(VertexArray vertexArray)
+        public override unsafe void DrawIndexed(VertexArray vertexArray, uint indexCount = 0)
         {
             vertexArray.Bind();
-            _gl.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndexBuffer().GetCount(),
+            _gl.DrawElements(PrimitiveType.Triangles,
+                indexCount == 0 ? vertexArray.GetIndexBuffer().GetCount() : indexCount,
                 DrawElementsType.UnsignedInt, null);
         }
 

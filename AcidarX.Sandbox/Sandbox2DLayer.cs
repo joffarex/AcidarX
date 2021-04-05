@@ -68,14 +68,19 @@ namespace AcidarX.Sandbox
             });
             _renderer2D.DrawQuad(new QuadProperties
             {
-                Position = new Vector3(Vector2.One * 0.3f, 3.0f), Texture2D = _texture,
-                Color = new Vector4(1.0f, 0.6f, 0.6f, 1.0f)
+                Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
+                Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
             });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(Vector2.One * -0.5f, 0.0f), Size = Vector2.One * 1.1f, Texture2D = _texture,
-                RotationInRadians = 45 * (float) (Math.PI / 180.0f), TilingFactor = 2.0f
-            });
+            // _renderer2D.DrawQuad(new QuadProperties
+            // {
+            //     Position = new Vector3(Vector2.One * 0.3f, 3.0f), Texture2D = _texture,
+            //     Color = new Vector4(1.0f, 0.6f, 0.6f, 1.0f)
+            // });
+            // _renderer2D.DrawQuad(new QuadProperties
+            // {
+            //     Position = new Vector3(Vector2.One * -0.5f, 0.0f), Size = Vector2.One * 1.1f, Texture2D = _texture,
+            //     RotationInRadians = 45 * (float) (Math.PI / 180.0f), TilingFactor = 2.0f
+            // });
 
             _renderer2D.EndScene();
         }

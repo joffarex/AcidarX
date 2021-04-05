@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer.OpenGL;
@@ -36,6 +37,21 @@ namespace AcidarX.Core.Renderer
                     API.None => null,
                     API.OpenGL => AXProfiler.Capture(
                         () => new OpenGLVertexBuffer<T>(Gl, new ReadOnlySpan<T>(vertices))),
+                    _ => throw new Exception("Not supported API")
+                };
+            });
+        }
+        
+        public VertexBuffer CreateVertexBuffer<T>(uint count)
+            where T : unmanaged
+        {
+            return AXProfiler.Capture(() =>
+            {
+                return AXRenderer.API switch
+                {
+                    API.None => null,
+                    API.OpenGL => AXProfiler.Capture(
+                        () => new OpenGLVertexBuffer<T>(Gl, Marshal.SizeOf<T>(), count)),
                     _ => throw new Exception("Not supported API")
                 };
             });

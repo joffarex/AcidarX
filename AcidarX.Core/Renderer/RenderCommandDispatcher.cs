@@ -17,9 +17,9 @@ namespace AcidarX.Core.Renderer
             _renderQueue = new Queue<Action>();
         }
 
-        public void DrawIndexed(VertexArray vertexArray)
+        public void DrawIndexed(VertexArray vertexArray, uint indexCount = 0)
         {
-            _renderQueue.Enqueue(() => { _rendererAPI.DrawIndexed(vertexArray); });
+            _renderQueue.Enqueue(() => { _rendererAPI.DrawIndexed(vertexArray, indexCount); });
         }
 
         public void UnbindTexture2D(Texture2D texture2D)

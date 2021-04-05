@@ -28,6 +28,15 @@ namespace AcidarX.Core.Renderer.OpenGL
                 GLEnum.StaticDraw);
         }
 
+        public unsafe OpenGLVertexBuffer(GL gl, int size, uint count)
+        {
+            _gl = gl;
+            _rendererID = (RendererID) _gl.CreateBuffer();
+            Bind();
+
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (size * count), null, GLEnum.DynamicDraw);
+        }
+
         public override void Dispose()
         {
             Logger.Assert(!_isDisposed, $"{this} is already disposed");
@@ -52,6 +61,21 @@ namespace AcidarX.Core.Renderer.OpenGL
         public override void SetLayout(BufferLayout layout)
         {
             _layout = layout;
+        }
+
+        public override void SetData<TData>(ReadOnlySpan<TData> data)
+        {
+            Bind();
+
+            int size = Marshal.SizeOf<TData>();
+            _gl.BufferSubData(BufferTargetARB.ArrayBuffer, 0, (nuint) (size * data.Length), data);
+        }
+
+        public override unsafe void SetData(void* data, uint size)
+        {
+            Bind();
+
+            _gl.BufferSubData(BufferTargetARB.ArrayBuffer, 0, size, data);
         }
 
         public override BufferLayout? GetLayout() => _layout;
