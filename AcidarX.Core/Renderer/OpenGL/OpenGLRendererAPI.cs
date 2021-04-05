@@ -32,9 +32,11 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override void Clear()
         {
-            // Enables Z-index sorting, positive value means on top, negative means on bottom
+            // Need these here as ImGui layer disables them. needs refactoring
             _gl.Enable(EnableCap.DepthTest);
-            _gl.DepthFunc(DepthFunction.Lequal);
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.Enable(EnableCap.CullFace);
 
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         }
@@ -62,6 +64,9 @@ namespace AcidarX.Core.Renderer.OpenGL
                         break;
                     case ShaderDataType.Float3:
                         openGLShader.UploadFloat3(uniformPublicInfo.Name, (Vector3) uniformPublicInfo.Data);
+                        break;
+                    case ShaderDataType.Float:
+                        openGLShader.UploadFloat(uniformPublicInfo.Name, (float) uniformPublicInfo.Data);
                         break;
                     default:
                         Logger.Assert(false, "Unknown Uniform Type");

@@ -478,7 +478,7 @@ void main()
                 vtxOffset += cmdList.VtxBuffer.Size;
             }
 
-            // _gl.Disable(EnableCap.Blend);
+            _gl.Disable(EnableCap.Blend);
             _gl.Disable(EnableCap.ScissorTest);
         }
     }
