@@ -46,6 +46,11 @@ namespace AcidarX.Core.Renderer.OpenGL
             shader.Bind();
         }
 
+        public override unsafe void SetVertexBufferData(VertexBuffer vertexBuffer, void* ptr, uint count)
+        {
+            vertexBuffer.SetData(ptr, count);
+        }
+
         public override void UseShader(Shader shader, IEnumerable<ShaderInputData> uniforms)
         {
             var openGLShader = (OpenGLShader) shader;

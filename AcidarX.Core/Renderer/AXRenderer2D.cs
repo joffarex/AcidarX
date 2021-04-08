@@ -9,6 +9,29 @@ using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Renderer
 {
+    public static class AXStatistics
+    {
+        public static uint DrawCalls { get; set; }
+        public static uint QuadCount { get; set; }
+
+        public static void ImGuiWindow()
+        {
+            ImGuiNET.ImGui.Begin("Statistics");
+            ImGuiNET.ImGui.SetWindowFontScale(1.4f);
+            ImGuiNET.ImGui.Text($"QuadCount: {QuadCount}");
+            ImGuiNET.ImGui.Text($"DrawCalls: {DrawCalls}");
+            ImGuiNET.ImGui.Text($"VertexCount: {QuadCount * 4}");
+            ImGuiNET.ImGui.Text($"IndexCount: {QuadCount * 6}");
+            ImGuiNET.ImGui.End();
+        }
+
+        public static void Reset()
+        {
+            DrawCalls = 0;
+            QuadCount = 0;
+        }
+    }
+
     public static unsafe class Renderer2DData
     {
         public static Matrix4x4 ViewProjectionMatrix { get; set; }
@@ -153,11 +176,7 @@ namespace AcidarX.Core.Renderer
 
         public unsafe void BeginScene(OrthographicCamera camera)
         {
-            Array.Clear(Renderer2DData.QuadVertices, 0, (int) Renderer2DData.QuadVertexCount);
-            Renderer2DData.QuadIndexCount = 0;
-            Renderer2DData.QuadVertexCount = 0;
-            Renderer2DData.TextureSlotIndex = 1;
-
+            StartBatch();
             Renderer2DData.ViewProjectionMatrix = camera.ViewProjectionMatrix;
 
             var samplers = new uint[Renderer2DData.MaxTextureSlots];
@@ -179,13 +198,25 @@ namespace AcidarX.Core.Renderer
             Renderer2DData.QuadVertexBufferPtr = Renderer2DData.QuadVertexBufferBase;
         }
 
+        private void StartBatch()
+        {
+            Array.Clear(Renderer2DData.QuadVertices, 0, (int) Renderer2DData.QuadVertexCount);
+            Renderer2DData.QuadIndexCount = 0;
+            Renderer2DData.QuadVertexCount = 0;
+            Renderer2DData.TextureSlotIndex = 1;
+        }
+
+        private void NextBatch()
+        {
+            EndScene();
+            StartBatch();
+        }
 
         public void DrawQuad(QuadProperties quadProperties)
         {
-            var transform = Matrix4x4.CreateTranslation(quadProperties.Position);
-            if (quadProperties.RotationInRadians != 0.0f)
+            if (Renderer2DData.QuadIndexCount >= Renderer2DData.MaxIndices)
             {
-                transform *= Matrix4x4.CreateRotationZ(quadProperties.RotationInRadians);
+                NextBatch();
             }
 
             var textureIndex = 0.0f;
@@ -205,10 +236,21 @@ namespace AcidarX.Core.Renderer
 
                 if (textureIndex == 0.0f)
                 {
+                    if (Renderer2DData.TextureSlotIndex >= Renderer2DData.MaxTextureSlots)
+                    {
+                        NextBatch();
+                    }
+
                     textureIndex = Renderer2DData.TextureSlotIndex;
                     Renderer2DData.TextureSlots[Renderer2DData.TextureSlotIndex] = quadProperties.Texture2D;
                     Renderer2DData.TextureSlotIndex++;
                 }
+            }
+
+            var transform = Matrix4x4.CreateTranslation(quadProperties.Position);
+            if (quadProperties.RotationInRadians != 0.0f)
+            {
+                transform *= Matrix4x4.CreateRotationZ(quadProperties.RotationInRadians);
             }
 
             transform *= Matrix4x4.CreateScale(new Vector3(quadProperties.Size, 1.0f));
@@ -227,14 +269,22 @@ namespace AcidarX.Core.Renderer
 
             Renderer2DData.QuadIndexCount += Renderer2DData.IndexPerQuad;
             Renderer2DData.QuadVertexCount += Renderer2DData.VertexPerQuad;
+
+            AXStatistics.QuadCount++;
         }
 
 
         public unsafe void EndScene()
         {
+            if (Renderer2DData.QuadIndexCount == 0)
+            {
+                return; // Nothing to draw
+            }
+
             fixed (void* qvPtr = &Renderer2DData.QuadVertices[0])
             {
-                Renderer2DData.VertexBuffer.SetData(qvPtr, Renderer2DData.QuadVertexCount);
+                _renderCommandDispatcher.SetVertexBufferData(Renderer2DData.VertexBuffer, qvPtr,
+                    Renderer2DData.QuadVertexCount);
             }
 
             Flush();
@@ -248,8 +298,9 @@ namespace AcidarX.Core.Renderer
                 _renderCommandDispatcher.UseTexture2D((TextureSlot) i, texture2D);
             }
 
-            Renderer2DData.VertexArray.Bind();
             _renderCommandDispatcher.DrawIndexed(Renderer2DData.VertexArray, Renderer2DData.QuadIndexCount);
+
+            AXStatistics.DrawCalls++;
 
             for (var i = 0; i < Renderer2DData.TextureSlotIndex; i++)
             {

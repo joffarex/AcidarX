@@ -22,6 +22,7 @@ namespace AcidarX.Core.Renderer
         public abstract void UseShader(Shader shader, IEnumerable<ShaderInputData> uniforms);
         public abstract void UseTexture2D(TextureSlot slot, Texture2D texture2D);
         public abstract void DrawIndexed(VertexArray vertexArray, uint indexCount = 0);
+        public abstract unsafe void SetVertexBufferData(VertexBuffer vertexBuffer, void* ptr, uint count);
         public abstract void UnbindTexture2D(Texture2D texture2D);
     }
 }

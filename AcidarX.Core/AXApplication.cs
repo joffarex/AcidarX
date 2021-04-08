@@ -148,8 +148,6 @@ namespace AcidarX.Core
                         {
                             layer.OnRender(e.DeltaTime);
                         }
-
-                        _renderCommandDispatcher.Dispatch();
                     });
 
                     AXProfiler.Capture("OnImGuiRender", () =>
