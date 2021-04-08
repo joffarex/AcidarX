@@ -48,6 +48,7 @@ namespace AcidarX.Core.Renderer
         public abstract unsafe void SetData(void* data, uint size);
 
 
+        public abstract RendererID GetRendererID();
         public abstract uint GetWidth();
         public abstract uint GetHeight();
         public abstract string GetPath();
@@ -60,7 +61,27 @@ namespace AcidarX.Core.Renderer
         }
     }
 
-    public abstract class Texture2D : Texture
+    public abstract class Texture2D : Texture, IEquatable<Texture2D>
     {
+        public bool Equals(Texture2D other) => other != null && other.GetRendererID() == GetRendererID();
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && Equals((Texture2D) obj);
+        }
+
+        public override int GetHashCode() => GetRendererID();
+        // public static bool operator ==(Texture2D t1, Texture2D t2) => t1 != null && t1.Equals(t2);
+        // public static bool operator !=(Texture2D t1, Texture2D t2) => t1 != null && !t1.Equals(t2);
     }
 }

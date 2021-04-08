@@ -61,29 +61,30 @@ namespace AcidarX.Sandbox
                 Position = new Vector3(Vector2.Zero, 1.0f), Size = Vector2.One * 1.2f,
                 Color = new Vector4(0.4f, 0.1f, 0.8f, 1.0f), RotationInRadians = 45 * (float) (Math.PI / 180.0f)
             });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
-                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f)
-            });
+
             _renderer2D.DrawQuad(new QuadProperties
             {
                 Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
                 Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
             });
 
-            StressTest();
+            // Transparency is weird with depth buffer. We need to first draw non-transparent objects and then draw transparent ones
+            // But even for them, render order MATTERS! also we'll need to order Z Index as well.
+            // Related link: https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/transparencyanddepth/Tutorial%204%20-%20Transparency%20and%20Depth.pdf
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f),
+                Texture2D = _texture
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.UnitX * 0.8f, 2.1f), Size = Vector2.One * 0.8f,
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f),
+                Texture2D = _texture, TilingFactor = 2.0f
+            });
 
-            // _renderer2D.DrawQuad(new QuadProperties
-            // {
-            //     Position = new Vector3(Vector2.One * 0.3f, 3.0f), Texture2D = _texture,
-            //     Color = new Vector4(1.0f, 0.6f, 0.6f, 1.0f)
-            // });
-            // _renderer2D.DrawQuad(new QuadProperties
-            // {
-            //     Position = new Vector3(Vector2.One * -0.5f, 0.0f), Size = Vector2.One * 1.1f, Texture2D = _texture,
-            //     RotationInRadians = 45 * (float) (Math.PI / 180.0f), TilingFactor = 2.0f
-            // });
+            // StressTest();
 
             _renderer2D.EndScene();
         }
@@ -97,8 +98,8 @@ namespace AcidarX.Sandbox
             {
                 for (var y = 0; y < quadPerAxis; y++)
                 {
-                    float xPos = offset + (x * 1.1f);
-                    float yPos = offset + (y * 1.1f);
+                    float xPos = offset + x * 1.1f;
+                    float yPos = offset + y * 1.1f;
 
                     _renderer2D.DrawQuad(new QuadProperties
                     {

@@ -68,6 +68,9 @@ namespace AcidarX.Core.Renderer.OpenGL
                     case ShaderDataType.Float:
                         openGLShader.UploadFloat(uniformPublicInfo.Name, (float) uniformPublicInfo.Data);
                         break;
+                    case ShaderDataType.IntSamplerArr:
+                        openGLShader.UploadIntArray(uniformPublicInfo.Name, (int[]) uniformPublicInfo.Data);
+                        break;
                     default:
                         Logger.Assert(false, "Unknown Uniform Type");
                         break;

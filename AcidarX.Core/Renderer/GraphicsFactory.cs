@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using AcidarX.Core.Layers;
 using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer.OpenGL;
@@ -41,7 +40,7 @@ namespace AcidarX.Core.Renderer
                 };
             });
         }
-        
+
         public VertexBuffer CreateVertexBuffer<T>(uint count)
             where T : unmanaged
         {

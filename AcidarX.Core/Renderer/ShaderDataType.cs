@@ -10,6 +10,7 @@
         Mat3,
         Mat4,
         Int,
+        IntSamplerArr,
         Int2,
         Int3,
         Int4,

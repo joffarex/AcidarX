@@ -121,6 +121,8 @@ namespace AcidarX.Core.Renderer.OpenGL
             });
         }
 
+        public override RendererID GetRendererID() => _rendererID;
+
         public override uint GetWidth() => _width;
 
         public override uint GetHeight() => _height;

@@ -8,6 +8,7 @@
 
         public static explicit operator RendererID(uint value) => new(value);
         public static implicit operator uint(RendererID rendererID) => rendererID._value;
+        public static implicit operator int(RendererID rendererID) => (int) rendererID._value;
 
         public override string ToString() => _value.ToString();
     }

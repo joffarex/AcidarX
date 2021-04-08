@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
@@ -77,6 +78,7 @@ namespace AcidarX.Core.Renderer.OpenGL
                 case ShaderDataType.Int2: return UniformType.IntVec2;
                 case ShaderDataType.Int3: return UniformType.IntVec3;
                 case ShaderDataType.Int4: return UniformType.IntVec4;
+                case ShaderDataType.IntSamplerArr: return UniformType.Sampler2D;
                 case ShaderDataType.Bool: return UniformType.Bool;
                 default:
                     Logger.Assert(false, "Unknown ShaderDataType");
@@ -94,17 +96,26 @@ namespace AcidarX.Core.Renderer.OpenGL
             GC.KeepAlive(this);
         }
 
-        private void GetUniforms()
+        private unsafe void GetUniforms()
         {
             AXProfiler.Capture(() =>
             {
                 _gl.GetProgram(_rendererID, ProgramPropertyARB.ActiveUniforms, out int numberOfUniforms);
+
+                byte* version = _gl.GetString(StringName.Version);
+                string? str = Marshal.PtrToStringUTF8((IntPtr) version);
+
 
                 UniformFieldData[] uniforms = new UniformFieldData[numberOfUniforms];
 
                 for (uint i = 0; i < numberOfUniforms; i++)
                 {
                     string name = _gl.GetActiveUniform(_rendererID, i, out int size, out UniformType type);
+                    if (type == UniformType.Sampler2D)
+                    {
+                        name = name.Split("[")[0];
+                    }
+
                     int location = _gl.GetUniformLocation(_rendererID, name);
                     UniformFieldData fieldData;
                     fieldData.Location = location;
@@ -141,7 +152,7 @@ namespace AcidarX.Core.Renderer.OpenGL
                 _gl.DeleteShader(shader);
 
                 Logger.LogError(infoLog);
-                Logger.Assert(false, "Error compiling vertex shader");
+                Logger.Assert(false, $"Error compiling {shaderType} shader");
                 return null;
             }
 
@@ -202,6 +213,21 @@ namespace AcidarX.Core.Renderer.OpenGL
                 $"${name} has invalid type.");
 
             _gl.Uniform4(_uniformFieldData.First(fieldData => fieldData.Name == name).Location, data);
+        }
+
+        public unsafe void UploadIntArray(string name, int[] data)
+        {
+            Logger.Assert(_uniformFieldData.Any(fieldData => fieldData.Name == name),
+                $"{name} uniform not found on a shader.");
+            Logger.Assert(_uniformFieldData.Any(
+                    fieldData => fieldData.Type == ShaderDataTypeToUniformTypeMapper(ShaderDataType.IntSamplerArr)),
+                $"${name} has invalid type.");
+
+            var count = (uint) data.Length;
+            fixed (int* d = &data[0])
+            {
+                _gl.Uniform1(_uniformFieldData.First(fieldData => fieldData.Name == name).Location, count, d);
+            }
         }
 
         private bool LinkProgram(uint rendererId)

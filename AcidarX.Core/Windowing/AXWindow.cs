@@ -24,6 +24,7 @@ namespace AcidarX.Core.Windowing
             windowOptions.VSync = _axWindowOptions.VSync;
             windowOptions.ShouldSwapAutomatically = true;
             windowOptions.WindowBorder = WindowBorder.Resizable;
+            windowOptions.API = new GraphicsAPI(ContextAPI.OpenGL, new APIVersion(4, 5));
             NativeWindow = Window.Create(windowOptions);
 
             Logger.Assert(NativeWindow != null, "Could not initialize Common Window");
