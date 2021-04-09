@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using AcidarX.Core.Logging;
+using ImGuiNET;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Profiling
@@ -32,14 +33,14 @@ namespace AcidarX.Core.Profiling
 
         public static void ImGuiWindow()
         {
-            ImGuiNET.ImGui.Begin("Profile Results");
-            ImGuiNET.ImGui.SetWindowFontScale(1.5f);
+            ImGui.Begin("Profile Results");
+            ImGui.SetWindowFontScale(1.5f);
             foreach (KeyValuePair<string, double> profileResult in _profileResults)
             {
-                ImGuiNET.ImGui.Text($"{profileResult.Value:0.0000}ms {profileResult.Key}");
+                ImGui.Text($"{profileResult.Value:0.0000}ms {profileResult.Key}");
             }
 
-            ImGuiNET.ImGui.End();
+            ImGui.End();
         }
 
         public void RecordTime()

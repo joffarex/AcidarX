@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.ECS", "AcidarX.ECS\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.Sandbox", "AcidarX.Sandbox\AcidarX.Sandbox.csproj", "{B37EA9DB-B9CD-4628-96B6-236BD5916DAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.ImGui", "AcidarX.ImGui\AcidarX.ImGui.csproj", "{E4BE9863-F897-42FB-A009-C106D0DE6CAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcidarX.AXImGui", "AcidarX.AXImGui\AcidarX.AXImGui.csproj", "{E4BE9863-F897-42FB-A009-C106D0DE6CAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

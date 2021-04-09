@@ -1,5 +1,6 @@
-﻿using AcidarX.Core.Logging;
-using AcidarX.ImGui;
+﻿using AcidarX.AXImGui;
+using AcidarX.Core.Logging;
+using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -35,6 +36,7 @@ namespace AcidarX.Core.Layers
 
         public override void OnImGuiRender()
         {
+            ImGui.ShowDemoWindow();
         }
 
         public void Begin(double deltaTime)

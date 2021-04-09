@@ -9,7 +9,7 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
-namespace AcidarX.ImGui
+namespace AcidarX.AXImGui
 {
     public class ImGuiController : IDisposable
     {
@@ -20,12 +20,17 @@ namespace AcidarX.ImGui
 
         private readonly Vector2 _scaleFactor = Vector2.One;
         private readonly IView _view;
+        private ImGuiDockNodeFlags _dockSpaceFlags = ImGuiDockNodeFlags.None;
 
         private Texture _fontTexture;
         private bool _frameBegun;
+
+        private readonly bool _fullScreen = true;
         private uint _indexBuffer;
         private uint _indexBufferSize;
         private IKeyboard _keyboard;
+        private readonly bool _padding = false;
+        private bool _pOpen = true;
 
         private IMouse _prevMouseState;
         private Shader _shader;
@@ -64,10 +69,10 @@ namespace AcidarX.ImGui
 
         public void Init()
         {
-            IntPtr context = ImGuiNET.ImGui.CreateContext();
-            ImGuiNET.ImGui.SetCurrentContext(context);
+            IntPtr context = ImGui.CreateContext();
+            ImGui.SetCurrentContext(context);
 
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
 
             io.Fonts.AddFontDefault();
 
@@ -87,11 +92,11 @@ namespace AcidarX.ImGui
 
         public void Init(ImGuiFontConfig imGuiFontConfig)
         {
-            IntPtr context = ImGuiNET.ImGui.CreateContext();
-            ImGuiNET.ImGui.SetCurrentContext(context);
-            ImGuiNET.ImGui.StyleColorsClassic();
+            IntPtr context = ImGui.CreateContext();
+            ImGui.SetCurrentContext(context);
+            ImGui.StyleColorsClassic();
 
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
 
             io.Fonts.AddFontFromFileTTF(imGuiFontConfig.Path, imGuiFontConfig.Size);
 
@@ -101,7 +106,7 @@ namespace AcidarX.ImGui
             io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
 
-            ImGuiStylePtr style = ImGuiNET.ImGui.GetStyle();
+            ImGuiStylePtr style = ImGui.GetStyle();
             if ((io.ConfigFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
             {
                 style.WindowRounding = 0.0f;
@@ -116,10 +121,62 @@ namespace AcidarX.ImGui
             BeginFrame();
         }
 
+        private void SetupDockSpace()
+        {
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+
+            if (_fullScreen)
+            {
+                ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+                ImGui.SetNextWindowPos(viewport.GetWorkPos());
+                ImGui.SetNextWindowSize(viewport.GetWorkSize());
+                ImGui.SetNextWindowViewport(viewport.ID);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+                windowFlags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize |
+                               ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus |
+                               ImGuiWindowFlags.NoNavFocus;
+            }
+            else
+            {
+                _dockSpaceFlags &= ImGuiDockNodeFlags.PassthruCentralNode;
+            }
+
+            if ((_dockSpaceFlags & ImGuiDockNodeFlags.PassthruCentralNode) != 0)
+            {
+                windowFlags |= ImGuiWindowFlags.NoBackground;
+            }
+
+            if (!_padding)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            }
+
+            ImGui.Begin("DockSpace Demo", ref _pOpen, windowFlags);
+            if (!_padding)
+            {
+                ImGui.PopStyleVar();
+            }
+
+            if (_fullScreen)
+            {
+                ImGui.PopStyleVar(2);
+            }
+
+            ImGuiIOPtr io = ImGui.GetIO();
+            if ((io.ConfigFlags & ImGuiConfigFlags.DockingEnable) != 0)
+            {
+                uint dockSpaceId = ImGui.GetID("DockSpace");
+                ImGui.DockSpace(dockSpaceId, Vector2.Zero, _dockSpaceFlags);
+            }
+
+            ImGui.End();
+        }
+
 
         private void BeginFrame()
         {
-            ImGuiNET.ImGui.NewFrame();
+            ImGui.NewFrame();
             _frameBegun = true;
             _keyboard = _input.Keyboards[0];
             _view.Resize += WindowResized;
@@ -212,7 +269,7 @@ void main()
         /// </summary>
         private void RecreateFontDeviceTexture()
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out int bytesPerPixel);
 
             _fontTexture = new Texture(_gl, "ImGui Text Atlas", width, height, pixels);
@@ -235,16 +292,16 @@ void main()
             if (_frameBegun)
             {
                 _frameBegun = false;
-                ImGuiNET.ImGui.Render();
+                ImGui.Render();
 
                 // _gl.Viewport(0, 0, (uint) _windowWidth, (uint) _windowHeight);
-                RenderImDrawData(ImGuiNET.ImGui.GetDrawData());
+                RenderImDrawData(ImGui.GetDrawData());
 
-                ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+                ImGuiIOPtr io = ImGui.GetIO();
 
                 if ((io.ConfigFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
                 {
-                    ImGuiNET.ImGui.UpdatePlatformWindows();
+                    ImGui.UpdatePlatformWindows();
                 }
             }
         }
@@ -256,14 +313,15 @@ void main()
         {
             if (_frameBegun)
             {
-                ImGuiNET.ImGui.Render();
+                ImGui.Render();
             }
 
             SetPerFrameImGuiData(deltaSeconds);
             UpdateImGuiInput();
 
             _frameBegun = true;
-            ImGuiNET.ImGui.NewFrame();
+            ImGui.NewFrame();
+            SetupDockSpace();
         }
 
         /// <summary>
@@ -272,7 +330,7 @@ void main()
         /// </summary>
         private void SetPerFrameImGuiData(float deltaSeconds)
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             io.DisplaySize = new Vector2(
                 _windowWidth / _scaleFactor.X,
                 _windowHeight / _scaleFactor.Y);
@@ -282,7 +340,7 @@ void main()
 
         private void UpdateImGuiInput()
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
 
             IMouse mouseState = _input.Mice[0];
             IKeyboard keyboardState = _input.Keyboards[0];
@@ -337,7 +395,7 @@ void main()
 
         private static void SetKeyMappings()
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             io.KeyMap[(int) ImGuiKey.Tab] = (int) Key.Tab;
             io.KeyMap[(int) ImGuiKey.LeftArrow] = (int) Key.Left;
             io.KeyMap[(int) ImGuiKey.RightArrow] = (int) Key.Right;
@@ -417,7 +475,7 @@ void main()
             }
 
             // Setup orthographic projection matrix into our constant buffer
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             var mvp = Matrix4x4.CreateOrthographicOffCenter(
                 -1.0f,
                 io.DisplaySize.X,

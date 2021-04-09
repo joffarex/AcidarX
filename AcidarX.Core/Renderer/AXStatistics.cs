@@ -1,4 +1,6 @@
-﻿namespace AcidarX.Core.Renderer
+﻿using ImGuiNET;
+
+namespace AcidarX.Core.Renderer
 {
     public static class AXStatistics
     {
@@ -7,13 +9,13 @@
 
         public static void ImGuiWindow()
         {
-            ImGuiNET.ImGui.Begin("Statistics");
-            ImGuiNET.ImGui.SetWindowFontScale(1.4f);
-            ImGuiNET.ImGui.Text($"QuadCount: {QuadCount}");
-            ImGuiNET.ImGui.Text($"DrawCalls: {DrawCalls}");
-            ImGuiNET.ImGui.Text($"VertexCount: {QuadCount * 4}");
-            ImGuiNET.ImGui.Text($"IndexCount: {QuadCount * 6}");
-            ImGuiNET.ImGui.End();
+            ImGui.Begin("Statistics");
+            ImGui.SetWindowFontScale(1.4f);
+            ImGui.Text($"QuadCount: {QuadCount}");
+            ImGui.Text($"DrawCalls: {DrawCalls}");
+            ImGui.Text($"VertexCount: {QuadCount * 4}");
+            ImGui.Text($"IndexCount: {QuadCount * 6}");
+            ImGui.End();
         }
 
         public static void Reset()

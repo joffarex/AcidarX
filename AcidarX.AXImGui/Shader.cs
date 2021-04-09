@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Silk.NET.OpenGL;
 
-namespace AcidarX.ImGui
+namespace AcidarX.AXImGui
 {
     internal struct UniformFieldInfo
     {

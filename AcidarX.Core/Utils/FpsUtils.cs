@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using AcidarX.Core.Logging;
+using ImGuiNET;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Utils
@@ -24,10 +25,10 @@ namespace AcidarX.Core.Utils
                 _currentFps = Get(deltaTime);
             }
 
-            ImGuiNET.ImGui.Begin("Benchmarks");
-            ImGuiNET.ImGui.SetWindowFontScale(1.4f);
-            ImGuiNET.ImGui.Text($"FPS: {_currentFps}");
-            ImGuiNET.ImGui.End();
+            ImGui.Begin("Benchmarks");
+            ImGui.SetWindowFontScale(1.4f);
+            ImGui.Text($"FPS: {_currentFps}");
+            ImGui.End();
         }
 
         public static string Get
