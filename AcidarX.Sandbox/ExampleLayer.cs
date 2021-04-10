@@ -88,7 +88,7 @@ namespace AcidarX.Sandbox
         {
         }
 
-        public override void OnImGuiRender()
+        public override void OnImGuiRender(AppRenderEvent e)
         {
         }
 

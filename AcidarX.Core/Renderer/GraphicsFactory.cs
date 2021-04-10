@@ -56,6 +56,20 @@ namespace AcidarX.Core.Renderer
             });
         }
 
+        public Framebuffer CreateFramebuffer(FramebufferSpecs specs)
+        {
+            return AXProfiler.Capture(() =>
+            {
+                return AXRenderer.API switch
+                {
+                    API.None => null,
+                    API.OpenGL => AXProfiler.Capture(
+                        () => new OpenGLFramebuffer(Gl, specs)),
+                    _ => throw new Exception("Not supported API")
+                };
+            });
+        }
+
         public VertexArray CreateVertexArray()
         {
             return AXRenderer.API switch

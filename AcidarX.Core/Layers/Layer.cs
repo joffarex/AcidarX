@@ -38,7 +38,7 @@ namespace AcidarX.Core.Layers
         {
         }
 
-        public virtual void OnImGuiRender()
+        public virtual void OnImGuiRender(AppRenderEvent e)
         {
         }
 

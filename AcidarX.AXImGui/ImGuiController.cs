@@ -13,9 +13,11 @@ namespace AcidarX.AXImGui
 {
     public class ImGuiController : IDisposable
     {
+        private readonly bool _fullScreen = true;
         private readonly GL _gl;
         private readonly Version _glVersion;
         private readonly IInputContext _input;
+        private readonly bool _padding = false;
         private readonly List<char> _pressedChars = new();
 
         private readonly Vector2 _scaleFactor = Vector2.One;
@@ -24,12 +26,9 @@ namespace AcidarX.AXImGui
 
         private Texture _fontTexture;
         private bool _frameBegun;
-
-        private readonly bool _fullScreen = true;
         private uint _indexBuffer;
         private uint _indexBufferSize;
         private IKeyboard _keyboard;
-        private readonly bool _padding = false;
         private bool _pOpen = true;
 
         private IMouse _prevMouseState;
@@ -321,7 +320,6 @@ void main()
 
             _frameBegun = true;
             ImGui.NewFrame();
-            SetupDockSpace();
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using AcidarX.AXImGui;
+using AcidarX.Core.Events;
 using AcidarX.Core.Logging;
-using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -34,9 +34,8 @@ namespace AcidarX.Core.Layers
             _imGuiController.DestroyDeviceObjects();
         }
 
-        public override void OnImGuiRender()
+        public override void OnImGuiRender(AppRenderEvent e)
         {
-            ImGui.ShowDemoWindow();
         }
 
         public void Begin(double deltaTime)

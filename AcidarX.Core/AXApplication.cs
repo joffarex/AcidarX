@@ -6,10 +6,8 @@ using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer;
-using AcidarX.Core.Utils;
 using AcidarX.Core.Windowing;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Maths;
 
 namespace AcidarX.Core
 {
@@ -141,9 +139,6 @@ namespace AcidarX.Core
                 {
                     AXProfiler.Capture("OnDraw", () =>
                     {
-                        _renderCommandDispatcher.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
-                        _renderCommandDispatcher.Clear();
-
                         foreach (Layer layer in _layers)
                         {
                             layer.OnRender(e.DeltaTime);
@@ -156,10 +151,9 @@ namespace AcidarX.Core
                         _imGuiLayer.Begin(e.DeltaTime);
                         foreach (Layer layer in _layers)
                         {
-                            layer.OnImGuiRender();
+                            layer.OnImGuiRender(e);
                         }
 
-                        FpsUtils.ImGuiWindow(e.DeltaTime);
 
                         _imGuiLayer.End();
                     });

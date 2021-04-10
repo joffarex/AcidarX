@@ -6,7 +6,9 @@ using AcidarX.Core.Camera;
 using AcidarX.Core.Graphics;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
+using ImGuiNET;
 using Microsoft.Extensions.Logging;
+using Silk.NET.Maths;
 
 namespace AcidarX.Core.Renderer
 {
@@ -36,8 +38,16 @@ namespace AcidarX.Core.Renderer
     {
         private static readonly ILogger<AXRenderer2D> Logger = AXLogger.CreateLogger<AXRenderer2D>();
         private readonly AssetManager _assetManager;
+
+        private readonly bool _fullScreen = true;
         private readonly GraphicsFactory _graphicsFactory;
+        private readonly bool _padding = false;
         private readonly RenderCommandDispatcher _renderCommandDispatcher;
+
+        private ImGuiDockNodeFlags _dockSpaceFlags = ImGuiDockNodeFlags.None;
+
+        private Framebuffer _framebuffer;
+        private bool _pOpen = true;
 
         public AXRenderer2D
         (
@@ -60,6 +70,11 @@ namespace AcidarX.Core.Renderer
         }
 
         public static API API => RendererAPI.API;
+
+        public void SetFramebuffer(FramebufferSpecs specs)
+        {
+            _framebuffer = _graphicsFactory.CreateFramebuffer(specs);
+        }
 
         public unsafe void Init()
         {
@@ -108,6 +123,92 @@ namespace AcidarX.Core.Renderer
             });
         }
 
+        public void Clear()
+        {
+            _renderCommandDispatcher.Clear();
+        }
+
+        public void SetClearColor(Vector4D<float> color)
+        {
+            _renderCommandDispatcher.SetClearColor(color);
+        }
+
+        public void DrawInFramebuffer(Action render)
+        {
+            if (_framebuffer == null)
+            {
+                render();
+                Logger.Assert(false, "Framebuffer is not set, hence drawing into default view");
+            }
+            else
+            {
+                _framebuffer.Bind();
+                render();
+                _framebuffer.Unbind();
+            }
+        }
+
+        public void DrawDockSpace(Action imGuiWindows)
+        {
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+
+            if (_fullScreen)
+            {
+                ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+                ImGui.SetNextWindowPos(viewport.GetWorkPos());
+                ImGui.SetNextWindowSize(viewport.GetWorkSize());
+                ImGui.SetNextWindowViewport(viewport.ID);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+                windowFlags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize |
+                               ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus |
+                               ImGuiWindowFlags.NoNavFocus;
+            }
+            else
+            {
+                _dockSpaceFlags &= ImGuiDockNodeFlags.PassthruCentralNode;
+            }
+
+            if ((_dockSpaceFlags & ImGuiDockNodeFlags.PassthruCentralNode) != 0)
+            {
+                windowFlags |= ImGuiWindowFlags.NoBackground;
+            }
+
+            if (!_padding)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            }
+
+            ImGui.Begin("DockSpace Demo", ref _pOpen, windowFlags);
+            if (!_padding)
+            {
+                ImGui.PopStyleVar();
+            }
+
+            if (_fullScreen)
+            {
+                ImGui.PopStyleVar(2);
+            }
+
+            ImGuiIOPtr io = ImGui.GetIO();
+            if ((io.ConfigFlags & ImGuiConfigFlags.DockingEnable) != 0)
+            {
+                uint dockSpaceId = ImGui.GetID("DockSpace");
+                ImGui.DockSpace(dockSpaceId, Vector2.Zero, _dockSpaceFlags);
+            }
+
+            if (_framebuffer != null)
+            {
+                ImGui.Begin("Framebuffer");
+                RendererID textureId = _framebuffer.GetColorAttachmentRendererID();
+                ImGui.Image(new IntPtr(textureId), new Vector2(1280, 720), Vector2.UnitY, Vector2.UnitX);
+                ImGui.End();
+            }
+
+            imGuiWindows();
+
+            ImGui.End();
+        }
 
         public void BeginScene(OrthographicCamera camera)
         {
@@ -228,7 +329,12 @@ namespace AcidarX.Core.Renderer
         }
 
 
-        public unsafe void EndScene()
+        public void EndScene()
+        {
+            Flush();
+        }
+
+        public unsafe void Flush()
         {
             if (Renderer2DData.QuadIndexCount == 0)
             {
@@ -241,11 +347,6 @@ namespace AcidarX.Core.Renderer
                     Renderer2DData.QuadVertexCount);
             }
 
-            Flush();
-        }
-
-        public void Flush()
-        {
             for (var i = 0; i < Renderer2DData.TextureSlotIndex; i++)
             {
                 Texture2D texture2D = Renderer2DData.TextureSlots[i];
