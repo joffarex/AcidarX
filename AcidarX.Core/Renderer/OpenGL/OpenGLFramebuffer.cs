@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Numerics;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 
 namespace AcidarX.Core.Renderer.OpenGL
@@ -26,6 +28,11 @@ namespace AcidarX.Core.Renderer.OpenGL
 
         public override unsafe void Invalidate()
         {
+            if (_rendererID != 0)
+            {
+                Dispose(true);
+            }
+
             _rendererID = (RendererID) _gl.CreateFramebuffer();
             Bind();
 
@@ -60,9 +67,17 @@ namespace AcidarX.Core.Renderer.OpenGL
             Unbind();
         }
 
+        public override void Resize(uint width, uint height)
+        {
+            _specs.Width = width;
+            _specs.Height = height;
+            Invalidate();
+        }
+
         public override void Bind()
         {
             _gl.BindFramebuffer(FramebufferTarget.Framebuffer, _rendererID);
+
             _gl.BindTexture(TextureTarget.Texture2D, _colorAttachmentRendererID);
         }
 
@@ -90,7 +105,12 @@ namespace AcidarX.Core.Renderer.OpenGL
         {
             Logger.Assert(manual, $"Memory leak detected on object: {this}");
 
-            AXProfiler.Capture(() => { _gl.DeleteFramebuffers(1, _rendererID); });
+            AXProfiler.Capture(() =>
+            {
+                _gl.DeleteFramebuffers(1, _rendererID);
+                _gl.DeleteTextures(1, _colorAttachmentRendererID);
+                _gl.DeleteTextures(1, _depthAttachmentRendererID);
+            });
         }
 
         public override string ToString() => $"Framebuffer|{_rendererID}";

@@ -79,14 +79,16 @@ namespace AcidarX.Core.Camera
 
         private bool OnWindowResize(WindowResizeEvent e)
         {
-            AXProfiler.Capture(() =>
-            {
-                _aspectRatio = (float) e.Size.X / e.Size.Y;
-                Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
-                    _zoomLevel);
-            });
+            AXProfiler.Capture(() => { OnFramebufferResize(e.Size.X, e.Size.Y); });
 
             return false;
+        }
+
+        public void OnFramebufferResize(float width, float height)
+        {
+            _aspectRatio = width / height;
+            Camera.SetProjection(-_aspectRatio * _zoomLevel, _aspectRatio * _zoomLevel, -_zoomLevel,
+                _zoomLevel);
         }
     }
 }

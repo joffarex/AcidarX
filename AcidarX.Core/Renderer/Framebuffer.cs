@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Numerics;
+using Silk.NET.Maths;
 
 namespace AcidarX.Core.Renderer
 {
     public record FramebufferSpecs
     {
-        public uint Width { get; init; }
-        public uint Height { get; init; }
+        public uint Width { get; set; }
+        public uint Height { get; set; }
         public uint Samples { get; init; } = 1;
         public bool SwapChainTarget { get; init; } = false;
     }
@@ -15,6 +17,7 @@ namespace AcidarX.Core.Renderer
     {
         public abstract void Dispose();
         public abstract void Invalidate();
+        public abstract void Resize(uint width, uint height);
         public abstract void Bind();
         public abstract void Unbind();
         public abstract FramebufferSpecs GetFramebufferSpecs();

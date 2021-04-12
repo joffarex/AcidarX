@@ -56,7 +56,7 @@ namespace EditarX
 
         public override void OnImGuiRender(AppRenderEvent e)
         {
-            _renderer2D.DrawDockSpace(() =>
+            _renderer2D.DrawDockSpace(_cameraController, () =>
             {
                 AXStatistics.ImGuiWindow();
                 FpsUtils.ImGuiWindow(e.DeltaTime);
@@ -73,8 +73,7 @@ namespace EditarX
         {
             _renderer2D.DrawInFramebuffer(() =>
             {
-                _renderer2D.SetClearColor(new Vector4D<float>(24.0f,24.0f, 24.0f, 1.0f));
-                _renderer2D.Clear();
+                _renderer2D.ClearFramebuffer(new Vector4(24.0f / 255.0f,24.0f / 255.0f,24.0f / 255.0f, 1.0f));
 
                 AXStatistics.Reset();
 
