@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Silk.NET.Maths;
 
 namespace AcidarX.Core.Renderer
@@ -24,5 +25,7 @@ namespace AcidarX.Core.Renderer
         public abstract void DrawIndexed(VertexArray vertexArray, uint indexCount = 0);
         public abstract unsafe void SetVertexBufferData(VertexBuffer vertexBuffer, void* ptr, uint count);
         public abstract void UnbindTexture2D(Texture2D texture2D);
+
+        public abstract void ClearFramebuffer(Framebuffer framebuffer, Vector4 color);
     }
 }

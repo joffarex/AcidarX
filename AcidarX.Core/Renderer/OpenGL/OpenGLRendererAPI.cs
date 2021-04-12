@@ -41,6 +41,17 @@ namespace AcidarX.Core.Renderer.OpenGL
             _gl.Clear((uint) (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
         }
 
+        public override void ClearFramebuffer(Framebuffer framebuffer, Vector4 color)
+        {
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.Enable(EnableCap.CullFace);
+
+            _gl.ClearTexImage(framebuffer.GetColorAttachmentRendererID(), 0, PixelFormat.Rgba, PixelType.Float, color);
+            _gl.Clear((uint) (ClearBufferMask.DepthBufferBit));
+        }
+
         public override void UseShader(Shader shader)
         {
             shader.Bind();

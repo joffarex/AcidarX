@@ -128,6 +128,11 @@ namespace AcidarX.Core.Renderer
             _renderCommandDispatcher.Clear();
         }
 
+        public void ClearFramebuffer(Vector4 color)
+        {
+            _renderCommandDispatcher.ClearFramebuffer(_framebuffer, color);
+        }
+
         public void SetClearColor(Vector4D<float> color)
         {
             _renderCommandDispatcher.SetClearColor(color);
@@ -148,7 +153,9 @@ namespace AcidarX.Core.Renderer
             }
         }
 
-        public void DrawDockSpace(Action imGuiWindows)
+        private Vector2? _viewportSize;
+
+        public void DrawDockSpace(OrthographicCameraController cameraController, Action imGuiWindows)
         {
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
 
@@ -199,9 +206,17 @@ namespace AcidarX.Core.Renderer
 
             if (_framebuffer != null)
             {
-                ImGui.Begin("Framebuffer");
+                ImGui.Begin("Viewport");
+                Vector2 viewportPanelSize = ImGui.GetContentRegionAvail();
+                if (!_viewportSize.HasValue || Math.Abs(_viewportSize.Value.X - viewportPanelSize.X) > double.Epsilon ||
+                     Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)
+                {
+                    _viewportSize = viewportPanelSize;
+                    _framebuffer.Resize((uint) _viewportSize.Value.X, (uint) _viewportSize.Value.Y);
+                }
+
                 RendererID textureId = _framebuffer.GetColorAttachmentRendererID();
-                ImGui.Image(new IntPtr(textureId), new Vector2(1280, 720), Vector2.UnitY, Vector2.UnitX);
+                ImGui.Image(new IntPtr(textureId), new Vector2(_viewportSize.Value.X, _viewportSize.Value.Y), Vector2.UnitY, Vector2.UnitX);
                 ImGui.End();
             }
 
@@ -210,6 +225,7 @@ namespace AcidarX.Core.Renderer
             ImGui.End();
         }
 
+        
         public void BeginScene(OrthographicCamera camera)
         {
             StartBatch();

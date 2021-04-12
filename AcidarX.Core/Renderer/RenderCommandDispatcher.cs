@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Silk.NET.Maths;
 
 namespace AcidarX.Core.Renderer
@@ -58,6 +59,11 @@ namespace AcidarX.Core.Renderer
         public void Clear()
         {
             _rendererAPI.Clear();
+        }
+
+        public void ClearFramebuffer(Framebuffer framebuffer, Vector4 color)
+        {
+            _rendererAPI.ClearFramebuffer(framebuffer, color);
         }
     }
 }
