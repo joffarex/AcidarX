@@ -73,7 +73,7 @@ namespace AcidarX.Sandbox
         {
             _renderer2D.DrawInFramebuffer(() =>
             {
-                _renderer2D.SetClearColor(new Vector4D<float>(255.0f, 0.0f, 0.0f, 1.0f));
+                _renderer2D.SetClearColor(new Vector4D<float>(24.0f,24.0f, 24.0f, 1.0f));
                 _renderer2D.Clear();
 
                 AXStatistics.Reset();
