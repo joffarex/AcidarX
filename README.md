@@ -7,9 +7,9 @@ AcidarX (a.k.a AX) is a modular Game Framework, built with C# and SILK.NET. It i
 
 Features to add before starting making actual games: 
 --------------------------------------------------
-- [ ] Basic 2D renderer with batch rendering (for top-down/sidescroller pixel art games, basically whatever does not need lighting)
+- [x] Basic 2D renderer with batch rendering (for top-down/sidescroller pixel art games, basically whatever does not need lighting)
 - [x] Asset manager, we need to load everything on application/scene load
-- [ ] ECS integrated with core renderer 
+- [x] ECS integrated with core renderer 
 - [ ] Audio manager 
 - [x] Image processor
 - [ ] Animation engine
