@@ -11,7 +11,6 @@ using AcidarX.Core.Renderer;
 using AcidarX.Core.Utils;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Maths;
 
 namespace EditarX
 {
@@ -73,7 +72,7 @@ namespace EditarX
         {
             _renderer2D.DrawInFramebuffer(() =>
             {
-                _renderer2D.ClearFramebuffer(new Vector4(24.0f / 255.0f,24.0f / 255.0f,24.0f / 255.0f, 1.0f));
+                _renderer2D.ClearFramebuffer(new Vector4(24.0f / 255.0f, 24.0f / 255.0f, 24.0f / 255.0f, 1.0f));
 
                 AXStatistics.Reset();
 
@@ -118,7 +117,7 @@ namespace EditarX
                 _renderer2D.EndScene();
             });
         }
-        
+
         public override void OnEvent(Event e)
         {
             _cameraController.OnEvent(e);

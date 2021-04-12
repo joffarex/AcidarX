@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Numerics;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
 using Microsoft.Extensions.Logging;
-using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 
 namespace AcidarX.Core.Renderer.OpenGL

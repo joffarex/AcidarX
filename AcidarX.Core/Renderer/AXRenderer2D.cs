@@ -49,6 +49,8 @@ namespace AcidarX.Core.Renderer
         private Framebuffer _framebuffer;
         private bool _pOpen = true;
 
+        private Vector2? _viewportSize;
+
         public AXRenderer2D
         (
             RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory, AssetManager assetManager
@@ -153,8 +155,6 @@ namespace AcidarX.Core.Renderer
             }
         }
 
-        private Vector2? _viewportSize;
-
         public void DrawDockSpace(OrthographicCameraController cameraController, Action imGuiWindows)
         {
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
@@ -209,14 +209,15 @@ namespace AcidarX.Core.Renderer
                 ImGui.Begin("Viewport");
                 Vector2 viewportPanelSize = ImGui.GetContentRegionAvail();
                 if (!_viewportSize.HasValue || Math.Abs(_viewportSize.Value.X - viewportPanelSize.X) > double.Epsilon ||
-                     Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)
+                    Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)
                 {
                     _viewportSize = viewportPanelSize;
                     _framebuffer.Resize((uint) _viewportSize.Value.X, (uint) _viewportSize.Value.Y);
                 }
 
                 RendererID textureId = _framebuffer.GetColorAttachmentRendererID();
-                ImGui.Image(new IntPtr(textureId), new Vector2(_viewportSize.Value.X, _viewportSize.Value.Y), Vector2.UnitY, Vector2.UnitX);
+                ImGui.Image(new IntPtr(textureId), new Vector2(_viewportSize.Value.X, _viewportSize.Value.Y),
+                    Vector2.UnitY, Vector2.UnitX);
                 ImGui.End();
             }
 
@@ -225,7 +226,7 @@ namespace AcidarX.Core.Renderer
             ImGui.End();
         }
 
-        
+
         public void BeginScene(OrthographicCamera camera)
         {
             StartBatch();

@@ -52,9 +52,9 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender(AppRenderEvent e)
         {
-                // AXStatistics.ImGuiWindow();
-                FpsUtils.ImGuiWindow(e.DeltaTime);
-                ImGui.ShowDemoWindow();
+            // AXStatistics.ImGuiWindow();
+            FpsUtils.ImGuiWindow(e.DeltaTime);
+            ImGui.ShowDemoWindow();
         }
 
         public override void OnUpdate(double deltaTime)
@@ -64,54 +64,54 @@ namespace AcidarX.Sandbox
 
         public override void OnRender(double deltaTime)
         {
-                _renderer2D.SetClearColor(new Vector4D<float>(24.0f,24.0f, 24.0f, 1.0f));
-                _renderer2D.Clear();
+            _renderer2D.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
+            _renderer2D.Clear();
 
-                AXStatistics.Reset();
+            AXStatistics.Reset();
 
-                _renderer2D.BeginScene(_cameraController.Camera);
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
-                    Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
-                });
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(Vector2.Zero, 1.0f), Size = Vector2.One * 1.2f,
-                    Color = new Vector4(0.4f, 0.1f, 0.8f, 1.0f), RotationInRadians = 45 * (float) (Math.PI / 180.0f)
-                });
-                _renderer2D.EndScene();
+            _renderer2D.BeginScene(_cameraController.Camera);
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
+                Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.Zero, 1.0f), Size = Vector2.One * 1.2f,
+                Color = new Vector4(0.4f, 0.1f, 0.8f, 1.0f), RotationInRadians = 45 * (float) (Math.PI / 180.0f)
+            });
+            _renderer2D.EndScene();
 
-                _renderer2D.BeginScene(_cameraController.Camera);
-                StressTest();
-                _renderer2D.EndScene();
+            _renderer2D.BeginScene(_cameraController.Camera);
+            StressTest();
+            _renderer2D.EndScene();
 
-                // Transparency is weird with depth buffer. We need to first draw non-transparent objects and then draw transparent ones
-                // But even for them, render order MATTERS! also we'll need to order Z Index as well.
-                // Related link: https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/transparencyanddepth/Tutorial%204%20-%20Transparency%20and%20Depth.pdf
-                _renderer2D.BeginScene(_cameraController.Camera);
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
-                    Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f), Texture2D = _texture
-                });
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(-Vector2.UnitX * 0.8f, 2.1f), Size = Vector2.One * 0.8f,
-                    Color = new Vector4(0.4f, 0.8f, 0.2f, 1.0f), Texture2D = _texture, TilingFactor = 2.0f
-                });
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(Vector2.UnitY * 0.9f, 2.2f), Size = Vector2.One,
-                    SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 3), new SizeF(128.0f, 128.0f))
-                });
-                _renderer2D.DrawQuad(new QuadProperties
-                {
-                    Position = new Vector3(Vector2.UnitY * 0.9f, 2.3f), Size = new Vector2(1.0f, 2.0f),
-                    SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 1), new SizeF(128.0f, 128.0f),
-                        new Vector2(1, 2))
-                });
-                _renderer2D.EndScene();
+            // Transparency is weird with depth buffer. We need to first draw non-transparent objects and then draw transparent ones
+            // But even for them, render order MATTERS! also we'll need to order Z Index as well.
+            // Related link: https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/transparencyanddepth/Tutorial%204%20-%20Transparency%20and%20Depth.pdf
+            _renderer2D.BeginScene(_cameraController.Camera);
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f), Texture2D = _texture
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(-Vector2.UnitX * 0.8f, 2.1f), Size = Vector2.One * 0.8f,
+                Color = new Vector4(0.4f, 0.8f, 0.2f, 1.0f), Texture2D = _texture, TilingFactor = 2.0f
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.UnitY * 0.9f, 2.2f), Size = Vector2.One,
+                SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 3), new SizeF(128.0f, 128.0f))
+            });
+            _renderer2D.DrawQuad(new QuadProperties
+            {
+                Position = new Vector3(Vector2.UnitY * 0.9f, 2.3f), Size = new Vector2(1.0f, 2.0f),
+                SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 1), new SizeF(128.0f, 128.0f),
+                    new Vector2(1, 2))
+            });
+            _renderer2D.EndScene();
         }
 
         private void StressTest()

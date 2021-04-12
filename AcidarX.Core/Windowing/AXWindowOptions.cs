@@ -4,9 +4,8 @@
     {
         public AXWindowOptions()
         {
-            
         }
-        
+
         public AXWindowOptions(string title, int width, int height, bool vSync)
         {
             Title = title;
