@@ -44,10 +44,6 @@ namespace AcidarX.Sandbox
             _texture = _assetManager.GetTexture2D("assets/Textures/awesomeface.png");
             _tilemapTexture = _assetManager.GetTexture2D("assets/Textures/rpg_tilemap.png");
             _renderer2D.Init();
-            _renderer2D.SetFramebuffer(new FramebufferSpecs
-            {
-                Width = 1280, Height = 720
-            });
         }
 
         public override void OnDetach()
@@ -56,12 +52,9 @@ namespace AcidarX.Sandbox
 
         public override void OnImGuiRender(AppRenderEvent e)
         {
-            _renderer2D.DrawDockSpace(() =>
-            {
-                AXStatistics.ImGuiWindow();
+                // AXStatistics.ImGuiWindow();
                 FpsUtils.ImGuiWindow(e.DeltaTime);
                 ImGui.ShowDemoWindow();
-            });
         }
 
         public override void OnUpdate(double deltaTime)
@@ -71,8 +64,6 @@ namespace AcidarX.Sandbox
 
         public override void OnRender(double deltaTime)
         {
-            _renderer2D.DrawInFramebuffer(() =>
-            {
                 _renderer2D.SetClearColor(new Vector4D<float>(24.0f,24.0f, 24.0f, 1.0f));
                 _renderer2D.Clear();
 
@@ -121,7 +112,6 @@ namespace AcidarX.Sandbox
                         new Vector2(1, 2))
                 });
                 _renderer2D.EndScene();
-            });
         }
 
         private void StressTest()

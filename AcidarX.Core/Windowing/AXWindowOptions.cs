@@ -2,6 +2,11 @@
 {
     public class AXWindowOptions
     {
+        public AXWindowOptions()
+        {
+            
+        }
+        
         public AXWindowOptions(string title, int width, int height, bool vSync)
         {
             Title = title;
@@ -10,10 +15,10 @@
             VSync = vSync;
         }
 
-        public string Title { get; }
-        public int Width { get; }
-        public int Height { get; }
-        public bool VSync { get; }
+        public string Title { get; init; }
+        public int Width { get; init; }
+        public int Height { get; init; }
+        public bool VSync { get; init; }
 
         public static AXWindowOptions CreateDefault() => new("AcidarX", 1280, 720, false);
     }
