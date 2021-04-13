@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Renderer

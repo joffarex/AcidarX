@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using AcidarX.Core.Logging;
-using AcidarX.Core.Profiling;
+using AcidarX.Kernel.Logging;
+using AcidarX.Kernel.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using AcidarX.Core.Renderer;
-using AcidarX.Core.Utils;
+using AcidarX.Kernel.Utils;
 using Silk.NET.OpenGL;
 using Shader = AcidarX.Core.Renderer.Shader;
 

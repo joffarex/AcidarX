@@ -1,6 +1,7 @@
 ﻿using System.IO;
+using AcidarX.Kernel.Utils;
 
-namespace AcidarX.Core.Profiling
+namespace AcidarX.Kernel.Profiling
 {
     public struct InstrumentationSession
     {

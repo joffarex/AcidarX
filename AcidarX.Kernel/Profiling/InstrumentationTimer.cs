@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace AcidarX.Core.Profiling
+namespace AcidarX.Kernel.Profiling
 {
     public class InstrumentationTimer : IDisposable
     {

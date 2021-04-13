@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace AcidarX.Core.Utils
+namespace AcidarX.Kernel.Utils
 {
     public static class FileUtils
     {

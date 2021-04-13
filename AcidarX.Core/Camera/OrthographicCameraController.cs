@@ -2,7 +2,7 @@
 using System.Numerics;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
-using AcidarX.Core.Profiling;
+using AcidarX.Kernel.Profiling;
 
 namespace AcidarX.Core.Camera
 {

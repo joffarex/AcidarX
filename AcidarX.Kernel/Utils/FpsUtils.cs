@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 
-namespace AcidarX.Core.Utils
+namespace AcidarX.Kernel.Utils
 {
     public class FpsUtils
     {

@@ -1,4 +1,4 @@
-﻿namespace AcidarX.Core.Profiling
+﻿namespace AcidarX.Kernel.Profiling
 {
     public struct ProfileResult
     {

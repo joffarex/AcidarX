@@ -3,10 +3,10 @@ using System.Linq;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Logging;
-using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
+using AcidarX.Kernel.Logging;
+using AcidarX.Kernel.Profiling;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core

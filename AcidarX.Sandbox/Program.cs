@@ -1,6 +1,6 @@
 ﻿using AcidarX.Core.Hosting;
-using AcidarX.Core.Profiling;
 using AcidarX.Core.Windowing;
+using AcidarX.Kernel.Profiling;
 using AcidarX.Sandbox;
 
 Instrumentation.Instance.BeginSession("Startup", "Sandbox/profile-Startup.json");

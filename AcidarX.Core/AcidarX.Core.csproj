@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AcidarX.AXImGui\AcidarX.AXImGui.csproj" />
     <ProjectReference Include="..\AcidarX.ECS\AcidarX.ECS.csproj" />
+    <ProjectReference Include="..\AcidarX.Kernel\AcidarX.Kernel.csproj" />
   </ItemGroup>
     
     <ItemGroup>

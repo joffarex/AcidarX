@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 
-namespace AcidarX.Core.Profiling
+namespace AcidarX.Kernel.Profiling
 {
     public sealed class AXTimer : IDisposable
     {

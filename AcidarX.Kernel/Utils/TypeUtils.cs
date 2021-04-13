@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Reflection.Emit;
 
-namespace AcidarX.Core.Utils
+namespace AcidarX.Kernel.Utils
 {
     public static class TypeUtils
     {

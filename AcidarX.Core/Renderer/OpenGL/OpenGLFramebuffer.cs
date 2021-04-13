@@ -1,6 +1,6 @@
 ﻿using System;
-using AcidarX.Core.Logging;
-using AcidarX.Core.Profiling;
+using AcidarX.Kernel.Logging;
+using AcidarX.Kernel.Profiling;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL;
 
