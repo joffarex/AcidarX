@@ -1,7 +1,7 @@
 ﻿using System;
 using AcidarX.Core.Events;
 using AcidarX.Core.Input;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.Maths;

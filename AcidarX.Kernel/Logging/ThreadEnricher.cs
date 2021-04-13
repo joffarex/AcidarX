@@ -2,7 +2,7 @@
 using Serilog.Core;
 using Serilog.Events;
 
-namespace AcidarX.Core.Logging
+namespace AcidarX.Kernel.Logging
 {
     public class ThreadEnricher : ILogEventEnricher
     {

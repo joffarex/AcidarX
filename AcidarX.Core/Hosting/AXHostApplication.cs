@@ -1,7 +1,7 @@
 ﻿using System;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Profiling;
 using AcidarX.Core.Windowing;
+using AcidarX.Kernel.Profiling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

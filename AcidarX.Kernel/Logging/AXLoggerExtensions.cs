@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
-namespace AcidarX.Core.Logging
+namespace AcidarX.Kernel.Logging
 {
     public static class AXLoggerExtensions
     {

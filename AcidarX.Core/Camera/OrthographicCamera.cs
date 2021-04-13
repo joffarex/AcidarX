@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using AcidarX.Core.Profiling;
+using AcidarX.Kernel.Profiling;
 
 namespace AcidarX.Core.Camera
 {

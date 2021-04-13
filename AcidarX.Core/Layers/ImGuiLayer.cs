@@ -1,6 +1,7 @@
 ﻿using AcidarX.AXImGui;
 using AcidarX.Core.Events;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
+using AcidarX.Kernel.Utils;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;

@@ -4,8 +4,8 @@ using AcidarX.Core;
 using AcidarX.Core.Camera;
 using AcidarX.Core.Events;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Logging;
 using AcidarX.Core.Renderer;
+using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Sandbox

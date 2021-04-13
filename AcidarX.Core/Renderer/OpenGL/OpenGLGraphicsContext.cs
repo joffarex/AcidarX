@@ -1,4 +1,4 @@
-﻿using AcidarX.Core.Profiling;
+﻿using AcidarX.Kernel.Profiling;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 

@@ -1,10 +1,10 @@
 ﻿// #define AX_PROFILE
 
 using System;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace AcidarX.Core.Profiling
+namespace AcidarX.Kernel.Profiling
 {
     public class AXProfiler
     {

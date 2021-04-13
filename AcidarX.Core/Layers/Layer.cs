@@ -1,6 +1,6 @@
 ﻿using System;
 using AcidarX.Core.Events;
-using AcidarX.Core.Logging;
+using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace AcidarX.Core.Layers

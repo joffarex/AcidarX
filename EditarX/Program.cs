@@ -1,6 +1,6 @@
 ﻿using AcidarX.Core.Hosting;
-using AcidarX.Core.Profiling;
 using AcidarX.Core.Windowing;
+using AcidarX.Kernel.Profiling;
 using EditarX;
 
 Instrumentation.Instance.BeginSession("Startup", "EditarX/profile-Startup.json");

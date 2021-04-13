@@ -1,7 +1,7 @@
 ﻿using System;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Profiling;
 using AcidarX.Core.Renderer.OpenGL;
+using AcidarX.Kernel.Profiling;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
