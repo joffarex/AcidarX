@@ -27,6 +27,7 @@ namespace AcidarX.Core.Hosting
                 .AddSingleton<AssetManager>()
                 // .AddSingleton<AXRenderer>()
                 .AddSingleton<AXRenderer2D>()
+                .AddSingleton<LayerStack>()
                 .AddSingleton<LayerFactory>()
                 .AddSingleton<AXApplication>();
         }

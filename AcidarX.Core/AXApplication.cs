@@ -24,10 +24,12 @@ namespace AcidarX.Core
         private bool _minimized;
 
         public AXApplication
-            (AXWindow window, RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory)
+        (
+            AXWindow window, RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory,
+            LayerStack layers
+        )
         {
-            _layers = new LayerStack();
-
+            _layers = layers;
             _window = window;
             _window.EventCallback = OnEvent;
 
