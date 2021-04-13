@@ -1,6 +1,7 @@
 ﻿using AcidarX.AXImGui;
 using AcidarX.Core.Events;
 using AcidarX.Core.Logging;
+using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -17,6 +18,8 @@ namespace AcidarX.Core.Layers
         public ImGuiLayer
             (GL gl, IWindow window, IInputContext inputContext) : base("ImGui layer") =>
             _imGuiController = new ImGuiController(gl, window, inputContext);
+
+        public bool BlockEvents { get; set; }
 
         public override void OnAttach()
         {
@@ -38,6 +41,16 @@ namespace AcidarX.Core.Layers
         {
         }
 
+        public override void OnEvent(Event e)
+        {
+            if (BlockEvents)
+            {
+                ImGuiIOPtr io = ImGui.GetIO();
+                e.Handled |= e.IsInCategory(EventCategory.Mouse) & io.WantCaptureMouse;
+                e.Handled |= e.IsInCategory(EventCategory.Keyboard) & io.WantCaptureKeyboard;
+            }
+        }
+
         public void Begin(double deltaTime)
         {
             _imGuiController.Update((float) deltaTime);
@@ -47,7 +60,6 @@ namespace AcidarX.Core.Layers
         {
             _imGuiController.Render();
         }
-
 
         public override void Dispose(bool manual)
         {

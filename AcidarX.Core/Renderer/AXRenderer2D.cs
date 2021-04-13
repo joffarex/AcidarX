@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using AcidarX.Core.Camera;
 using AcidarX.Core.Graphics;
+using AcidarX.Core.Layers;
 using AcidarX.Core.Logging;
 using AcidarX.Core.Profiling;
 using ImGuiNET;
@@ -41,6 +42,7 @@ namespace AcidarX.Core.Renderer
 
         private readonly bool _fullScreen = true;
         private readonly GraphicsFactory _graphicsFactory;
+        private readonly LayerStack _layers;
         private readonly bool _padding = false;
         private readonly RenderCommandDispatcher _renderCommandDispatcher;
 
@@ -53,12 +55,14 @@ namespace AcidarX.Core.Renderer
 
         public AXRenderer2D
         (
-            RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory, AssetManager assetManager
+            RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory, AssetManager assetManager,
+            LayerStack layers
         )
         {
             _renderCommandDispatcher = renderCommandDispatcher;
             _graphicsFactory = graphicsFactory;
             _assetManager = assetManager;
+            _layers = layers;
 
             Renderer2DData.QuadVertexPositions[0] = new Vector3(-0.5f, -0.5f, 0.0f); // bottom left
             Renderer2DData.QuadVertexPositions[1] = new Vector3(0.5f, -0.5f, 0.0f); // bottom right
@@ -72,6 +76,9 @@ namespace AcidarX.Core.Renderer
         }
 
         public static API API => RendererAPI.API;
+
+        public bool ViewportFocused { get; private set; }
+        public bool ViewportHovered { get; private set; }
 
         public void SetFramebuffer(FramebufferSpecs specs)
         {
@@ -207,6 +214,11 @@ namespace AcidarX.Core.Renderer
             if (_framebuffer != null)
             {
                 ImGui.Begin("Viewport");
+
+                ViewportFocused = ImGui.IsWindowFocused();
+                ViewportHovered = ImGui.IsWindowHovered();
+                _layers.GetImGuiLayer().BlockEvents = !ViewportFocused || !ViewportHovered;
+
                 Vector2 viewportPanelSize = ImGui.GetContentRegionAvail();
                 if (!_viewportSize.HasValue || Math.Abs(_viewportSize.Value.X - viewportPanelSize.X) > double.Epsilon ||
                     Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)
@@ -225,7 +237,6 @@ namespace AcidarX.Core.Renderer
 
             ImGui.End();
         }
-
 
         public void BeginScene(OrthographicCamera camera)
         {

@@ -65,7 +65,10 @@ namespace EditarX
 
         public override void OnUpdate(double deltaTime)
         {
-            _cameraController.OnUpdate(deltaTime);
+            if (_renderer2D.ViewportFocused)
+            {
+                _cameraController.OnUpdate(deltaTime);
+            }
         }
 
         public override void OnRender(double deltaTime)

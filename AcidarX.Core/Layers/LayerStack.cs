@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AcidarX.Core.Layers
 {
@@ -39,6 +40,11 @@ namespace AcidarX.Core.Layers
         public void PopOverlay(Layer overlay)
         {
             Layers.Remove(overlay);
+        }
+
+        public ImGuiLayer GetImGuiLayer()
+        {
+            return Layers.Where(layer => layer.GetType() == typeof(ImGuiLayer)).Cast<ImGuiLayer>().First();
         }
     }
 }
