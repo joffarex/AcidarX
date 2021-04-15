@@ -14,8 +14,8 @@ Features to add before starting making actual games:
 - [x] Image processor
 - [ ] Animation engine
 - [ ] ImGui integration for debugging purposes
-- [ ] REALLY basic physics engine
 - [x] Maybe do things more C# way (Use DI, for example)
+- [ ] Basic level editor
 
 Make some simple games for framework showcase: 
 ----------------------------------------------
@@ -35,6 +35,7 @@ These features will need to get implemented before initial release (some of them
 
 - [ ] Advanced texture setup
 - [ ] Lighting to 2D renderer
+- [ ] REALLY basic physics engine
 - [ ] Built-in AI engine and Algorithm implementations
 - [ ] Split code into modular architecture
 - [ ] Better Level Editor which is NOT tied into the actual framework code but can be used with it
