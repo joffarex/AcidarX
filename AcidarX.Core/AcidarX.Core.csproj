@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AcidarX.AXImGui\AcidarX.AXImGui.csproj" />
     <ProjectReference Include="..\AcidarX.ECS\AcidarX.ECS.csproj" />
+    <ProjectReference Include="..\AcidarX.Graphics\AcidarX.Graphics.csproj" />
     <ProjectReference Include="..\AcidarX.Kernel\AcidarX.Kernel.csproj" />
   </ItemGroup>
     
@@ -22,5 +23,9 @@
         <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
         <PackageReference Include="Silk.NET" Version="2.2.0" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Renderer" />
     </ItemGroup>
 </Project>

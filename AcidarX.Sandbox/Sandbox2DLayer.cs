@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
-using AcidarX.Core;
-using AcidarX.Core.Camera;
-using AcidarX.Core.Events;
-using AcidarX.Core.Graphics;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Renderer;
+using AcidarX.Graphics;
+using AcidarX.Graphics.Camera;
+using AcidarX.Graphics.Graphics;
+using AcidarX.Graphics.Renderer;
+using AcidarX.Kernel.Events;
 using AcidarX.Kernel.Logging;
 using AcidarX.Kernel.Utils;
 using ImGuiNET;

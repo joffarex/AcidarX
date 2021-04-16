@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using AcidarX.Core;
-using AcidarX.Core.Camera;
-using AcidarX.Core.Events;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Renderer;
+using AcidarX.Graphics;
+using AcidarX.Graphics.Camera;
+using AcidarX.Graphics.Renderer;
+using AcidarX.Kernel.Events;
 using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 

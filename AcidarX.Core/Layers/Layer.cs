@@ -1,5 +1,5 @@
 ﻿using System;
-using AcidarX.Core.Events;
+using AcidarX.Kernel.Events;
 using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 
