@@ -158,7 +158,7 @@ namespace AcidarX.Graphics.Renderer
             }
         }
 
-        public void DrawDockSpace(OrthographicCameraController cameraController, Action imGuiWindows)
+        public void DrawDockSpace(Action<bool> blockEvents, Action imGuiWindows)
         {
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
 
@@ -214,7 +214,8 @@ namespace AcidarX.Graphics.Renderer
                 ViewportFocused = ImGui.IsWindowFocused();
                 ViewportHovered = ImGui.IsWindowHovered();
                 // _layers.GetImGuiLayer().BlockEvents = !ViewportFocused || !ViewportHovered;
-
+                blockEvents(!ViewportFocused || !ViewportHovered);
+                
                 Vector2 viewportPanelSize = ImGui.GetContentRegionAvail();
                 if (!_viewportSize.HasValue || Math.Abs(_viewportSize.Value.X - viewportPanelSize.X) > double.Epsilon ||
                     Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)

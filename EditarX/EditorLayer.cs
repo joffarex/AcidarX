@@ -55,7 +55,7 @@ namespace EditarX
 
         public override void OnImGuiRender(AppRenderEvent e)
         {
-            _renderer2D.DrawDockSpace(_cameraController, () =>
+            _renderer2D.DrawDockSpace(LayerStack.GetImGuiLayer().SetBlockEvents, () =>
             {
                 AXStatistics.ImGuiWindow();
                 FpsUtils.ImGuiWindow(e.DeltaTime);

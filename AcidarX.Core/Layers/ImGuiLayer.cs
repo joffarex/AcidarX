@@ -21,6 +21,7 @@ namespace AcidarX.Core.Layers
             _imGuiController = new ImGuiController(gl, window, inputContext);
 
         public bool BlockEvents { get; set; }
+        public void SetBlockEvents(bool block) => BlockEvents = block;
 
         public override void OnAttach()
         {

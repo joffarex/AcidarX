@@ -12,9 +12,7 @@ namespace AcidarX.Core.Layers
         // That's why we need this index to keep track of layer's index so it wont get emlaced after overlay
         private int _layerIndex;
 
-        public LayerStack() => Layers = new List<Layer>();
-
-        public List<Layer> Layers { get; }
+        public static List<Layer> Layers { get; } = new();
 
         public IEnumerator<Layer> GetEnumerator() => Layers.GetEnumerator();
 
@@ -42,7 +40,7 @@ namespace AcidarX.Core.Layers
             Layers.Remove(overlay);
         }
 
-        public ImGuiLayer GetImGuiLayer()
+        public static ImGuiLayer GetImGuiLayer()
         {
             return Layers.Where(layer => layer.GetType() == typeof(ImGuiLayer)).Cast<ImGuiLayer>().First();
         }
