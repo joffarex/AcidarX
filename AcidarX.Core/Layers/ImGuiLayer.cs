@@ -1,5 +1,5 @@
 ﻿using AcidarX.AXImGui;
-using AcidarX.Core.Events;
+using AcidarX.Kernel.Events;
 using AcidarX.Kernel.Logging;
 using AcidarX.Kernel.Utils;
 using ImGuiNET;

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
-using AcidarX.Core.Events;
-using AcidarX.Core.Input;
+using AcidarX.Kernel.Events;
+using AcidarX.Kernel.Input;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using AcidarX.Core.Events;
-using AcidarX.Core.Input;
 using AcidarX.Core.Layers;
-using AcidarX.Core.Renderer;
 using AcidarX.Core.Windowing;
+using AcidarX.Graphics.Renderer;
+using AcidarX.Kernel.Events;
+using AcidarX.Kernel.Input;
 using AcidarX.Kernel.Logging;
 using AcidarX.Kernel.Profiling;
 using Microsoft.Extensions.Logging;
@@ -16,6 +16,7 @@ namespace AcidarX.Core
         private static readonly ILogger<AXApplication> Logger = AXLogger.CreateLogger<AXApplication>();
 
         private readonly GraphicsFactory _graphicsFactory;
+        private readonly LayerFactory _layerFactory;
         private readonly LayerStack _layers;
         private readonly RenderCommandDispatcher _renderCommandDispatcher;
         private readonly AXWindow _window;
@@ -26,10 +27,11 @@ namespace AcidarX.Core
         public AXApplication
         (
             AXWindow window, RenderCommandDispatcher renderCommandDispatcher, GraphicsFactory graphicsFactory,
-            LayerStack layers
+            LayerStack layers, LayerFactory layerFactory
         )
         {
             _layers = layers;
+            _layerFactory = layerFactory;
             _window = window;
             _window.EventCallback = OnEvent;
 
@@ -103,7 +105,7 @@ namespace AcidarX.Core
         {
             AXProfiler.Capture(() =>
             {
-                _imGuiLayer = _graphicsFactory.CreateImGuiLayer(_window.NativeWindow, _window.InputContext);
+                _imGuiLayer = _layerFactory.CreateImGuiLayer(_window.NativeWindow, _window.InputContext);
                 PushLayer(_imGuiLayer);
 
                 foreach (Layer layer in _layers)

@@ -1,7 +1,8 @@
 ﻿using AcidarX.Core.Layers;
-using AcidarX.Core.Renderer;
-using AcidarX.Core.Renderer.OpenGL;
 using AcidarX.Core.Windowing;
+using AcidarX.Graphics;
+using AcidarX.Graphics.Renderer;
+using AcidarX.Graphics.Renderer.OpenGL;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Silk.NET.OpenGL;

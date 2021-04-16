@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using AcidarX.Graphics.Renderer;
 
 namespace AcidarX.ECS
 {
@@ -27,49 +28,26 @@ namespace AcidarX.ECS
         public override string ToString() => $"[{GetType().Name}]: {{ Translation: {Translation}, Scale: {Scale} }}";
     }
 
-    public readonly struct Transform3DComponent : IComponent
-    {
-        public Matrix4x4 Translation { get; }
-
-        public Transform3DComponent(Matrix4x4 translation) => Translation = translation;
-
-        public override string ToString() => $"[{GetType().Name}]: {{ Translation: {Translation} }}";
-    }
-
     public readonly struct PositionComponent : IComponent
     {
-        public float X { get; }
-        public float Y { get; }
-        public float Z { get; }
-
-        public PositionComponent(float x, float y, float z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
-        public PositionComponent(Vector3 fullPosition)
-        {
-            X = fullPosition.X;
-            Y = fullPosition.Y;
-            Z = fullPosition.Z;
-        }
+        public float X { get; init; }
+        public float Y { get; init; }
+        public float Z { get; init; }
 
         public override string ToString() => $"[{GetType().Name}]: {{ X: {X}, Y: {Y}, Z: {Z} }}";
     }
 
-    public struct SpriteRendererComponent<TTexture> : IComponent
+    public struct SpriteRendererComponent : IComponent
     {
         public Vector4 Color { get; }
-        public List<TTexture> Textures { get; }
+        public List<Texture2D> Textures { get; }
         public bool IsDirty { get; set; }
 
         public SpriteRendererComponent
-            (ref SpriteRendererComponent<TTexture> spriteRendererComponent) =>
+            (ref SpriteRendererComponent spriteRendererComponent) =>
             (Color, Textures, IsDirty) = (spriteRendererComponent.Color, spriteRendererComponent.Textures, true);
 
-        public SpriteRendererComponent(Vector4 color, List<TTexture> texture) => (
+        public SpriteRendererComponent(Vector4 color, List<Texture2D> texture) => (
             Color, Textures, IsDirty) = (color, texture, true);
 
         public override string ToString() =>

@@ -1,6 +1,6 @@
 ﻿using System;
-using AcidarX.Core.Events;
-using AcidarX.Core.Input;
+using AcidarX.Kernel.Events;
+using AcidarX.Kernel.Input;
 using AcidarX.Kernel.Logging;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
