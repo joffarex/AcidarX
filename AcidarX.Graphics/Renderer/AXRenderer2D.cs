@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using AcidarX.Graphics.Camera;
 using AcidarX.Graphics.Graphics;
+using AcidarX.Graphics.Scene;
 using AcidarX.Kernel.Logging;
 using AcidarX.Kernel.Profiling;
 using ImGuiNET;
@@ -215,7 +216,7 @@ namespace AcidarX.Graphics.Renderer
                 ViewportHovered = ImGui.IsWindowHovered();
                 // _layers.GetImGuiLayer().BlockEvents = !ViewportFocused || !ViewportHovered;
                 blockEvents(!ViewportFocused || !ViewportHovered);
-                
+
                 Vector2 viewportPanelSize = ImGui.GetContentRegionAvail();
                 if (!_viewportSize.HasValue || Math.Abs(_viewportSize.Value.X - viewportPanelSize.X) > double.Epsilon ||
                     Math.Abs(_viewportSize.Value.Y - viewportPanelSize.Y) > double.Epsilon)
@@ -307,6 +308,56 @@ namespace AcidarX.Graphics.Renderer
             {
                 GetTextureIndex(quadProperties.SubTexture2D.Texture2D, ref textureIndex);
             }
+        }
+        
+        private void GetTextureIndex(SpriteRendererComponent spriteComponent, ref float textureIndex)
+        {
+            if (spriteComponent.Texture != null)
+            {
+                GetTextureIndex(spriteComponent.Texture, ref textureIndex);
+            }
+
+            if (spriteComponent.SubTexture?.Texture2D != null)
+            {
+                GetTextureIndex(spriteComponent.SubTexture.Texture2D, ref textureIndex);
+            }
+        }
+
+        public void DrawSprite(TransformComponent transformComponent, SpriteRendererComponent spriteComponent)
+        {
+            if (Renderer2DData.QuadIndexCount >= Renderer2DData.MaxIndices)
+            {
+                NextBatch();
+            }
+
+            // If there is no texture, we'll just use default white one
+            var textureIndex = 0.0f;
+            GetTextureIndex(spriteComponent, ref textureIndex);
+
+            Matrix4x4 transform = Matrix4x4.CreateTranslation(transformComponent.Translation) * 
+                                  transformComponent.Rotation *
+                                  Matrix4x4.CreateScale(new Vector3(transformComponent.Scale, 1.0f));
+
+            for (var i = 0; i < Renderer2DData.VertexPerQuad; i++)
+            {
+                Vector3 transformedPosition = Vector3.Transform(Renderer2DData.QuadVertexPositions[i], transform);
+
+                Vector2 textureCoordinate = spriteComponent.SubTexture?.Texture2D != null
+                    ? spriteComponent.SubTexture.TextureCoordinates[i]
+                    : Renderer2DData.QuadTextureCoordinates[i];
+
+                Renderer2DData.QuadVertices[Renderer2DData.QuadVertexCount + i] = new QuadVertex
+                {
+                    Position = transformedPosition, TextureIndex = textureIndex,
+                    TilingFactor = spriteComponent.TilingFactor, Color = spriteComponent.Color,
+                    TextureCoordinate = textureCoordinate
+                };
+            }
+
+            Renderer2DData.QuadIndexCount += Renderer2DData.IndexPerQuad;
+            Renderer2DData.QuadVertexCount += Renderer2DData.VertexPerQuad;
+
+            AXStatistics.QuadCount++;
         }
 
         public void DrawQuad(QuadProperties quadProperties)

@@ -6,6 +6,7 @@ using AcidarX.Graphics;
 using AcidarX.Graphics.Camera;
 using AcidarX.Graphics.Graphics;
 using AcidarX.Graphics.Renderer;
+using AcidarX.Graphics.Scene;
 using AcidarX.Kernel.Events;
 using AcidarX.Kernel.Logging;
 using AcidarX.Kernel.Utils;
@@ -21,8 +22,9 @@ namespace AcidarX.Sandbox
 
         private readonly AssetManager _assetManager;
 
-        private readonly OrthographicCameraController _cameraController;
         private readonly AXRenderer2D _renderer2D;
+
+        private Scene _scene;
 
         private Texture2D _texture;
         private Texture2D _tilemapTexture;
@@ -32,7 +34,6 @@ namespace AcidarX.Sandbox
         {
             _renderer2D = renderer2D;
             _assetManager = assetManager;
-            _cameraController = new OrthographicCameraController(16.0f / 9.0f);
         }
 
         public override void OnAttach()
@@ -44,6 +45,66 @@ namespace AcidarX.Sandbox
             _texture = _assetManager.GetTexture2D("assets/Textures/awesomeface.png");
             _tilemapTexture = _assetManager.GetTexture2D("assets/Textures/rpg_tilemap.png");
             _renderer2D.Init();
+
+            _scene = new Scene(_renderer2D, new OrthographicCameraController(16.0f / 9.0f));
+            _scene.AddComponentType<TransformComponent>();
+            _scene.AddComponentType<SpriteRendererComponent>();
+
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(-Vector2.UnitX * 0.7f, 0.0f),
+                Scale = Vector2.One * 1.1f
+            }, new SpriteRendererComponent
+            {
+                Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
+            });
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(Vector2.Zero, 1.0f),
+                Scale = Vector2.One * 1.2f,
+                Rotation = Matrix4x4.CreateRotationZ(45 * (float) (Math.PI / 180.0f))
+            }, new SpriteRendererComponent
+            {
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f)
+            });
+            StressTest();
+
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(-Vector2.One * 0.5f, 2.0f),
+                Scale = Vector2.One * 0.8f
+            }, new SpriteRendererComponent
+            {
+                Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f),
+                Texture = _texture
+            });
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(-Vector2.UnitX * 0.8f, 2.1f),
+                Scale = Vector2.One * 0.8f
+            }, new SpriteRendererComponent
+            {
+                Color = new Vector4(0.4f, 0.8f, 0.4f, 0.7f),
+                Texture = _texture,
+                TilingFactor = 2.0f
+            });
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(Vector2.UnitY * 0.9f, 2.2f),
+                Scale = Vector2.One
+            }, new SpriteRendererComponent
+            {
+                SubTexture = new SubTexture2D(_tilemapTexture, new Vector2(4, 3), new SizeF(128.0f, 128.0f))
+            });
+            _scene.AddSprite(new TransformComponent
+            {
+                Translation = new Vector3(Vector2.UnitY * 0.9f, 2.3f),
+                Scale = new Vector2(1.0f, 2.0f)
+            }, new SpriteRendererComponent
+            {
+                SubTexture = new SubTexture2D(_tilemapTexture, new Vector2(4, 1), new SizeF(128.0f, 128.0f),
+                    new Vector2(1, 2))
+            });
         }
 
         public override void OnDetach()
@@ -59,59 +120,21 @@ namespace AcidarX.Sandbox
 
         public override void OnUpdate(double deltaTime)
         {
-            _cameraController.OnUpdate(deltaTime);
+            _scene.OnUpdate(deltaTime);
         }
 
         public override void OnRender(double deltaTime)
         {
+            // Transparency is weird with depth buffer. We need to first draw non-transparent objects and then draw transparent ones
+            // But even for them, render order MATTERS! also we'll need to order Z Index as well.
+            // Related link: https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/transparencyanddepth/Tutorial%204%20-%20Transparency%20and%20Depth.pdf
+
             _renderer2D.SetClearColor(new Vector4D<float>(24.0f, 24.0f, 24.0f, 1.0f));
             _renderer2D.Clear();
 
             AXStatistics.Reset();
 
-            _renderer2D.BeginScene(_cameraController.Camera);
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(-Vector2.UnitX * 0.7f, 0.0f), Size = Vector2.One * 1.1f,
-                Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
-            });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(Vector2.Zero, 1.0f), Size = Vector2.One * 1.2f,
-                Color = new Vector4(0.4f, 0.1f, 0.8f, 1.0f), RotationInRadians = 45 * (float) (Math.PI / 180.0f)
-            });
-            _renderer2D.EndScene();
-
-            _renderer2D.BeginScene(_cameraController.Camera);
-            StressTest();
-            _renderer2D.EndScene();
-
-            // Transparency is weird with depth buffer. We need to first draw non-transparent objects and then draw transparent ones
-            // But even for them, render order MATTERS! also we'll need to order Z Index as well.
-            // Related link: https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/transparencyanddepth/Tutorial%204%20-%20Transparency%20and%20Depth.pdf
-            _renderer2D.BeginScene(_cameraController.Camera);
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(-Vector2.One * 0.5f, 2.0f), Size = Vector2.One * 0.8f,
-                Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f), Texture2D = _texture
-            });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(-Vector2.UnitX * 0.8f, 2.1f), Size = Vector2.One * 0.8f,
-                Color = new Vector4(0.4f, 0.8f, 0.2f, 1.0f), Texture2D = _texture, TilingFactor = 2.0f
-            });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(Vector2.UnitY * 0.9f, 2.2f), Size = Vector2.One,
-                SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 3), new SizeF(128.0f, 128.0f))
-            });
-            _renderer2D.DrawQuad(new QuadProperties
-            {
-                Position = new Vector3(Vector2.UnitY * 0.9f, 2.3f), Size = new Vector2(1.0f, 2.0f),
-                SubTexture2D = new SubTexture2D(_tilemapTexture, new Vector2(4, 1), new SizeF(128.0f, 128.0f),
-                    new Vector2(1, 2))
-            });
-            _renderer2D.EndScene();
+            _scene.OnRender(deltaTime);
         }
 
         private void StressTest()
@@ -126,9 +149,12 @@ namespace AcidarX.Sandbox
                     float xPos = offset + x * 1.1f;
                     float yPos = offset + y * 1.1f;
 
-                    _renderer2D.DrawQuad(new QuadProperties
+                    _scene.AddSprite(new TransformComponent
                     {
-                        Position = new Vector3(xPos, yPos, 0.0f), Size = Vector2.One * 0.1f,
+                        Translation = new Vector3(xPos, yPos, 0.0f),
+                        Scale = Vector2.One * 0.1f
+                    }, new SpriteRendererComponent
+                    {
                         Color = new Vector4(xPos / quadPerAxis, yPos / quadPerAxis, 0.8f, 1.0f)
                     });
                 }
@@ -137,7 +163,7 @@ namespace AcidarX.Sandbox
 
         public override void OnEvent(Event e)
         {
-            _cameraController.OnEvent(e);
+            _scene.OnEvent(e);
         }
 
         public override void Dispose(bool manual)

@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AcidarX.ECS\AcidarX.ECS.csproj" />
       <ProjectReference Include="..\AcidarX.Kernel\AcidarX.Kernel.csproj" />
     </ItemGroup>
 
