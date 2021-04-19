@@ -1,80 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace AcidarX.ECS
 {
-    internal class Registry
+    public class Registry
     {
-        public static Dictionary<uint, HashSet<IComponent>> Entities { get; } = new();
+        private const int MaxEntities = 100000;
 
-        public static uint NumberOfEntities { get; private set; }
+        private readonly Dictionary<Type, IComponent[]> _componentsMap = new();
 
+        public int EntityCount { get; private set; }
 
-        public uint CreateEntity()
-        {
-            NumberOfEntities++;
+        public void AddComponentType<T>() where T : IComponent =>
+            _componentsMap.Add(typeof(T), new IComponent[MaxEntities]);
 
-            Entities.Add(NumberOfEntities, new HashSet<IComponent>());
-            return NumberOfEntities;
-        }
+        public int CreateEntity() => EntityCount++;
 
-        public List<uint> View(List<Type> componentTypes)
-        {
-            List<uint> entities = new();
+        public void AddComponent<T>
+            (int entity, T component) where T : IComponent => _componentsMap[typeof(T)][entity] = component;
 
-            foreach ((uint entity, HashSet<IComponent> components) in Entities)
-            {
-                List<bool> shouldAddTracker = componentTypes
-                    .Select(type => components.Any(component => component.GetType().Name == type.Name)).ToList();
-
-                if (shouldAddTracker.TrueForAll(item => item))
-                {
-                    entities.Add(entity);
-                }
-            }
-
-            return entities;
-        }
-
-        public void AddComponent<T>(uint entity, ref T component) where T : IComponent
-        {
-            Entities.TryGetValue(entity, out HashSet<IComponent> components);
-
-            Debug.Assert(components != null, $"Entity {entity} not found");
-
-            components.TryGetValue(component, out IComponent? foundComponent);
-            Debug.Assert(foundComponent == null, $"Component {component} already added");
-
-            components.Add(component);
-        }
-
-        public T GetComponent<T>(uint entity) where T : IComponent
-        {
-            Entities.TryGetValue(entity, out HashSet<IComponent> components);
-
-            Debug.Assert(components != null, $"Entity {entity} not found");
-
-            T? component = components
-                .Where(c => c.GetType() == typeof(T))
-                .Cast<T>()
-                .FirstOrDefault();
-
-            Debug.Assert(component != null, $"Component of type {typeof(T).Name} not found");
-
-            return component;
-        }
-
-        public void RemoveComponent<T>(uint entity) where T : IComponent
-        {
-            Entities.TryGetValue(entity, out HashSet<IComponent> components);
-
-            Debug.Assert(components != null, $"Entity {entity} not found");
-
-            var component = GetComponent<T>(entity);
-            components.Remove(component);
-            // components.RemoveWhere(c => c.GetType() == typeof(T));
-        }
+        public T GetComponent<T>(int entity) where T : IComponent => (T) _componentsMap[typeof(T)][entity];
     }
 }
