@@ -309,7 +309,7 @@ namespace AcidarX.Graphics.Renderer
                 GetTextureIndex(quadProperties.SubTexture2D.Texture2D, ref textureIndex);
             }
         }
-        
+
         private void GetTextureIndex(SpriteRendererComponent spriteComponent, ref float textureIndex)
         {
             if (spriteComponent.Texture != null)
@@ -323,6 +323,21 @@ namespace AcidarX.Graphics.Renderer
             }
         }
 
+        private Vector2 CalculateScale(SpriteRendererComponent spriteComponent, TransformComponent transformComponent)
+        {
+            if (spriteComponent.Texture != null)
+            {
+               return spriteComponent.Texture.GetBaseScaleFromSpriteSize() * transformComponent.Scale;
+            }
+
+            if (spriteComponent.SubTexture?.Texture2D != null)
+            {
+                return spriteComponent.SubTexture.GetBaseScaleFromSpriteSize() * transformComponent.Scale;
+            }
+
+            return transformComponent.Scale;
+        }
+
         public void DrawSprite(TransformComponent transformComponent, SpriteRendererComponent spriteComponent)
         {
             if (Renderer2DData.QuadIndexCount >= Renderer2DData.MaxIndices)
@@ -334,9 +349,11 @@ namespace AcidarX.Graphics.Renderer
             var textureIndex = 0.0f;
             GetTextureIndex(spriteComponent, ref textureIndex);
 
-            Matrix4x4 transform = Matrix4x4.CreateTranslation(transformComponent.Translation) * 
+            Vector2 scale = CalculateScale(spriteComponent, transformComponent);
+
+            Matrix4x4 transform = Matrix4x4.CreateTranslation(transformComponent.Translation) *
                                   transformComponent.Rotation *
-                                  Matrix4x4.CreateScale(new Vector3(transformComponent.Scale, 1.0f));
+                                  Matrix4x4.CreateScale(new Vector3(scale, 1.0f));
 
             for (var i = 0; i < Renderer2DData.VertexPerQuad; i++)
             {

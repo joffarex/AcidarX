@@ -79,7 +79,7 @@ namespace AcidarX.Graphics.Renderer.OpenGL
 
             _gl.TextureStorage2D(_rendererID, 1, (GLEnum) _internalFormat, _width, _height);
             Bind();
-            
+
             _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
             _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Repeat);
 

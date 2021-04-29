@@ -10,7 +10,11 @@ namespace AcidarX.Graphics.Scene
         public Vector3 Translation { get; set; }
 
         public Matrix4x4 Rotation { get; set; } = Matrix4x4.Identity;
-        // public float RotationInRadians { get; set; } = 0.0f;
+
+        /// <summary>
+        ///     Actual scale of created sprite.
+        ///     if sprite's dimensions are 50x37px, actual texture drawn would be that size * Scale
+        /// </summary>
         public Vector2 Scale { get; set; }
 
 

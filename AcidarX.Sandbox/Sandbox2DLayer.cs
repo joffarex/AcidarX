@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Numerics;
 using AcidarX.Core.Layers;
 using AcidarX.Graphics;
@@ -24,10 +23,9 @@ namespace AcidarX.Sandbox
 
         private readonly AXRenderer2D _renderer2D;
 
-        private Scene _scene;
+        private Texture2D _adventurerSpritesheet;
 
-        private Texture2D _texture;
-        private Texture2D _tilemapTexture;
+        private Scene _scene;
 
         public Sandbox2DLayer(AXRenderer2D renderer2D, AssetManager assetManager)
             : base("Sandbox 2D layer")
@@ -42,8 +40,7 @@ namespace AcidarX.Sandbox
 
         public override void OnLoad()
         {
-            _texture = _assetManager.GetTexture2D("assets/Textures/adv-test.png");
-            _tilemapTexture = _assetManager.GetTexture2D("assets/Textures/rpg_tilemap.png");
+            _adventurerSpritesheet = _assetManager.GetTexture2D("assets/Textures/adventurer-spritesheet.png");
             _renderer2D.Init();
 
             _scene = new Scene(_renderer2D, new OrthographicCameraController(16.0f / 9.0f));
@@ -52,58 +49,12 @@ namespace AcidarX.Sandbox
 
             _scene.AddSprite(new TransformComponent
             {
-                Translation = new Vector3(-Vector2.UnitX * 0.7f, 0.0f),
-                Scale = Vector2.One * 1.1f
-            }, new SpriteRendererComponent
-            {
-                Color = new Vector4(0.8f, 0.8f, 0.4f, 1.0f)
-            });
-            _scene.AddSprite(new TransformComponent
-            {
                 Translation = new Vector3(Vector2.Zero, 1.0f),
-                Scale = Vector2.One * 1.2f,
-                Rotation = Matrix4x4.CreateRotationZ(45 * (float) (Math.PI / 180.0f))
-            }, new SpriteRendererComponent
-            {
-                Color = new Vector4(0.8f, 0.1f, 0.4f, 1.0f)
-            });
-            StressTest();
-
-            _scene.AddSprite(new TransformComponent
-            {
-                Translation = new Vector3(-Vector2.One * 0.5f, 2.0f),
-                Scale = Vector2.One * 1.8f
-            }, new SpriteRendererComponent
-            {
-                // Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f),
-                Texture = _texture
-            });
-            _scene.AddSprite(new TransformComponent
-            {
-                Translation = new Vector3(-Vector2.UnitX * 0.8f, 2.1f),
-                Scale = Vector2.One * 0.8f
-            }, new SpriteRendererComponent
-            {
-                // Color = new Vector4(0.4f, 0.8f, 0.4f, 0.7f),
-                Texture = _texture,
-                TilingFactor = 2.0f
-            });
-            _scene.AddSprite(new TransformComponent
-            {
-                Translation = new Vector3(Vector2.UnitY * 0.9f, 2.2f),
                 Scale = Vector2.One
             }, new SpriteRendererComponent
             {
-                SubTexture = new SubTexture2D(_tilemapTexture, new Vector2(4, 3), new SizeF(128.0f, 128.0f))
-            });
-            _scene.AddSprite(new TransformComponent
-            {
-                Translation = new Vector3(Vector2.UnitY * 0.9f, 2.3f),
-                Scale = new Vector2(1.0f, 2.0f)
-            }, new SpriteRendererComponent
-            {
-                SubTexture = new SubTexture2D(_tilemapTexture, new Vector2(4, 1), new SizeF(128.0f, 128.0f),
-                    new Vector2(1, 2))
+                SubTexture = new SubTexture2D(_adventurerSpritesheet, new Vector2(0, 15), 
+                    new SizeF(50.0f, 37.0f), Vector2.One)
             });
         }
 

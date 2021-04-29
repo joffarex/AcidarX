@@ -16,6 +16,7 @@ namespace AcidarX.Graphics.Graphics
         public SubTexture2D(Texture2D texture2D, Vector2 coordinates, SizeF spriteSize, Vector2 spriteBlockSize)
         {
             Texture2D = texture2D;
+            SpriteSize = spriteSize;
 
             TextureCoordinates[0] = new Vector2(coordinates.X * spriteSize.Width / Texture2D.GetWidth(),
                 coordinates.Y * spriteSize.Height / Texture2D.GetHeight());
@@ -36,7 +37,12 @@ namespace AcidarX.Graphics.Graphics
         }
 
         public Texture2D Texture2D { get; }
+        public SizeF SpriteSize { get; }
 
         public Vector2[] TextureCoordinates { get; } = new Vector2[4];
+
+        public Vector2 GetBaseScaleFromSpriteSize() => SpriteSize.Width > SpriteSize.Height
+            ? new Vector2(SpriteSize.Width / SpriteSize.Height, 1.0f)
+            : new Vector2(1.0f, SpriteSize.Height / SpriteSize.Width);
     }
 }

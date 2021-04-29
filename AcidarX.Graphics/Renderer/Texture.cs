@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace AcidarX.Graphics.Renderer
 {
@@ -83,5 +84,9 @@ namespace AcidarX.Graphics.Renderer
         public override int GetHashCode() => GetRendererID();
         // public static bool operator ==(Texture2D t1, Texture2D t2) => t1 != null && t1.Equals(t2);
         // public static bool operator !=(Texture2D t1, Texture2D t2) => t1 != null && !t1.Equals(t2);
+
+        public Vector2 GetBaseScaleFromSpriteSize() => GetWidth() > GetHeight()
+            ? new Vector2((float) GetWidth() / GetHeight(), 1.0f)
+            : new Vector2(1.0f, (float) GetHeight() / GetWidth());
     }
 }
