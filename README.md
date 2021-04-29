@@ -7,7 +7,7 @@ AcidarX (a.k.a AX) is a modular Game Framework, built with C# and SILK.NET. It i
 
 Features to add: 
 --------------------------------------------------
-- [ ] Asset manager with caching
+- [x] Asset manager with caching
 - [ ] Image processor
 - [ ] Audio manager 
 - [ ] Do things C# way.
@@ -15,18 +15,18 @@ Features to add:
 - [ ] Built-in AI engine and Algorithm implementations
 - [ ] Animations engine with both in-engine API and ImGui abstraction
 - [ ] Basic physics engine for 2D games
-- [ ] Performant ECS system
+- [x] Performant ECS system
 - [ ] Multithreading support
 - [ ] Networking layer for co-op
 - [ ] Game UI framework
 - [ ] File I/O, VFS (Virtual File System)
 - [ ] 2D Scene graph support (extend layers)
 - [ ] Better camera support
-- [ ] Performant sprite batcher
+- [x] Performant sprite batcher
 - [ ] Texture atlases/spritesheets API
 - [ ] Font rendering
 - [ ] 2D particle system
 - [ ] Better input abstraction
-- [ ] Powerfull graphics API with both low-level and high-level functionality
+- [ ] Powerful graphics API with both low-level and high-level functionality
 - [ ] Serialization system with JSON or my own format ".axs"
 - [ ] Debugging utilities, like profiling, logging, snapshots, etc.
