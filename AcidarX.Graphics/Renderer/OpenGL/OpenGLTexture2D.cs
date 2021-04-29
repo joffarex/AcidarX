@@ -48,11 +48,12 @@ namespace AcidarX.Graphics.Renderer.OpenGL
                 _rendererID = (RendererID) generatedId;
 
                 _gl.TextureStorage2D(_rendererID, 1, (GLEnum) _internalFormat, _width, _height);
+                Bind();
 
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Repeat);
 
-                _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
+                _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Nearest);
                 _gl.TexParameter(_textureTarget, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
 
                 _gl.TextureSubImage2D(_rendererID, 0, 0, 0, _width, _height, _dataFormat, PixelType.UnsignedByte, data);
@@ -77,11 +78,12 @@ namespace AcidarX.Graphics.Renderer.OpenGL
             _rendererID = (RendererID) generatedId;
 
             _gl.TextureStorage2D(_rendererID, 1, (GLEnum) _internalFormat, _width, _height);
-
+            Bind();
+            
             _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
             _gl.TexParameter(_textureTarget, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Repeat);
 
-            _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
+            _gl.TexParameter(_textureTarget, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Nearest);
             _gl.TexParameter(_textureTarget, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
         }
 

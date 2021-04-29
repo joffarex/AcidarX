@@ -42,7 +42,7 @@ namespace AcidarX.Sandbox
 
         public override void OnLoad()
         {
-            _texture = _assetManager.GetTexture2D("assets/Textures/awesomeface.png");
+            _texture = _assetManager.GetTexture2D("assets/Textures/adv-test.png");
             _tilemapTexture = _assetManager.GetTexture2D("assets/Textures/rpg_tilemap.png");
             _renderer2D.Init();
 
@@ -72,10 +72,10 @@ namespace AcidarX.Sandbox
             _scene.AddSprite(new TransformComponent
             {
                 Translation = new Vector3(-Vector2.One * 0.5f, 2.0f),
-                Scale = Vector2.One * 0.8f
+                Scale = Vector2.One * 1.8f
             }, new SpriteRendererComponent
             {
-                Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f),
+                // Color = new Vector4(0.8f, 0.1f, 0.4f, 0.7f),
                 Texture = _texture
             });
             _scene.AddSprite(new TransformComponent
@@ -84,7 +84,7 @@ namespace AcidarX.Sandbox
                 Scale = Vector2.One * 0.8f
             }, new SpriteRendererComponent
             {
-                Color = new Vector4(0.4f, 0.8f, 0.4f, 0.7f),
+                // Color = new Vector4(0.4f, 0.8f, 0.4f, 0.7f),
                 Texture = _texture,
                 TilingFactor = 2.0f
             });
