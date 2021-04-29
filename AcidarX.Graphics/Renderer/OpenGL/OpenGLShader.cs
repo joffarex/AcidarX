@@ -105,7 +105,6 @@ namespace AcidarX.Graphics.Renderer.OpenGL
                 byte* version = _gl.GetString(StringName.Version);
                 string? str = Marshal.PtrToStringUTF8((IntPtr) version);
 
-
                 UniformFieldData[] uniforms = new UniformFieldData[numberOfUniforms];
 
                 for (uint i = 0; i < numberOfUniforms; i++)

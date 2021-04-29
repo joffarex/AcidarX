@@ -10,12 +10,10 @@ namespace AcidarX.Graphics
     {
         private static readonly Dictionary<string, Shader> Shaders = new();
         private static readonly Dictionary<string, Texture2D> Texture2Ds = new();
-        private readonly GL _gl;
         private readonly GraphicsFactory _graphicsFactory;
 
-        public AssetManager(GL gl, GraphicsFactory graphicsFactory)
+        public AssetManager(GraphicsFactory graphicsFactory)
         {
-            _gl = gl;
             _graphicsFactory = graphicsFactory;
         }
 
