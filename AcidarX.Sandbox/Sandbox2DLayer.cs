@@ -1,9 +1,7 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using AcidarX.Core.Layers;
 using AcidarX.Graphics;
 using AcidarX.Graphics.Camera;
-using AcidarX.Graphics.Graphics;
 using AcidarX.Graphics.Renderer;
 using AcidarX.Graphics.Scene;
 using AcidarX.Kernel.Events;
@@ -23,7 +21,7 @@ namespace AcidarX.Sandbox
 
         private readonly AXRenderer2D _renderer2D;
 
-        private Texture2D _adventurerSpritesheet;
+        private Player _player;
 
         private Scene _scene;
 
@@ -40,22 +38,14 @@ namespace AcidarX.Sandbox
 
         public override void OnLoad()
         {
-            _adventurerSpritesheet = _assetManager.GetTexture2D("assets/Textures/adventurer-spritesheet.png");
             _renderer2D.Init();
 
             _scene = new Scene(_renderer2D, new OrthographicCameraController(16.0f / 9.0f));
             _scene.AddComponentType<TransformComponent>();
             _scene.AddComponentType<SpriteRendererComponent>();
 
-            _scene.AddSprite(new TransformComponent
-            {
-                Translation = new Vector3(Vector2.Zero, 1.0f),
-                Scale = Vector2.One
-            }, new SpriteRendererComponent
-            {
-                SubTexture = new SubTexture2D(_adventurerSpritesheet, new Vector2(0, 15), 
-                    new SizeF(50.0f, 37.0f), Vector2.One)
-            });
+            _player = new Player(_assetManager);
+            _scene.AddSprite(_player.Transform, _player.SpriteRenderer);
         }
 
         public override void OnDetach()
@@ -71,6 +61,7 @@ namespace AcidarX.Sandbox
 
         public override void OnUpdate(double deltaTime)
         {
+            _player.OnUpdate(deltaTime);
             _scene.OnUpdate(deltaTime);
         }
 

@@ -327,7 +327,7 @@ namespace AcidarX.Graphics.Renderer
         {
             if (spriteComponent.Texture != null)
             {
-               return spriteComponent.Texture.GetBaseScaleFromSpriteSize() * transformComponent.Scale;
+                return spriteComponent.Texture.GetBaseScaleFromSpriteSize() * transformComponent.Scale;
             }
 
             if (spriteComponent.SubTexture?.Texture2D != null)

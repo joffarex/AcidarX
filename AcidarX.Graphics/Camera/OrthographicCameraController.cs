@@ -30,22 +30,22 @@ namespace AcidarX.Graphics.Camera
         {
             AXProfiler.Capture(() =>
             {
-                if (KeyboardState.IsKeyPressed(AXKey.A))
+                if (KeyboardState.IsKeyPressed(AXKey.J))
                 {
                     _cameraPosition.X -= _cameraSpeed * (float) deltaTime;
                 }
 
-                if (KeyboardState.IsKeyPressed(AXKey.D))
+                if (KeyboardState.IsKeyPressed(AXKey.L))
                 {
                     _cameraPosition.X += _cameraSpeed * (float) deltaTime;
                 }
 
-                if (KeyboardState.IsKeyPressed(AXKey.W))
+                if (KeyboardState.IsKeyPressed(AXKey.I))
                 {
                     _cameraPosition.Y += _cameraSpeed * (float) deltaTime;
                 }
 
-                if (KeyboardState.IsKeyPressed(AXKey.S))
+                if (KeyboardState.IsKeyPressed(AXKey.K))
                 {
                     _cameraPosition.Y -= _cameraSpeed * (float) deltaTime;
                 }

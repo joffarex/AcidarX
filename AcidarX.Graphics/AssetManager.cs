@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using AcidarX.Graphics.Renderer;
 using AcidarX.Kernel.Utils;
-using Silk.NET.OpenGL;
-using Shader = AcidarX.Graphics.Renderer.Shader;
 
 namespace AcidarX.Graphics
 {
@@ -12,10 +10,7 @@ namespace AcidarX.Graphics
         private static readonly Dictionary<string, Texture2D> Texture2Ds = new();
         private readonly GraphicsFactory _graphicsFactory;
 
-        public AssetManager(GraphicsFactory graphicsFactory)
-        {
-            _graphicsFactory = graphicsFactory;
-        }
+        public AssetManager(GraphicsFactory graphicsFactory) => _graphicsFactory = graphicsFactory;
 
         public Shader GetShader(string resourceName)
         {

@@ -17,6 +17,10 @@ namespace AcidarX.Graphics.Scene
         /// </summary>
         public Vector2 Scale { get; set; }
 
+        public void UpdateTranslationX(float x) => Translation = new Vector3(x, Translation.Y, Translation.Z);
+        public void UpdateTranslationY(float y) => Translation = new Vector3(Translation.X, y, Translation.Z);
+        public void UpdateTranslationZ(float z) => Translation = new Vector3(Translation.X, Translation.Y, z);
+
 
         public override string ToString() => $"[{GetType().Name}]: {{ Translation: {Translation}, Scale: {Scale} }}";
     }

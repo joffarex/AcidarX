@@ -17,17 +17,9 @@ namespace AcidarX.Graphics.Graphics
         {
             Texture2D = texture2D;
             SpriteSize = spriteSize;
+            SpriteBlockSize = spriteBlockSize;
 
-            TextureCoordinates[0] = new Vector2(coordinates.X * spriteSize.Width / Texture2D.GetWidth(),
-                coordinates.Y * spriteSize.Height / Texture2D.GetHeight());
-            TextureCoordinates[1] = new Vector2(
-                (coordinates.X + spriteBlockSize.X) * spriteSize.Width / Texture2D.GetWidth(),
-                coordinates.Y * spriteSize.Height / Texture2D.GetHeight());
-            TextureCoordinates[2] = new Vector2(
-                (coordinates.X + spriteBlockSize.X) * spriteSize.Width / Texture2D.GetWidth(),
-                (coordinates.Y + spriteBlockSize.Y) * spriteSize.Height / Texture2D.GetHeight());
-            TextureCoordinates[3] = new Vector2(coordinates.X * spriteSize.Width / Texture2D.GetWidth(),
-                (coordinates.Y + spriteBlockSize.Y) * spriteSize.Height / Texture2D.GetHeight());
+            UpdateSpriteCoordinates(coordinates);
         }
 
         public SubTexture2D
@@ -38,8 +30,39 @@ namespace AcidarX.Graphics.Graphics
 
         public Texture2D Texture2D { get; }
         public SizeF SpriteSize { get; }
+        public Vector2 SpriteBlockSize { get; }
 
         public Vector2[] TextureCoordinates { get; } = new Vector2[4];
+
+        public void UpdateSpriteCoordinates(Vector2 coordinates, bool mirrored = false)
+        {
+            if (mirrored)
+            {
+                TextureCoordinates[1] = new Vector2(coordinates.X * SpriteSize.Width / Texture2D.GetWidth(),
+                    coordinates.Y * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[0] = new Vector2(
+                    (coordinates.X + SpriteBlockSize.X) * SpriteSize.Width / Texture2D.GetWidth(),
+                    coordinates.Y * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[3] = new Vector2(
+                    (coordinates.X + SpriteBlockSize.X) * SpriteSize.Width / Texture2D.GetWidth(),
+                    (coordinates.Y + SpriteBlockSize.Y) * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[2] = new Vector2(coordinates.X * SpriteSize.Width / Texture2D.GetWidth(),
+                    (coordinates.Y + SpriteBlockSize.Y) * SpriteSize.Height / Texture2D.GetHeight());
+            }
+            else
+            {
+                TextureCoordinates[0] = new Vector2(coordinates.X * SpriteSize.Width / Texture2D.GetWidth(),
+                    coordinates.Y * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[1] = new Vector2(
+                    (coordinates.X + SpriteBlockSize.X) * SpriteSize.Width / Texture2D.GetWidth(),
+                    coordinates.Y * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[2] = new Vector2(
+                    (coordinates.X + SpriteBlockSize.X) * SpriteSize.Width / Texture2D.GetWidth(),
+                    (coordinates.Y + SpriteBlockSize.Y) * SpriteSize.Height / Texture2D.GetHeight());
+                TextureCoordinates[3] = new Vector2(coordinates.X * SpriteSize.Width / Texture2D.GetWidth(),
+                    (coordinates.Y + SpriteBlockSize.Y) * SpriteSize.Height / Texture2D.GetHeight());
+            }
+        }
 
         public Vector2 GetBaseScaleFromSpriteSize() => SpriteSize.Width > SpriteSize.Height
             ? new Vector2(SpriteSize.Width / SpriteSize.Height, 1.0f)
